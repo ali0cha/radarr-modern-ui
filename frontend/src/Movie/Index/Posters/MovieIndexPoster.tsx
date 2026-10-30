@@ -28,7 +28,7 @@ import translate from 'Utilities/String/translate';
 import createMovieIndexItemSelector from '../createMovieIndexItemSelector';
 import MovieIndexPosterInfo from './MovieIndexPosterInfo';
 import selectPosterOptions from './selectPosterOptions';
-import styles from './MovieIndexPoster.css';
+import styles from './MovieIndexPoster.module.css';
 
 interface MovieIndexPosterProps {
   movieId: number;

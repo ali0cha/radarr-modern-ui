@@ -6,7 +6,7 @@ import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import { inputTypes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './NotificationEventItems.css';
+import styles from './NotificationEventItems.module.css';
 
 function NotificationEventItems(props) {
   const {

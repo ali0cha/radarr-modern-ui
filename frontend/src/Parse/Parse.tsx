@@ -13,7 +13,7 @@ import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import ParseResult from './ParseResult';
 import parseStateSelector from './parseStateSelector';
-import styles from './Parse.css';
+import styles from './Parse.module.css';
 
 function Parse() {
   const { isFetching, error, item } = useSelector(parseStateSelector());

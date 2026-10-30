@@ -9,7 +9,7 @@ import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelect
 import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import DiscoverMovieTableOptionsConnector from './DiscoverMovieTableOptionsConnector';
-import styles from './DiscoverMovieHeader.css';
+import styles from './DiscoverMovieHeader.module.css';
 
 class DiscoverMovieHeader extends Component {
 

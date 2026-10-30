@@ -15,7 +15,7 @@ import MoviePoster from 'Movie/MoviePoster';
 import formatRuntime from 'Utilities/Date/formatRuntime';
 import translate from 'Utilities/String/translate';
 import AddNewMovieModal from './AddNewMovieModal';
-import styles from './AddNewMovieSearchResult.css';
+import styles from './AddNewMovieSearchResult.module.css';
 
 class AddNewMovieSearchResult extends Component {
 

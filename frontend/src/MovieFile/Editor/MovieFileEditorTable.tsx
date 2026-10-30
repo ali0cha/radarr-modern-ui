@@ -1,6 +1,6 @@
 import React from 'react';
 import MovieFileEditorTableContentConnector from './MovieFileEditorTableContentConnector';
-import styles from './MovieFileEditorTable.css';
+import styles from './MovieFileEditorTable.module.css';
 
 interface MovieFileEditorTableProps {
   movieId: number;

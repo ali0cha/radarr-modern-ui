@@ -4,7 +4,7 @@ import Label from 'Components/Label';
 import { kinds } from 'Helpers/Props';
 import MoviePoster from 'Movie/MoviePoster';
 import { SuggestedMovie } from './MovieSearchInput';
-import styles from './MovieSearchResult.css';
+import styles from './MovieSearchResult.module.css';
 
 interface Match {
   key: string;

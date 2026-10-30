@@ -8,7 +8,7 @@ import getMovieStatusDetails from 'Movie/getMovieStatusDetails';
 import { MovieStatus } from 'Movie/Movie';
 import { toggleMovieMonitored } from 'Store/Actions/movieActions';
 import translate from 'Utilities/String/translate';
-import styles from './MovieStatusCell.css';
+import styles from './MovieStatusCell.module.css';
 
 interface MovieStatusCellProps {
   className: string;

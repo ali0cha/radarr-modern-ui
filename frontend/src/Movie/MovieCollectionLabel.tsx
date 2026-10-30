@@ -5,7 +5,7 @@ import { toggleCollectionMonitored } from 'Store/Actions/movieCollectionActions'
 import { createCollectionSelectorForHook } from 'Store/Selectors/createCollectionSelector';
 import MovieCollection from 'typings/MovieCollection';
 import translate from 'Utilities/String/translate';
-import styles from './MovieCollectionLabel.css';
+import styles from './MovieCollectionLabel.module.css';
 
 interface MovieCollectionLabelProps {
   tmdbId: number;

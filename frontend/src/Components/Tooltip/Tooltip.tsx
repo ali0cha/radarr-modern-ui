@@ -12,7 +12,7 @@ import { kinds, tooltipPositions } from 'Helpers/Props';
 import { Kind } from 'Helpers/Props/kinds';
 import dimensions from 'Styles/Variables/dimensions';
 import { isMobile as isMobileUtil } from 'Utilities/browser';
-import styles from './Tooltip.css';
+import styles from './Tooltip.module.css';
 
 export interface TooltipProps {
   className?: string;

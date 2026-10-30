@@ -10,7 +10,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddNotificationItem from './AddNotificationItem';
-import styles from './AddNotificationModalContent.css';
+import styles from './AddNotificationModalContent.module.css';
 
 class AddNotificationModalContent extends Component {
 

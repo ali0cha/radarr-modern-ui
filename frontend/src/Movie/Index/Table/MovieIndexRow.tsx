@@ -33,7 +33,7 @@ import translate from 'Utilities/String/translate';
 import MovieIndexProgressBar from '../ProgressBar/MovieIndexProgressBar';
 import MovieStatusCell from './MovieStatusCell';
 import selectTableOptions from './selectTableOptions';
-import styles from './MovieIndexRow.css';
+import styles from './MovieIndexRow.module.css';
 
 interface MovieIndexRowProps {
   movieId: number;

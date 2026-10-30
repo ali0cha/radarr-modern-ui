@@ -9,7 +9,7 @@ import translate from 'Utilities/String/translate';
 import AddDownloadClientModal from './AddDownloadClientModal';
 import DownloadClient from './DownloadClient';
 import EditDownloadClientModalConnector from './EditDownloadClientModalConnector';
-import styles from './DownloadClients.css';
+import styles from './DownloadClients.module.css';
 
 class DownloadClients extends Component {
 

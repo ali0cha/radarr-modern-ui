@@ -10,7 +10,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import translate from 'Utilities/String/translate';
 import { PageToolbarButtonProps } from './PageToolbarButton';
 import PageToolbarOverflowMenuItem from './PageToolbarOverflowMenuItem';
-import styles from './PageToolbarSection.css';
+import styles from './PageToolbarSection.module.css';
 
 const BUTTON_WIDTH = parseInt(dimensions.toolbarButtonWidth);
 const SEPARATOR_MARGIN = parseInt(dimensions.toolbarSeparatorMargin);

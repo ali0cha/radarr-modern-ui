@@ -5,7 +5,7 @@ import { kinds } from 'Helpers/Props';
 import Field from 'typings/Field';
 import translate from 'Utilities/String/translate';
 import EditMetadataModal from './EditMetadataModal';
-import styles from './Metadata.css';
+import styles from './Metadata.module.css';
 
 interface MetadataProps {
   id: number;

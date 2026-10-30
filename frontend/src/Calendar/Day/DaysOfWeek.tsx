@@ -5,7 +5,7 @@ import AppState from 'App/State/AppState';
 import * as calendarViews from 'Calendar/calendarViews';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import DayOfWeek from './DayOfWeek';
-import styles from './DaysOfWeek.css';
+import styles from './DaysOfWeek.module.css';
 
 function DaysOfWeek() {
   const { dates, view } = useSelector((state: AppState) => state.calendar);

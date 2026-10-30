@@ -3,7 +3,7 @@ import Tooltip from 'Components/Tooltip/Tooltip';
 import { kinds, tooltipPositions } from 'Helpers/Props';
 import { Ratings } from 'Movie/Movie';
 import translate from 'Utilities/String/translate';
-import styles from './TraktRating.css';
+import styles from './TraktRating.module.css';
 
 interface TraktRatingProps {
   ratings: Ratings;

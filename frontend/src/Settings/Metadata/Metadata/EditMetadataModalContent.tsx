@@ -23,7 +23,7 @@ import {
 import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import styles from './EditMetadataModalContent.css';
+import styles from './EditMetadataModalContent.module.css';
 
 export interface EditMetadataModalContentProps {
   id: number;

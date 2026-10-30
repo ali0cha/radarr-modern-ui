@@ -10,7 +10,7 @@ import MetadataType from 'typings/Metadata';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import Metadata from './Metadata';
-import styles from './Metadatas.css';
+import styles from './Metadatas.module.css';
 
 function createMetadatasSelector() {
   return createSelector(

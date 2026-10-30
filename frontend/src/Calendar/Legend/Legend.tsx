@@ -6,7 +6,7 @@ import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import LegendIconItem from './LegendIconItem';
 import LegendItem from './LegendItem';
-import styles from './Legend.css';
+import styles from './Legend.module.css';
 
 function Legend() {
   const view = useSelector((state: AppState) => state.calendar.view);

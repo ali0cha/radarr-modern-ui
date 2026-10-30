@@ -17,7 +17,7 @@ import MovieDetailsLinks from 'Movie/Details/MovieDetailsLinks';
 import MoviePoster from 'Movie/MoviePoster';
 import translate from 'Utilities/String/translate';
 import DiscoverMoviePosterInfo from './DiscoverMoviePosterInfo';
-import styles from './DiscoverMoviePoster.css';
+import styles from './DiscoverMoviePoster.module.css';
 
 class DiscoverMoviePoster extends Component {
 

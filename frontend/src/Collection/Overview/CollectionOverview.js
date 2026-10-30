@@ -17,7 +17,7 @@ import fonts from 'Styles/Variables/fonts';
 import translate from 'Utilities/String/translate';
 import CollectionMovieConnector from './CollectionMovieConnector';
 import CollectionMovieLabelConnector from './CollectionMovieLabelConnector';
-import styles from './CollectionOverview.css';
+import styles from './CollectionOverview.module.css';
 
 // Import Swiper styles
 import 'swiper/css';

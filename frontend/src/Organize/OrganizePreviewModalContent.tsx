@@ -22,7 +22,7 @@ import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import OrganizePreviewRow from './OrganizePreviewRow';
-import styles from './OrganizePreviewModalContent.css';
+import styles from './OrganizePreviewModalContent.module.css';
 
 function getValue(allSelected: boolean, allUnselected: boolean) {
   if (allSelected) {

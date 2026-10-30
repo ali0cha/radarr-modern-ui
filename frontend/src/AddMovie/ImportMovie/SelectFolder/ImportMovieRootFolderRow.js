@@ -7,7 +7,7 @@ import TableRow from 'Components/Table/TableRow';
 import { icons } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import styles from './ImportMovieRootFolderRow.css';
+import styles from './ImportMovieRootFolderRow.module.css';
 
 function ImportMovieRootFolderRow(props) {
   const {

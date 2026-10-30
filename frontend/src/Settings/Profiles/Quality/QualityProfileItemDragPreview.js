@@ -5,7 +5,7 @@ import DragPreviewLayer from 'Components/DragPreviewLayer';
 import { QUALITY_PROFILE_ITEM } from 'Helpers/dragTypes';
 import dimensions from 'Styles/Variables/dimensions.js';
 import QualityProfileItem from './QualityProfileItem';
-import styles from './QualityProfileItemDragPreview.css';
+import styles from './QualityProfileItemDragPreview.module.css';
 
 const formGroupExtraSmallWidth = parseInt(dimensions.formGroupExtraSmallWidth);
 const formLabelSmallWidth = parseInt(dimensions.formLabelSmallWidth);

@@ -25,7 +25,7 @@ import ImportListExclusion from 'typings/ImportListExclusion';
 import { InputChanged } from 'typings/inputs';
 import { PendingSection } from 'typings/pending';
 import translate from 'Utilities/String/translate';
-import styles from './EditImportListExclusionModalContent.css';
+import styles from './EditImportListExclusionModalContent.module.css';
 
 const newImportListExclusion = {
   movieTitle: '',

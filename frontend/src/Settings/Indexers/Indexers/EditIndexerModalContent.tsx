@@ -28,7 +28,7 @@ import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProvid
 import Indexer from 'typings/Indexer';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import styles from './EditIndexerModalContent.css';
+import styles from './EditIndexerModalContent.module.css';
 
 export interface EditIndexerModalContentProps {
   id?: number;

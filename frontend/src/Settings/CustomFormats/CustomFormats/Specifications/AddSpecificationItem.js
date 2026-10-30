@@ -7,7 +7,7 @@ import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddSpecificationPresetMenuItem from './AddSpecificationPresetMenuItem';
-import styles from './AddSpecificationItem.css';
+import styles from './AddSpecificationItem.module.css';
 
 class AddSpecificationItem extends Component {
 

@@ -5,7 +5,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import { DELAY_PROFILE } from 'Helpers/dragTypes';
 import DelayProfile from './DelayProfile';
-import styles from './DelayProfileDragSource.css';
+import styles from './DelayProfileDragSource.module.css';
 
 const delayProfileDragSource = {
   beginDrag(item) {

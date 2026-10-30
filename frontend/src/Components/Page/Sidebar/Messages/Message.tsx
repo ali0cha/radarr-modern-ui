@@ -5,7 +5,7 @@ import { MessageType } from 'App/State/MessagesAppState';
 import Icon, { IconName } from 'Components/Icon';
 import { icons } from 'Helpers/Props';
 import { hideMessage } from 'Store/Actions/appActions';
-import styles from './Message.css';
+import styles from './Message.module.css';
 
 interface MessageProps {
   id: number;

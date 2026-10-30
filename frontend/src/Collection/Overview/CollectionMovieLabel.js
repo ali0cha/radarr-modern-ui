@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import getProgressBarKind from 'Utilities/Movie/getProgressBarKind';
 import translate from 'Utilities/String/translate';
-import styles from './CollectionMovieLabel.css';
+import styles from './CollectionMovieLabel.module.css';
 
 class CollectionMovieLabel extends Component {
   //

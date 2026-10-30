@@ -12,7 +12,7 @@ import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemS
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import CalendarEventQueueDetails from './CalendarEventQueueDetails';
-import styles from './CalendarEvent.css';
+import styles from './CalendarEvent.module.css';
 
 interface CalendarEventProps {
   id: number;

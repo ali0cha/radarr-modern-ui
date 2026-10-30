@@ -7,7 +7,7 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditRemotePathMappingModalConnector from './EditRemotePathMappingModalConnector';
-import styles from './RemotePathMapping.css';
+import styles from './RemotePathMapping.module.css';
 
 class RemotePathMapping extends Component {
 

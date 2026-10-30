@@ -17,7 +17,7 @@ import { inputTypes, kinds } from 'Helpers/Props';
 import AdvancedSettingsButton from 'Settings/AdvancedSettingsButton';
 import translate from 'Utilities/String/translate';
 import NotificationEventItems from './NotificationEventItems';
-import styles from './EditNotificationModalContent.css';
+import styles from './EditNotificationModalContent.module.css';
 
 function EditNotificationModalContent(props) {
   const {

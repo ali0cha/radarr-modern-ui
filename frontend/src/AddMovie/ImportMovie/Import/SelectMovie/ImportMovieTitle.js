@@ -3,7 +3,7 @@ import React from 'react';
 import Label from 'Components/Label';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './ImportMovieTitle.css';
+import styles from './ImportMovieTitle.module.css';
 
 function ImportMovieTitle(props) {
   const {

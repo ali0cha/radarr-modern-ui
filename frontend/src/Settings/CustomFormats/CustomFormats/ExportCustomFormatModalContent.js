@@ -10,7 +10,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './ExportCustomFormatModalContent.css';
+import styles from './ExportCustomFormatModalContent.module.css';
 
 class ExportCustomFormatModalContent extends Component {
 

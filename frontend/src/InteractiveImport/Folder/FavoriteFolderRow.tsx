@@ -6,7 +6,7 @@ import TableRowButton from 'Components/Table/TableRowButton';
 import { icons } from 'Helpers/Props';
 import { removeFavoriteFolder } from 'Store/Actions/interactiveImportActions';
 import translate from 'Utilities/String/translate';
-import styles from './FavoriteFolderRow.css';
+import styles from './FavoriteFolderRow.module.css';
 
 interface FavoriteFolderRowProps {
   folder: string;

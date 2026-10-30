@@ -15,7 +15,7 @@ import { deleteImportList } from 'Store/Actions/Settings/importLists';
 import ImportList from 'typings/ImportList';
 import MovieCredit from 'typings/MovieCredit';
 import translate from 'Utilities/String/translate';
-import styles from '../MovieCreditPoster.css';
+import styles from '../MovieCreditPoster.module.css';
 
 export interface MovieCrewPosterProps
   extends Pick<MovieCredit, 'personName' | 'images' | 'job'> {

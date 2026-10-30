@@ -27,7 +27,7 @@ import { fetchStatus } from 'Store/Actions/systemActions';
 import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import styles from './AuthenticationRequiredModalContent.css';
+import styles from './AuthenticationRequiredModalContent.module.css';
 
 const SECTION = 'general';
 

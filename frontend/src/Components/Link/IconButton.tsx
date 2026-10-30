@@ -3,7 +3,7 @@ import React from 'react';
 import Icon, { IconProps } from 'Components/Icon';
 import translate from 'Utilities/String/translate';
 import Link, { LinkProps } from './Link';
-import styles from './IconButton.css';
+import styles from './IconButton.module.css';
 
 export interface IconButtonProps
   extends Omit<LinkProps, 'name' | 'kind'>,

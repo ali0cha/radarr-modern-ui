@@ -7,7 +7,7 @@ import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
 import { toggleAdvancedSettings } from 'Store/Actions/settingsActions';
 import translate from 'Utilities/String/translate';
-import styles from './AdvancedSettingsButton.css';
+import styles from './AdvancedSettingsButton.module.css';
 
 interface AdvancedSettingsButtonProps {
   showLabel: boolean;

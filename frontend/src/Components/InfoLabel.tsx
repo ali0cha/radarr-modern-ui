@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { ComponentProps, ReactNode } from 'react';
 import { Kind } from 'Helpers/Props/kinds';
 import { Size } from 'Helpers/Props/sizes';
-import styles from './InfoLabel.css';
+import styles from './InfoLabel.module.css';
 
 interface InfoLabelProps extends ComponentProps<'span'> {
   className?: string;

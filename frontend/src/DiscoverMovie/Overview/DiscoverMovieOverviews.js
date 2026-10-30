@@ -7,7 +7,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 import hasDifferentItemsOrOrder from 'Utilities/Object/hasDifferentItemsOrOrder';
 import DiscoverMovieOverviewConnector from './DiscoverMovieOverviewConnector';
-import styles from './DiscoverMovieOverviews.css';
+import styles from './DiscoverMovieOverviews.module.css';
 
 // Poster container dimensions
 const columnPadding = parseInt(dimensions.movieIndexColumnPadding);

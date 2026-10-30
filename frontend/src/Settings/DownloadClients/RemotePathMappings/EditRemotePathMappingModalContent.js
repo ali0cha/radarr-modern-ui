@@ -15,7 +15,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import { stringSettingShape } from 'Helpers/Props/Shapes/settingShape';
 import translate from 'Utilities/String/translate';
-import styles from './EditRemotePathMappingModalContent.css';
+import styles from './EditRemotePathMappingModalContent.module.css';
 
 function EditRemotePathMappingModalContent(props) {
   const {

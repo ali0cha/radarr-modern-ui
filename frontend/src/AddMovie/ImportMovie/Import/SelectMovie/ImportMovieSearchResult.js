@@ -4,7 +4,7 @@ import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
 import ImportMovieTitle from './ImportMovieTitle';
-import styles from './ImportMovieSearchResult.css';
+import styles from './ImportMovieSearchResult.module.css';
 
 class ImportMovieSearchResult extends Component {
 

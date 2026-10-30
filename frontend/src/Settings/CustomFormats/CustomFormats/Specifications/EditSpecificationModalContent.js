@@ -15,7 +15,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './EditSpecificationModalContent.css';
+import styles from './EditSpecificationModalContent.module.css';
 
 function EditSpecificationModalContent(props) {
   const {

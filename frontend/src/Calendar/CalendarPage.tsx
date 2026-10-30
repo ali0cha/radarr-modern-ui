@@ -32,7 +32,7 @@ import CalendarFilterModal from './CalendarFilterModal';
 import CalendarLinkModal from './iCal/CalendarLinkModal';
 import Legend from './Legend/Legend';
 import CalendarOptionsModal from './Options/CalendarOptionsModal';
-import styles from './CalendarPage.css';
+import styles from './CalendarPage.module.css';
 
 const MINIMUM_DAY_WIDTH = 120;
 

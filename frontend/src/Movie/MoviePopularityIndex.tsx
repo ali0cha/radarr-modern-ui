@@ -3,7 +3,7 @@ import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './MoviePopularityIndex.css';
+import styles from './MoviePopularityIndex.module.css';
 
 interface MoviePopularityIndexProps {
   popularity: number;

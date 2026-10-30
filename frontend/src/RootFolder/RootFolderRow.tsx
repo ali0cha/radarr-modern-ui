@@ -10,7 +10,7 @@ import { icons, kinds } from 'Helpers/Props';
 import { deleteRootFolder } from 'Store/Actions/rootFolderActions';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import styles from './RootFolderRow.css';
+import styles from './RootFolderRow.module.css';
 
 interface RootFolderRowProps {
   id: number;

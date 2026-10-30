@@ -8,7 +8,7 @@ import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
 import { sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import QualityProfileFormatItem from './QualityProfileFormatItem';
-import styles from './QualityProfileFormatItems.css';
+import styles from './QualityProfileFormatItems.module.css';
 
 function calcOrder(profileFormatItems) {
   const items = profileFormatItems.reduce((acc, cur, index) => {

@@ -23,7 +23,7 @@ import { InputChanged } from 'typings/inputs';
 import NamingConfig from 'typings/Settings/NamingConfig';
 import translate from 'Utilities/String/translate';
 import NamingModal from './NamingModal';
-import styles from './Naming.css';
+import styles from './Naming.module.css';
 
 const SECTION = 'naming';
 

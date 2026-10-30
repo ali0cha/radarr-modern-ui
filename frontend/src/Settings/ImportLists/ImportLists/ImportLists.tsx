@@ -18,7 +18,7 @@ import translate from 'Utilities/String/translate';
 import AddImportListModal from './AddImportListModal';
 import EditImportListModal from './EditImportListModal';
 import ImportList from './ImportList';
-import styles from './ImportLists.css';
+import styles from './ImportLists.module.css';
 
 function ImportLists() {
   const dispatch = useDispatch();

@@ -21,7 +21,7 @@ import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import createPathsSelector from './createPathsSelector';
 import FileBrowserRow from './FileBrowserRow';
-import styles from './FileBrowserModalContent.css';
+import styles from './FileBrowserModalContent.module.css';
 
 const columns: Column[] = [
   {

@@ -7,7 +7,7 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditSpecificationModalConnector from './EditSpecificationModal';
-import styles from './Specification.css';
+import styles from './Specification.module.css';
 
 class Specification extends Component {
 

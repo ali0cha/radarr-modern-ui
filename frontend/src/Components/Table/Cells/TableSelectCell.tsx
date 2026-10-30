@@ -3,7 +3,7 @@ import CheckInput from 'Components/Form/CheckInput';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import TableRowCell, { TableRowCellProps } from './TableRowCell';
-import styles from './TableSelectCell.css';
+import styles from './TableSelectCell.module.css';
 
 interface TableSelectCellProps extends Omit<TableRowCellProps, 'id'> {
   className?: string;

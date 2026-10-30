@@ -11,7 +11,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddDownloadClientItem from './AddDownloadClientItem';
-import styles from './AddDownloadClientModalContent.css';
+import styles from './AddDownloadClientModalContent.module.css';
 
 class AddDownloadClientModalContent extends Component {
 

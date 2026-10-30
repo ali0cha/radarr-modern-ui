@@ -9,7 +9,7 @@ import { createQualityProfileSelectorForHook } from 'Store/Selectors/createQuali
 import { SelectStateInputProps } from 'typings/props';
 import firstCharToUpper from 'Utilities/String/firstCharToUpper';
 import translate from 'Utilities/String/translate';
-import styles from './ManageImportListsModalRow.css';
+import styles from './ManageImportListsModalRow.module.css';
 
 interface ManageImportListsModalRowProps {
   id: number;

@@ -6,7 +6,7 @@ import { icons } from 'Helpers/Props';
 import dimensions from 'Styles/Variables/dimensions';
 import translate from 'Utilities/String/translate';
 import DiscoverMovieOverviewInfoRow from './DiscoverMovieOverviewInfoRow';
-import styles from './DiscoverMovieOverviewInfo.css';
+import styles from './DiscoverMovieOverviewInfo.module.css';
 
 const infoRowHeight = parseInt(dimensions.movieIndexOverviewInfoRowHeight);
 

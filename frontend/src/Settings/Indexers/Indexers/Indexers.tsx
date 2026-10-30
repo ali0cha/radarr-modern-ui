@@ -14,7 +14,7 @@ import translate from 'Utilities/String/translate';
 import AddIndexerModal from './AddIndexerModal';
 import EditIndexerModal from './EditIndexerModal';
 import Indexer from './Indexer';
-import styles from './Indexers.css';
+import styles from './Indexers.module.css';
 
 function Indexers() {
   const dispatch = useDispatch();

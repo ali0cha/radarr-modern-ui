@@ -19,7 +19,7 @@ import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import AutoTagging from './AutoTagging';
 import EditAutoTaggingModal from './EditAutoTaggingModal';
-import styles from './AutoTaggings.css';
+import styles from './AutoTaggings.module.css';
 
 export default function AutoTaggings() {
   const { error, items, isDeleting, isFetching, isPopulated } = useSelector(

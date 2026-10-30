@@ -14,7 +14,7 @@ import { kinds } from 'Helpers/Props';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsDelayProfile from './TagDetailsDelayProfile';
-import styles from './TagDetailsModalContent.css';
+import styles from './TagDetailsModalContent.module.css';
 
 function findMatchingItems<T extends ModelBase>(ids: number[], items: T[]) {
   return items.filter((s) => {

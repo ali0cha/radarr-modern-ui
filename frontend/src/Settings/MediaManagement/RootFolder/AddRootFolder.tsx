@@ -8,7 +8,7 @@ import { icons, kinds, sizes } from 'Helpers/Props';
 import { addRootFolder } from 'Store/Actions/rootFolderActions';
 import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
 import translate from 'Utilities/String/translate';
-import styles from './AddRootFolder.css';
+import styles from './AddRootFolder.module.css';
 
 function AddRootFolder() {
   const { isSaving, saveError } = useSelector(createRootFoldersSelector());

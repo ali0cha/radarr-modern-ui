@@ -13,7 +13,7 @@ import Indexer from 'typings/Indexer';
 import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import translate from 'Utilities/String/translate';
 import EditReleaseProfileModal from './EditReleaseProfileModal';
-import styles from './ReleaseProfileItem.css';
+import styles from './ReleaseProfileItem.module.css';
 
 interface ReleaseProfileProps extends ReleaseProfile {
   tagList: Tag[];

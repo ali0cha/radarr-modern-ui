@@ -5,7 +5,7 @@ import TableBody from 'Components/Table/TableBody';
 import { sortDirections } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import MovieFileEditorRow from './MovieFileEditorRow';
-import styles from './MovieFileEditorTableContent.css';
+import styles from './MovieFileEditorTableContent.module.css';
 
 class MovieFileEditorTableContent extends Component {
 

@@ -11,7 +11,7 @@ import { icons, kinds } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import RestoreBackupModalConnector from './RestoreBackupModalConnector';
-import styles from './BackupRow.css';
+import styles from './BackupRow.module.css';
 
 class BackupRow extends Component {
 

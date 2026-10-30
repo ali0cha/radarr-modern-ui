@@ -5,7 +5,7 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import createMultiMoviesSelector from 'Store/Selectors/createMultiMoviesSelector';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
-import styles from './QueuedTaskRowNameCell.css';
+import styles from './QueuedTaskRowNameCell.module.css';
 
 function formatTitles(titles: string[]) {
   if (!titles) {

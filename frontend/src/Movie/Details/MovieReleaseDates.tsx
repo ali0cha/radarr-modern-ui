@@ -8,7 +8,7 @@ import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import formatDate from 'Utilities/Date/formatDate';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
-import styles from './MovieReleaseDates.css';
+import styles from './MovieReleaseDates.module.css';
 
 type MovieReleaseDatesProps = Pick<
   Movie,

@@ -9,7 +9,7 @@ import { selectImportListSchema } from 'Store/Actions/settingsActions';
 import ImportList from 'typings/ImportList';
 import translate from 'Utilities/String/translate';
 import AddImportListPresetMenuItem from './AddImportListPresetMenuItem';
-import styles from './AddImportListItem.css';
+import styles from './AddImportListItem.module.css';
 
 interface AddImportListItemProps {
   implementation: string;

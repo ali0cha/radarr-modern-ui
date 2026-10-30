@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import Movie from 'Movie/Movie';
 import AgendaEvent from './AgendaEvent';
-import styles from './Agenda.css';
+import styles from './Agenda.module.css';
 
 interface AgendaMovie extends Movie {
   sortDate: moment.Moment;

@@ -28,7 +28,7 @@ import selectSettings from 'Store/Selectors/selectSettings';
 import useIsWindows from 'System/useIsWindows';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import styles from './AddNewMovieCollectionMovieModalContent.css';
+import styles from './AddNewMovieCollectionMovieModalContent.module.css';
 
 export interface AddNewMovieCollectionMovieModalContentProps {
   tmdbId: number;

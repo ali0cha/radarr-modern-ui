@@ -23,7 +23,7 @@ import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import styles from './EditMovieCollectionModalContent.css';
+import styles from './EditMovieCollectionModalContent.module.css';
 
 export interface EditMovieCollectionModalContentProps {
   collectionId: number;

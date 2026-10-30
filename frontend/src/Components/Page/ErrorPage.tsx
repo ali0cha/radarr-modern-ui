@@ -1,7 +1,7 @@
 import React from 'react';
 import { Error } from 'App/State/AppSectionState';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
-import styles from './ErrorPage.css';
+import styles from './ErrorPage.module.css';
 
 interface ErrorPageProps {
   version: string;

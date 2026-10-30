@@ -13,7 +13,7 @@ import { deleteCustomFormat } from 'Store/Actions/settingsActions';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
 import EditCustomFormatModalConnector from '../EditCustomFormatModalConnector';
-import styles from './ManageCustomFormatsModalRow.css';
+import styles from './ManageCustomFormatsModalRow.module.css';
 
 interface ManageCustomFormatsModalRowProps {
   id: number;

@@ -8,7 +8,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import CustomFilter from './CustomFilter';
-import styles from './CustomFiltersModalContent.css';
+import styles from './CustomFiltersModalContent.module.css';
 
 function CustomFiltersModalContent(props) {
   const {

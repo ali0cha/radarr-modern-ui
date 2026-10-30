@@ -14,7 +14,7 @@ import { fetchIndexerSchema } from 'Store/Actions/settingsActions';
 import Indexer from 'typings/Indexer';
 import translate from 'Utilities/String/translate';
 import AddIndexerItem from './AddIndexerItem';
-import styles from './AddIndexerModalContent.css';
+import styles from './AddIndexerModalContent.module.css';
 
 interface AddIndexerModalContentProps {
   onIndexerSelect: () => void;

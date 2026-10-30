@@ -22,7 +22,7 @@ import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
 import translate from 'Utilities/String/translate';
 import FileDetailsModal from '../FileDetailsModal';
 import MovieFileRowCellPlaceholder from './MovieFileRowCellPlaceholder';
-import styles from './MovieFileEditorRow.css';
+import styles from './MovieFileEditorRow.module.css';
 
 interface MovieFileRowProps
   extends Pick<

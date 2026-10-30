@@ -8,7 +8,7 @@ import VirtualTableSelectAllHeaderCell from 'Components/Table/VirtualTableSelect
 import Popover from 'Components/Tooltip/Popover';
 import { icons, tooltipPositions } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './ImportMovieHeader.css';
+import styles from './ImportMovieHeader.module.css';
 
 function ImportMovieHeader(props) {
   const {

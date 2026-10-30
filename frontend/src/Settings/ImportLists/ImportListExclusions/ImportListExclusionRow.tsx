@@ -12,7 +12,7 @@ import ImportListExclusion from 'typings/ImportListExclusion';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
 import EditImportListExclusionModal from './EditImportListExclusionModal';
-import styles from './ImportListExclusionRow.css';
+import styles from './ImportListExclusionRow.module.css';
 
 interface ImportListExclusionRowProps extends ImportListExclusion {
   isSelected: boolean;

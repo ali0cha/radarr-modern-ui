@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ratings, RatingValues } from 'Movie/Movie';
 import translate from 'Utilities/String/translate';
-import styles from './RottenTomatoRating.css';
+import styles from './RottenTomatoRating.module.css';
 
 interface RottenTomatoRatingProps {
   ratings: Ratings;

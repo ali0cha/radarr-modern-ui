@@ -10,7 +10,7 @@ import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditRemotePathMappingModalConnector from './EditRemotePathMappingModalConnector';
 import RemotePathMapping from './RemotePathMapping';
-import styles from './RemotePathMappings.css';
+import styles from './RemotePathMappings.module.css';
 
 class RemotePathMappings extends Component {
 

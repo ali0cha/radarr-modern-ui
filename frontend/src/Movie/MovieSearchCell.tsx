@@ -11,7 +11,7 @@ import { executeCommand } from 'Store/Actions/commandActions';
 import createExecutingCommandsSelector from 'Store/Selectors/createExecutingCommandsSelector';
 import translate from 'Utilities/String/translate';
 import MovieInteractiveSearchModal from './Search/MovieInteractiveSearchModal';
-import styles from './MovieSearchCell.css';
+import styles from './MovieSearchCell.module.css';
 
 interface MovieSearchCellProps {
   movieId: number;

@@ -8,7 +8,7 @@ import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditQualityProfileModalConnector from './EditQualityProfileModalConnector';
 import QualityProfile from './QualityProfile';
-import styles from './QualityProfiles.css';
+import styles from './QualityProfiles.module.css';
 
 class QualityProfiles extends Component {
 
