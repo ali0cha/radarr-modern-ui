@@ -6,7 +6,7 @@
       "baseUrl": "src",
       "jsx": "react",
       "module": "esnext",
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "allowSyntheticDefaultImports": true,
       "forceConsistentCasingInFileNames": true,
       "noEmit": true,
@@ -17,6 +17,7 @@
       "noImplicitThis": true,
       "strict": true,
       "esModuleInterop": true,
+      "skipLibCheck": true,
       "typeRoots": ["node_modules/@types", "typings"],
       "paths": {
           "*": [
@@ -28,7 +29,7 @@
   "include": [
       "./src/**/*",
       "./.eslintrc.js",
-      "./build/webpack.config.js",
+      "../vite.config.mts",
       "./typings/*.ts",
   ],
   "exclude": [

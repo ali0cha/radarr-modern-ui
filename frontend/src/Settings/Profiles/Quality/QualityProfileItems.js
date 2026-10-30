@@ -10,7 +10,7 @@ import { icons, kinds, sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import QualityProfileItemDragPreview from './QualityProfileItemDragPreview';
 import QualityProfileItemDragSource from './QualityProfileItemDragSource';
-import styles from './QualityProfileItems.css';
+import styles from './QualityProfileItems.module.css';
 
 class QualityProfileItems extends Component {
 

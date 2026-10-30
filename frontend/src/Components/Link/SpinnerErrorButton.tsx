@@ -7,7 +7,7 @@ import SpinnerButton, {
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
 import { ValidationFailure } from 'typings/pending';
-import styles from './SpinnerErrorButton.css';
+import styles from './SpinnerErrorButton.module.css';
 
 function getTestResult(error: Error | string | undefined) {
   if (!error) {

@@ -11,7 +11,7 @@ import {
   removeRecentFolder,
 } from 'Store/Actions/interactiveImportActions';
 import translate from 'Utilities/String/translate';
-import styles from './RecentFolderRow.css';
+import styles from './RecentFolderRow.module.css';
 
 interface RecentFolderRowProps {
   folder: string;

@@ -5,7 +5,7 @@ import DragPreviewLayer from 'Components/DragPreviewLayer';
 import { DELAY_PROFILE } from 'Helpers/dragTypes';
 import dimensions from 'Styles/Variables/dimensions.js';
 import DelayProfile from './DelayProfile';
-import styles from './DelayProfileDragPreview.css';
+import styles from './DelayProfileDragPreview.module.css';
 
 const dragHandleWidth = parseInt(dimensions.dragHandleWidth);
 

@@ -6,7 +6,7 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowButton from 'Components/Table/TableRowButton';
 import { icons } from 'Helpers/Props';
 import LogsTableDetailsModal from './LogsTableDetailsModal';
-import styles from './LogsTableRow.css';
+import styles from './LogsTableRow.module.css';
 
 function getIconName(level) {
   switch (level) {

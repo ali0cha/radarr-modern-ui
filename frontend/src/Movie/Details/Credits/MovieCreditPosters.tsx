@@ -5,7 +5,7 @@ import { Swiper as SwiperClass } from 'swiper/types';
 import dimensions from 'Styles/Variables/dimensions';
 import MovieCredit from 'typings/MovieCredit';
 import MovieCreditPoster from './MovieCreditPoster';
-import styles from './MovieCreditPosters.css';
+import styles from './MovieCreditPosters.module.css';
 
 // Import Swiper styles
 import 'swiper/css';

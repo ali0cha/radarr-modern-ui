@@ -9,7 +9,7 @@ import {
   gotoCalendarPreviousRange,
 } from 'Store/Actions/calendarActions';
 import CalendarDay from './CalendarDay';
-import styles from './CalendarDays.css';
+import styles from './CalendarDays.module.css';
 
 function CalendarDays() {
   const dispatch = useDispatch();

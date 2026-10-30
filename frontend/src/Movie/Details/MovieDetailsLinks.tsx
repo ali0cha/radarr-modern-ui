@@ -5,7 +5,7 @@ import Link from 'Components/Link/Link';
 import { kinds, sizes } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
 import translate from 'Utilities/String/translate';
-import styles from './MovieDetailsLinks.css';
+import styles from './MovieDetailsLinks.module.css';
 
 type MovieDetailsLinksProps = Pick<
   Movie,

@@ -10,7 +10,7 @@ import useMovieFile from 'MovieFile/useMovieFile';
 import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemSelector';
 import translate from 'Utilities/String/translate';
 import MovieQuality from './MovieQuality';
-import styles from './MovieStatus.css';
+import styles from './MovieStatus.module.css';
 
 interface MovieStatusProps {
   movieId: number;

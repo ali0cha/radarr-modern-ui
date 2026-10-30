@@ -3,7 +3,7 @@ import Tooltip from 'Components/Tooltip/Tooltip';
 import { kinds, tooltipPositions } from 'Helpers/Props';
 import { Ratings, RatingValues } from 'Movie/Movie';
 import translate from 'Utilities/String/translate';
-import styles from './ImdbRating.css';
+import styles from './ImdbRating.module.css';
 
 interface ImdbRatingProps {
   ratings: Ratings;

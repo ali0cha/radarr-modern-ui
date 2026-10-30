@@ -14,7 +14,7 @@ import UpdateChanges from 'System/Updates/UpdateChanges';
 import Update from 'typings/Update';
 import translate from 'Utilities/String/translate';
 import AppState from './State/AppState';
-import styles from './AppUpdatedModalContent.css';
+import styles from './AppUpdatedModalContent.module.css';
 
 function mergeUpdates(items: Update[], version: string, prevVersion?: string) {
   let installedIndex = items.findIndex((u) => u.version === version);

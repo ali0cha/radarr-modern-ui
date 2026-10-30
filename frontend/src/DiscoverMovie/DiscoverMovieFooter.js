@@ -10,7 +10,7 @@ import monitorOptions from 'Utilities/Movie/monitorOptions';
 import translate from 'Utilities/String/translate';
 import DiscoverMovieFooterLabel from './DiscoverMovieFooterLabel';
 import ExcludeMovieModal from './Exclusion/ExcludeMovieModal';
-import styles from './DiscoverMovieFooter.css';
+import styles from './DiscoverMovieFooter.module.css';
 
 class DiscoverMovieFooter extends Component {
 

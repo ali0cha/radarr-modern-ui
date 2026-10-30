@@ -25,7 +25,7 @@ import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
 import createTagsSelector from 'Store/Selectors/createTagsSelector';
 import translate from 'Utilities/String/translate';
 import MovieSearchResult from './MovieSearchResult';
-import styles from './MovieSearchInput.css';
+import styles from './MovieSearchInput.module.css';
 
 const ADD_NEW_TYPE = 'addNew';
 

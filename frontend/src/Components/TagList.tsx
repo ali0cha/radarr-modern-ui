@@ -3,7 +3,7 @@ import { Tag } from 'App/State/TagsAppState';
 import { kinds } from 'Helpers/Props';
 import sortByProp from 'Utilities/Array/sortByProp';
 import Label from './Label';
-import styles from './TagList.css';
+import styles from './TagList.module.css';
 
 interface TagListProps {
   tags: number[];

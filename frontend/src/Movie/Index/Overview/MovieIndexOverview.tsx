@@ -23,7 +23,7 @@ import translate from 'Utilities/String/translate';
 import createMovieIndexItemSelector from '../createMovieIndexItemSelector';
 import MovieIndexOverviewInfo from './MovieIndexOverviewInfo';
 import selectOverviewOptions from './selectOverviewOptions';
-import styles from './MovieIndexOverview.css';
+import styles from './MovieIndexOverview.module.css';
 
 const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
 const columnPaddingSmallScreen = parseInt(

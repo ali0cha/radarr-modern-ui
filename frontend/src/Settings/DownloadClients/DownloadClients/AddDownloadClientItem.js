@@ -7,7 +7,7 @@ import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddDownloadClientPresetMenuItem from './AddDownloadClientPresetMenuItem';
-import styles from './AddDownloadClientItem.css';
+import styles from './AddDownloadClientItem.module.css';
 
 class AddDownloadClientItem extends Component {
 

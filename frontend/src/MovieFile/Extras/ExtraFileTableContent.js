@@ -6,7 +6,7 @@ import TableBody from 'Components/Table/TableBody';
 import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import ExtraFileRow from './ExtraFileRow';
-import styles from './ExtraFileTableContent.css';
+import styles from './ExtraFileTableContent.module.css';
 
 const columns = [
   {

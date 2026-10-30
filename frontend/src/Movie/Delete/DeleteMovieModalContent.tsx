@@ -18,7 +18,7 @@ import { deleteMovie, setDeleteOption } from 'Store/Actions/movieActions';
 import { CheckInputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import styles from './DeleteMovieModalContent.css';
+import styles from './DeleteMovieModalContent.module.css';
 
 export interface DeleteMovieModalContentProps {
   movieId: number;

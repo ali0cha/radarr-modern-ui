@@ -4,7 +4,7 @@ import IconButton from 'Components/Link/IconButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './CustomFilter.css';
+import styles from './CustomFilter.module.css';
 
 class CustomFilter extends Component {
 

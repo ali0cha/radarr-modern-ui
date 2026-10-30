@@ -19,7 +19,7 @@ import QualityProfileFilterBuilderRowValue from './QualityProfileFilterBuilderRo
 import QueueStatusFilterBuilderRowValue from './QueueStatusFilterBuilderRowValue';
 import ReleaseStatusFilterBuilderRowValue from './ReleaseStatusFilterBuilderRowValue';
 import TagFilterBuilderRowValueConnector from './TagFilterBuilderRowValueConnector';
-import styles from './FilterBuilderRow.css';
+import styles from './FilterBuilderRow.module.css';
 
 function getselectedFilterBuilderProp(filterBuilderProps, name) {
   return filterBuilderProps.find((a) => {

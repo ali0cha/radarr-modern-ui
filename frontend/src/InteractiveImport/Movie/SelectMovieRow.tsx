@@ -1,7 +1,7 @@
 import React from 'react';
 import Label from 'Components/Label';
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
-import styles from './SelectMovieRow.css';
+import styles from './SelectMovieRow.module.css';
 
 interface SelectMovieRowProps {
   title: string;

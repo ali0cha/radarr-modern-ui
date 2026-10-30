@@ -7,7 +7,7 @@ import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddNotificationPresetMenuItem from './AddNotificationPresetMenuItem';
-import styles from './AddNotificationItem.css';
+import styles from './AddNotificationItem.module.css';
 
 class AddNotificationItem extends Component {
 

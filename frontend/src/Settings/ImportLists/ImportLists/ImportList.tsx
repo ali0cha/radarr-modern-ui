@@ -11,7 +11,7 @@ import useTags from 'Tags/useTags';
 import formatShortTimeSpan from 'Utilities/Date/formatShortTimeSpan';
 import translate from 'Utilities/String/translate';
 import EditImportListModal from './EditImportListModal';
-import styles from './ImportList.css';
+import styles from './ImportList.module.css';
 
 interface ImportListProps {
   id: number;

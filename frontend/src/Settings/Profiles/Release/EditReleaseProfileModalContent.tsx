@@ -22,7 +22,7 @@ import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
 import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import translate from 'Utilities/String/translate';
-import styles from './EditReleaseProfileModalContent.css';
+import styles from './EditReleaseProfileModalContent.module.css';
 
 const tagInputDelimiters = ['Tab', 'Enter'];
 

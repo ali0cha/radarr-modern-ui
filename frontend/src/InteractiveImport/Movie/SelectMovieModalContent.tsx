@@ -26,7 +26,7 @@ import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import SelectMovieModalTableHeader from './SelectMovieModalTableHeader';
 import SelectMovieRow from './SelectMovieRow';
-import styles from './SelectMovieModalContent.css';
+import styles from './SelectMovieModalContent.module.css';
 
 const columns = [
   {

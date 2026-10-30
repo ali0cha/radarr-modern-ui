@@ -17,7 +17,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import fonts from 'Styles/Variables/fonts';
 import translate from 'Utilities/String/translate';
 import DiscoverMovieOverviewInfo from './DiscoverMovieOverviewInfo';
-import styles from './DiscoverMovieOverview.css';
+import styles from './DiscoverMovieOverview.module.css';
 
 const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
 const columnPaddingSmallScreen = parseInt(dimensions.movieIndexColumnPaddingSmallScreen);

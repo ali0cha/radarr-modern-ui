@@ -14,7 +14,7 @@ import Movie from 'Movie/Movie';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
-import styles from './OrganizeMoviesModalContent.css';
+import styles from './OrganizeMoviesModalContent.module.css';
 
 interface OrganizeMoviesModalContentProps {
   movieIds: number[];

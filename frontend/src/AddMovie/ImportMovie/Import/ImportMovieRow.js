@@ -5,7 +5,7 @@ import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
 import { inputTypes } from 'Helpers/Props';
 import ImportMovieSelectMovieConnector from './SelectMovie/ImportMovieSelectMovieConnector';
-import styles from './ImportMovieRow.css';
+import styles from './ImportMovieRow.module.css';
 
 function ImportMovieRow(props) {
   const {

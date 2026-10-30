@@ -11,7 +11,7 @@ import PageContentFooter from 'Components/Page/PageContentFooter';
 import Popover from 'Components/Tooltip/Popover';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './ImportMovieFooter.css';
+import styles from './ImportMovieFooter.module.css';
 
 const MIXED = 'mixed';
 

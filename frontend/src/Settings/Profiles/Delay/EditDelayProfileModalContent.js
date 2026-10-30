@@ -15,7 +15,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import { boolSettingShape, numberSettingShape, tagSettingShape } from 'Helpers/Props/Shapes/settingShape';
 import translate from 'Utilities/String/translate';
-import styles from './EditDelayProfileModalContent.css';
+import styles from './EditDelayProfileModalContent.module.css';
 
 const protocolOptions = [
   {

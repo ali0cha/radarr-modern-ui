@@ -7,7 +7,7 @@ import TagList from 'Components/TagList';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditNotificationModalConnector from './EditNotificationModalConnector';
-import styles from './Notification.css';
+import styles from './Notification.module.css';
 
 class Notification extends Component {
 

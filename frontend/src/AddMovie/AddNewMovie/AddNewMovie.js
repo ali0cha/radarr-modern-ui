@@ -12,7 +12,7 @@ import { icons, kinds } from 'Helpers/Props';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import AddNewMovieSearchResultConnector from './AddNewMovieSearchResultConnector';
-import styles from './AddNewMovie.css';
+import styles from './AddNewMovie.module.css';
 
 class AddNewMovie extends Component {
 

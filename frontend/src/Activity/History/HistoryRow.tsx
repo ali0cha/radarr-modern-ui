@@ -21,7 +21,7 @@ import { HistoryData, HistoryEventType } from 'typings/History';
 import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
 import HistoryDetailsModal from './Details/HistoryDetailsModal';
 import HistoryEventTypeCell from './HistoryEventTypeCell';
-import styles from './HistoryRow.css';
+import styles from './HistoryRow.module.css';
 
 interface HistoryRowProps {
   id: number;

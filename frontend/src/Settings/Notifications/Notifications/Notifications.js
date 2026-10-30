@@ -9,7 +9,7 @@ import translate from 'Utilities/String/translate';
 import AddNotificationModal from './AddNotificationModal';
 import EditNotificationModalConnector from './EditNotificationModalConnector';
 import Notification from './Notification';
-import styles from './Notifications.css';
+import styles from './Notifications.module.css';
 
 class Notifications extends Component {
 

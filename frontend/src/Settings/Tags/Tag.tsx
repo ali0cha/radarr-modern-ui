@@ -8,7 +8,7 @@ import createTagDetailsSelector from 'Store/Selectors/createTagDetailsSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsModal from './Details/TagDetailsModal';
 import TagInUse from './TagInUse';
-import styles from './Tag.css';
+import styles from './Tag.module.css';
 
 interface TagProps {
   id: number;

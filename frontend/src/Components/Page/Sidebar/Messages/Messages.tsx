@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import { Message as MessageModel } from 'App/State/MessagesAppState';
 import Message from './Message';
-import styles from './Messages.css';
+import styles from './Messages.module.css';
 
 function Messages() {
   const items = useSelector((state: AppState) => state.app.messages.items);

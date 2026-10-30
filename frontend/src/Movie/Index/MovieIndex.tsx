@@ -58,7 +58,7 @@ import MovieIndexSelectModeButton from './Select/MovieIndexSelectModeButton';
 import MovieIndexSelectModeMenuItem from './Select/MovieIndexSelectModeMenuItem';
 import MovieIndexTable from './Table/MovieIndexTable';
 import MovieIndexTableOptions from './Table/MovieIndexTableOptions';
-import styles from './MovieIndex.css';
+import styles from './MovieIndex.module.css';
 
 function getViewComponent(view: string) {
   if (view === 'posters') {

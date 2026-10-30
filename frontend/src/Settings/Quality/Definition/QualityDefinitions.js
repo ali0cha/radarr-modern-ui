@@ -4,7 +4,7 @@ import FieldSet from 'Components/FieldSet';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import translate from 'Utilities/String/translate';
 import QualityDefinitionConnector from './QualityDefinitionConnector';
-import styles from './QualityDefinitions.css';
+import styles from './QualityDefinitions.module.css';
 
 class QualityDefinitions extends Component {
 

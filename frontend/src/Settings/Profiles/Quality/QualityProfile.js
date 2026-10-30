@@ -8,7 +8,7 @@ import Tooltip from 'Components/Tooltip/Tooltip';
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditQualityProfileModalConnector from './EditQualityProfileModalConnector';
-import styles from './QualityProfile.css';
+import styles from './QualityProfile.module.css';
 
 class QualityProfile extends Component {
 

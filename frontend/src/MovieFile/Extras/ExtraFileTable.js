@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ExtraFileTableContentConnector from './ExtraFileTableContentConnector';
-import styles from './ExtraFileTable.css';
+import styles from './ExtraFileTable.module.css';
 
 function ExtraFileTable(props) {
   const {

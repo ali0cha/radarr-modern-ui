@@ -31,7 +31,7 @@ import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import RootFolderModal from './RootFolder/RootFolderModal';
 import { RootFolderUpdated } from './RootFolder/RootFolderModalContent';
-import styles from './EditMovieModalContent.css';
+import styles from './EditMovieModalContent.module.css';
 
 export interface EditMovieModalContentProps {
   movieId: number;

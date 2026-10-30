@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import NumberInput from 'Components/Form/NumberInput';
-import styles from './QualityProfileFormatItem.css';
+import styles from './QualityProfileFormatItem.module.css';
 
 class QualityProfileFormatItem extends Component {
 

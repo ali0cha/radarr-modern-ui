@@ -6,7 +6,7 @@ import { findDOMNode } from 'react-dom';
 import { QUALITY_PROFILE_ITEM } from 'Helpers/dragTypes';
 import QualityProfileItem from './QualityProfileItem';
 import QualityProfileItemGroup from './QualityProfileItemGroup';
-import styles from './QualityProfileItemDragSource.css';
+import styles from './QualityProfileItemDragSource.module.css';
 
 const qualityProfileItemDragSource = {
   beginDrag(props) {

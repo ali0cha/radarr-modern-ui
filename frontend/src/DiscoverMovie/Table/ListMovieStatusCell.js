@@ -3,7 +3,7 @@ import React from 'react';
 import Icon from 'Components/Icon';
 import VirtualTableRowCell from 'Components/Table/Cells/TableRowCell';
 import getMovieStatusDetails from 'Movie/getMovieStatusDetails';
-import styles from './ListMovieStatusCell.css';
+import styles from './ListMovieStatusCell.module.css';
 
 function ListMovieStatusCell(props) {
   const {

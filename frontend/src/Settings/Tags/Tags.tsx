@@ -18,7 +18,7 @@ import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSele
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import Tag from './Tag';
-import styles from './Tags.css';
+import styles from './Tags.module.css';
 
 function Tags() {
   const dispatch = useDispatch();

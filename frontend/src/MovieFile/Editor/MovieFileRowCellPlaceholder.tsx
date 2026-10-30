@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './MovieFileRowCellPlaceholder.css';
+import styles from './MovieFileRowCellPlaceholder.module.css';
 
 function MovieFileRowCellPlaceholder() {
   return <span className={styles.placeholder} />;

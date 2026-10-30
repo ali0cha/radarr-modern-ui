@@ -12,7 +12,7 @@ import getUniqueElememtId from 'Utilities/getUniqueElementId';
 import translate from 'Utilities/String/translate';
 import ImportMovieSearchResultConnector from './ImportMovieSearchResultConnector';
 import ImportMovieTitle from './ImportMovieTitle';
-import styles from './ImportMovieSelectMovie.css';
+import styles from './ImportMovieSelectMovie.module.css';
 
 class ImportMovieSelectMovie extends Component {
 

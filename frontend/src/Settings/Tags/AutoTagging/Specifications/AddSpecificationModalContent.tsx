@@ -15,7 +15,7 @@ import {
 } from 'Store/Actions/settingsActions';
 import translate from 'Utilities/String/translate';
 import AddSpecificationItem from './AddSpecificationItem';
-import styles from './AddSpecificationModalContent.css';
+import styles from './AddSpecificationModalContent.module.css';
 
 interface AddSpecificationModalContentProps {
   onModalClose: (options?: { specificationSelected: boolean }) => void;

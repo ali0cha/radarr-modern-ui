@@ -16,7 +16,7 @@ import Popover from 'Components/Tooltip/Popover';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import MoviePoster from 'Movie/MoviePoster';
 import translate from 'Utilities/String/translate';
-import styles from './AddNewMovieModalContent.css';
+import styles from './AddNewMovieModalContent.module.css';
 
 class AddNewMovieModalContent extends Component {
 

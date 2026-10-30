@@ -12,7 +12,7 @@ import {
 } from 'Store/Actions/providerOptionActions';
 import { InputChanged } from 'typings/inputs';
 import TagInput, { TagInputProps } from './TagInput';
-import styles from './DeviceInput.css';
+import styles from './DeviceInput.module.css';
 
 interface DeviceTag {
   id: string;

@@ -17,7 +17,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
 import AdvancedSettingsButton from 'Settings/AdvancedSettingsButton';
 import translate from 'Utilities/String/translate';
-import styles from './EditDownloadClientModalContent.css';
+import styles from './EditDownloadClientModalContent.module.css';
 
 class EditDownloadClientModalContent extends Component {
 

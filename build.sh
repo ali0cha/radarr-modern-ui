@@ -94,11 +94,11 @@ YarnInstall()
     ProgressEnd 'yarn install'
 }
 
-RunWebpack()
+RunVite()
 {
-    ProgressStart 'Running webpack'
-    yarn run build --env production
-    ProgressEnd 'Running webpack'
+    ProgressStart 'Running vite'
+    yarn run build
+    ProgressEnd 'Running vite'
 }
 
 PackageFiles()
@@ -403,7 +403,7 @@ fi
 
 if [ "$FRONTEND" = "YES" ];
 then
-    RunWebpack
+    RunVite
 fi
 
 if [ "$PACKAGES" = "YES" ];

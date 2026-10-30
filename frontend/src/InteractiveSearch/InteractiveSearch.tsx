@@ -24,7 +24,7 @@ import translate from 'Utilities/String/translate';
 import InteractiveSearchFilterModal from './InteractiveSearchFilterModal';
 import InteractiveSearchPayload from './InteractiveSearchPayload';
 import InteractiveSearchRow from './InteractiveSearchRow';
-import styles from './InteractiveSearch.css';
+import styles from './InteractiveSearch.module.css';
 
 const columns: Column[] = [
   {

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import styles from './LoadingIndicator.css';
+import styles from './LoadingIndicator.module.css';
 
 interface LoadingIndicatorProps {
   className?: string;

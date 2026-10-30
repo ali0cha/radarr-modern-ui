@@ -18,7 +18,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import translate from 'Utilities/String/translate';
 import QualityProfileFormatItems from './QualityProfileFormatItems';
 import QualityProfileItems from './QualityProfileItems';
-import styles from './EditQualityProfileModalContent.css';
+import styles from './EditQualityProfileModalContent.module.css';
 
 const MODAL_BODY_PADDING = parseInt(dimensions.modalBodyPadding);
 

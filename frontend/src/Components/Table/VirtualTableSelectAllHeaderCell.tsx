@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import CheckInput from 'Components/Form/CheckInput';
 import { CheckInputChanged } from 'typings/inputs';
 import VirtualTableHeaderCell from './VirtualTableHeaderCell';
-import styles from './VirtualTableSelectAllHeaderCell.css';
+import styles from './VirtualTableSelectAllHeaderCell.module.css';
 
 interface VirtualTableSelectAllHeaderCellProps {
   allSelected: boolean;

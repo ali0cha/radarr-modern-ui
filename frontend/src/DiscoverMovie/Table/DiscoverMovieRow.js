@@ -20,7 +20,7 @@ import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import formatRuntime from 'Utilities/Date/formatRuntime';
 import translate from 'Utilities/String/translate';
 import ListMovieStatusCell from './ListMovieStatusCell';
-import styles from './DiscoverMovieRow.css';
+import styles from './DiscoverMovieRow.module.css';
 
 class DiscoverMovieRow extends Component {
 

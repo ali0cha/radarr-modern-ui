@@ -10,7 +10,7 @@ import { Kind } from 'Helpers/Props/kinds';
 import { AutoTaggingSpecification } from 'typings/AutoTagging';
 import translate from 'Utilities/String/translate';
 import EditAutoTaggingModal from './EditAutoTaggingModal';
-import styles from './AutoTagging.css';
+import styles from './AutoTagging.module.css';
 
 interface AutoTaggingProps {
   id: number;

@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import Label from './Label';
-import styles from './ImportListList.css';
+import styles from './ImportListList.module.css';
 
 interface ImportListListProps {
   lists: number[];

@@ -21,7 +21,7 @@ import ImportCustomFormatModal from './ImportCustomFormatModal';
 import AddSpecificationModal from './Specifications/AddSpecificationModal';
 import EditSpecificationModalConnector from './Specifications/EditSpecificationModalConnector';
 import Specification from './Specifications/Specification';
-import styles from './EditCustomFormatModalContent.css';
+import styles from './EditCustomFormatModalContent.module.css';
 
 class EditCustomFormatModalContent extends Component {
 

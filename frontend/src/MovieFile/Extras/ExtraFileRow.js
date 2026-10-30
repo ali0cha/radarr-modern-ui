@@ -4,7 +4,7 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import titleCase from 'Utilities/String/titleCase';
 import ExtraFileDetailsPopover from './ExtraFileDetailsPopover';
-import styles from './ExtraFileRow.css';
+import styles from './ExtraFileRow.module.css';
 
 class ExtraFileRow extends Component {
 

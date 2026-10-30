@@ -7,7 +7,7 @@ import EditMovieModal from 'Movie/Edit/EditMovieModal';
 import MovieIndexProgressBar from 'Movie/Index/ProgressBar/MovieIndexProgressBar';
 import MoviePoster from 'Movie/MoviePoster';
 import translate from 'Utilities/String/translate';
-import styles from './CollectionMovie.css';
+import styles from './CollectionMovie.module.css';
 
 class CollectionMovie extends Component {
 

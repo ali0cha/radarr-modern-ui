@@ -13,7 +13,7 @@ import TableBody from 'Components/Table/TableBody';
 import { icons, kinds, sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import ImportMovieRootFolderRowConnector from './ImportMovieRootFolderRowConnector';
-import styles from './ImportMovieSelectFolder.css';
+import styles from './ImportMovieSelectFolder.module.css';
 
 const rootFolderColumns = [
   {

@@ -7,7 +7,7 @@ import TagList from 'Components/TagList';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import EditDownloadClientModalConnector from './EditDownloadClientModalConnector';
-import styles from './DownloadClient.css';
+import styles from './DownloadClient.module.css';
 
 class DownloadClient extends Component {
 

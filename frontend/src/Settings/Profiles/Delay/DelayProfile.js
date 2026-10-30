@@ -9,7 +9,7 @@ import { icons, kinds } from 'Helpers/Props';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 import EditDelayProfileModalConnector from './EditDelayProfileModalConnector';
-import styles from './DelayProfile.css';
+import styles from './DelayProfile.module.css';
 
 function getDelay(enabled, delay) {
   if (!enabled) {

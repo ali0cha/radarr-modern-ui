@@ -3,7 +3,7 @@ import React from 'react';
 import TagInputTag from 'Components/Form/Tag/TagInputTag';
 import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import styles from './FilterBuilderRowValueTag.css';
+import styles from './FilterBuilderRowValueTag.module.css';
 
 function FilterBuilderRowValueTag(props) {
   return (

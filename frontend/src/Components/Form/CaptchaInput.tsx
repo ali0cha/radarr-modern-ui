@@ -14,7 +14,7 @@ import {
 import { InputChanged } from 'typings/inputs';
 import FormInputButton from './FormInputButton';
 import TextInput from './TextInput';
-import styles from './CaptchaInput.css';
+import styles from './CaptchaInput.module.css';
 
 export interface CaptchaInputProps {
   className?: string;

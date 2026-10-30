@@ -23,7 +23,7 @@ import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 import createHealthSelector from './createHealthSelector';
 import HealthItemLink from './HealthItemLink';
-import styles from './Health.css';
+import styles from './Health.module.css';
 
 const columns: Column[] = [
   {

@@ -18,7 +18,7 @@ import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import { InputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import styles from './DeleteMovieModalContent.css';
+import styles from './DeleteMovieModalContent.module.css';
 
 interface DeleteMovieModalContentProps {
   movieIds: number[];

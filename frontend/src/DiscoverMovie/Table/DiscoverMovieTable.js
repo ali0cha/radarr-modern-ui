@@ -7,7 +7,7 @@ import { sortDirections } from 'Helpers/Props';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 import DiscoverMovieHeaderConnector from './DiscoverMovieHeaderConnector';
 import DiscoverMovieRowConnector from './DiscoverMovieRowConnector';
-import styles from './DiscoverMovieTable.css';
+import styles from './DiscoverMovieTable.module.css';
 
 class DiscoverMovieTable extends Component {
 

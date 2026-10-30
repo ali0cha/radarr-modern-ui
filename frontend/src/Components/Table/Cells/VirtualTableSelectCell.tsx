@@ -5,7 +5,7 @@ import { SelectStateInputProps } from 'typings/props';
 import VirtualTableRowCell, {
   VirtualTableRowCellProps,
 } from './VirtualTableRowCell';
-import styles from './VirtualTableSelectCell.css';
+import styles from './VirtualTableSelectCell.module.css';
 
 interface VirtualTableSelectCellProps extends VirtualTableRowCellProps {
   inputClassName?: string;

@@ -3,7 +3,7 @@ import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons, sortDirections } from 'Helpers/Props';
 import { SortDirection } from 'Helpers/Props/sortDirections';
-import styles from './TableHeaderCell.css';
+import styles from './TableHeaderCell.module.css';
 
 interface TableHeaderCellProps {
   className?: string;

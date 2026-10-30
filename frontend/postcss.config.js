@@ -15,18 +15,18 @@ const mixinsFiles = [
 ];
 
 module.exports = {
-  plugins: [
-    'autoprefixer',
-    ['postcss-mixins', {
+  plugins: {
+    autoprefixer: {},
+    'postcss-mixins': {
       mixinsFiles
-    }],
-    ['postcss-simple-vars', {
+    },
+    'postcss-simple-vars': {
       variables: () =>
         cssVarsFiles.reduce((acc, vars) => {
           return Object.assign(acc, reload(vars));
         }, {})
-    }],
-    'postcss-color-function',
-    'postcss-nested'
-  ]
+    },
+    'postcss-color-function': {},
+    'postcss-nested': {}
+  }
 };

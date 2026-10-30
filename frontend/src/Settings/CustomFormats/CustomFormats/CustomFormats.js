@@ -8,7 +8,7 @@ import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import CustomFormat from './CustomFormat';
 import EditCustomFormatModalConnector from './EditCustomFormatModalConnector';
-import styles from './CustomFormats.css';
+import styles from './CustomFormats.module.css';
 
 class CustomFormats extends Component {
 

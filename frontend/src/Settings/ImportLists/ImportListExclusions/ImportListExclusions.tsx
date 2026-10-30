@@ -39,7 +39,7 @@ import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import EditImportListExclusionModal from './EditImportListExclusionModal';
 import ImportListExclusionRow from './ImportListExclusionRow';
-import styles from './ImportListExclusions.css';
+import styles from './ImportListExclusions.module.css';
 
 const COLUMNS: Column[] = [
   {

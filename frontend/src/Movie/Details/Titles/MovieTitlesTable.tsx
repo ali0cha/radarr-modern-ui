@@ -11,7 +11,7 @@ import { kinds } from 'Helpers/Props';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import MovieTitlesRow from './MovieTitlesRow';
-import styles from './MovieTitlesTable.css';
+import styles from './MovieTitlesTable.module.css';
 
 const columns: Column[] = [
   {

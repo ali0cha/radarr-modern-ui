@@ -11,7 +11,7 @@ import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import formatRuntime from 'Utilities/Date/formatRuntime';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
-import styles from './DiscoverMoviePosterInfo.css';
+import styles from './DiscoverMoviePosterInfo.module.css';
 
 function DiscoverMoviePosterInfo(props) {
   const {

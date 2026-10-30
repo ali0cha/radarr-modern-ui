@@ -5,7 +5,7 @@ import Link from 'Components/Link/Link';
 import MiddleTruncate from 'Components/MiddleTruncate';
 import { icons } from 'Helpers/Props';
 import { TagBase } from './TagInput';
-import styles from './TagInputTag.css';
+import styles from './TagInputTag.module.css';
 
 export interface DeletedTag<T extends TagBase> {
   index: number;

@@ -7,7 +7,7 @@ import { IN_LAST, IN_NEXT, NOT_IN_LAST, NOT_IN_NEXT } from 'Helpers/Props/filter
 import isString from 'Utilities/String/isString';
 import translate from 'Utilities/String/translate';
 import { NAME } from './FilterBuilderRowValue';
-import styles from './DateFilterBuilderRowValue.css';
+import styles from './DateFilterBuilderRowValue.module.css';
 
 const timeOptions = [
   {

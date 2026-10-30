@@ -30,7 +30,7 @@ import translate from 'Utilities/String/translate';
 import AddSpecificationModal from './Specifications/AddSpecificationModal';
 import EditSpecificationModal from './Specifications/EditSpecificationModal';
 import Specification from './Specifications/Specification';
-import styles from './EditAutoTaggingModalContent.css';
+import styles from './EditAutoTaggingModalContent.module.css';
 
 export interface EditAutoTaggingModalContentProps {
   id?: number;
