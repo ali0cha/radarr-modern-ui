@@ -1,12 +1,10 @@
 import * as addMovie from './addMovieActions';
 import * as app from './appActions';
-import * as blocklist from './blocklistActions';
 import * as calendar from './calendarActions';
 import * as captcha from './captchaActions';
 import * as commands from './commandActions';
 import * as customFilters from './customFilterActions';
 import * as discoverMovie from './discoverMovieActions';
-import * as history from './historyActions';
 import * as importMovie from './importMovieActions';
 import * as interactiveImportActions from './interactiveImportActions';
 import * as movies from './movieActions';
@@ -23,14 +21,12 @@ import * as wanted from './wantedActions';
 export default [
   addMovie,
   app,
-  blocklist,
   calendar,
   captcha,
   commands,
   customFilters,
   discoverMovie,
   movieFiles,
-  history,
   importMovie,
   interactiveImportActions,
   oAuth,

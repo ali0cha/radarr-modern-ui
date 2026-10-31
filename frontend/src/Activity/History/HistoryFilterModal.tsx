@@ -1,54 +1,19 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
-import FilterModal from 'Components/Filter/FilterModal';
-import { setHistoryFilter } from 'Store/Actions/historyActions';
+import React from 'react';
+import PagedTableFilterModal from 'Components/Filter/PagedTableFilterModal';
+import { historyTable } from './useHistory';
 
-function createHistorySelector() {
-  return createSelector(
-    (state: AppState) => state.history.items,
-    (queueItems) => {
-      return queueItems;
-    }
-  );
-}
-
-function createFilterBuilderPropsSelector() {
-  return createSelector(
-    (state: AppState) => state.history.filterBuilderProps,
-    (filterBuilderProps) => {
-      return filterBuilderProps;
-    }
-  );
-}
-
-interface HistoryFilterModalProps {
-  isOpen: boolean;
-}
+// The filter menu passes it the state of the filters
+type HistoryFilterModalProps = Omit<
+  React.ComponentProps<typeof PagedTableFilterModal>,
+  'filterBuilderProps' | 'customFilterType'
+>;
 
 export default function HistoryFilterModal(props: HistoryFilterModalProps) {
-  const sectionItems = useSelector(createHistorySelector());
-  const filterBuilderProps = useSelector(createFilterBuilderPropsSelector());
-  const customFilterType = 'history';
-
-  const dispatch = useDispatch();
-
-  const dispatchSetFilter = useCallback(
-    (payload: unknown) => {
-      dispatch(setHistoryFilter(payload));
-    },
-    [dispatch]
-  );
-
   return (
-    <FilterModal
-      // TODO: Don't spread all the props
+    <PagedTableFilterModal
       {...props}
-      sectionItems={sectionItems}
-      filterBuilderProps={filterBuilderProps}
-      customFilterType={customFilterType}
-      dispatchSetFilter={dispatchSetFilter}
+      filterBuilderProps={historyTable.filterBuilderProps}
+      customFilterType="history"
     />
   );
 }

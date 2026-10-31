@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -13,31 +12,14 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
-import usePaging from 'Components/Table/usePaging';
-import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
 import { align, icons, kinds } from 'Helpers/Props';
 import createMoviesFetchingSelector from 'Movie/createMoviesFetchingSelector';
-import {
-  clearHistory,
-  fetchHistory,
-  gotoHistoryPage,
-  setHistoryFilter,
-  setHistorySort,
-  setHistoryTableOption,
-} from 'Store/Actions/historyActions';
-import { createCustomFiltersSelector } from 'Store/Selectors/createClientSideCollectionSelector';
-import { TableOptionsChangePayload } from 'typings/Table';
-import {
-  registerPagePopulator,
-  unregisterPagePopulator,
-} from 'Utilities/pagePopulator';
 import translate from 'Utilities/String/translate';
 import HistoryFilterModal from './HistoryFilterModal';
 import HistoryRow from './HistoryRow';
+import { useHistory } from './useHistory';
 
 function History() {
-  const requestCurrentPage = useCurrentPage();
-
   const {
     isFetching,
     isPopulated,
@@ -46,84 +28,31 @@ function History() {
     columns,
     selectedFilterKey,
     filters,
+    customFilters,
     sortKey,
     sortDirection,
     page,
     pageSize,
     totalPages,
     totalRecords,
-  } = useSelector((state: AppState) => state.history);
-
-  const { isMoviesFetching, isMoviesPopulated, moviesError } = useSelector(
-    createMoviesFetchingSelector()
-  );
-  const customFilters = useSelector(createCustomFiltersSelector('history'));
-  const dispatch = useDispatch();
-
-  const isFetchingAny = isFetching || isMoviesFetching;
-  const isAllPopulated = isPopulated && (isMoviesPopulated || !items.length);
-  const hasError = error || moviesError;
-
-  const {
+    handleRefreshPress,
     handleFirstPagePress,
     handlePreviousPagePress,
     handleNextPagePress,
     handleLastPagePress,
     handlePageSelect,
-  } = usePaging({
-    page,
-    totalPages,
-    gotoPage: gotoHistoryPage,
-  });
+    handleFilterSelect,
+    handleSortPress,
+    handleTableOptionChange,
+  } = useHistory();
 
-  const handleFilterSelect = useCallback(
-    (selectedFilterKey: string | number) => {
-      dispatch(setHistoryFilter({ selectedFilterKey }));
-    },
-    [dispatch]
+  const { isMoviesFetching, isMoviesPopulated, moviesError } = useSelector(
+    createMoviesFetchingSelector()
   );
 
-  const handleSortPress = useCallback(
-    (sortKey: string) => {
-      dispatch(setHistorySort({ sortKey }));
-    },
-    [dispatch]
-  );
-
-  const handleTableOptionChange = useCallback(
-    (payload: TableOptionsChangePayload) => {
-      dispatch(setHistoryTableOption(payload));
-
-      if (payload.pageSize) {
-        dispatch(gotoHistoryPage({ page: 1 }));
-      }
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchHistory());
-    } else {
-      dispatch(gotoHistoryPage({ page: 1 }));
-    }
-
-    return () => {
-      dispatch(clearHistory());
-    };
-  }, [requestCurrentPage, dispatch]);
-
-  useEffect(() => {
-    const repopulate = () => {
-      dispatch(fetchHistory());
-    };
-
-    registerPagePopulator(repopulate);
-
-    return () => {
-      unregisterPagePopulator(repopulate);
-    };
-  }, [dispatch]);
+  const isFetchingAny = isFetching || isMoviesFetching;
+  const isAllPopulated = isPopulated && (isMoviesPopulated || !items.length);
+  const hasError = error || moviesError;
 
   return (
     <PageContent title={translate('History')}>
@@ -133,7 +62,7 @@ function History() {
             label={translate('Refresh')}
             iconName={icons.REFRESH}
             isSpinning={isFetching}
-            onPress={handleFirstPagePress}
+            onPress={handleRefreshPress}
           />
         </PageToolbarSection>
 

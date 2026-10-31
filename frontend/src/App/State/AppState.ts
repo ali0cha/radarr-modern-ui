@@ -1,10 +1,8 @@
 import { Error } from './AppSectionState';
-import BlocklistAppState from './BlocklistAppState';
 import CalendarAppState from './CalendarAppState';
 import CaptchaAppState from './CaptchaAppState';
 import CommandAppState from './CommandAppState';
 import CustomFiltersAppState from './CustomFiltersAppState';
-import HistoryAppState from './HistoryAppState';
 import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
 import MovieCollectionAppState from './MovieCollectionAppState';
@@ -24,7 +22,7 @@ interface FilterBuilderPropOption {
 
 export interface FilterBuilderProp<T> {
   name: string;
-  label: string;
+  label: string | (() => string);
   type: string;
   valueType?: string;
   optionsSelector?: (items: T[]) => FilterBuilderPropOption[];
@@ -72,12 +70,10 @@ export interface AppSectionState {
 
 interface AppState {
   app: AppSectionState;
-  blocklist: BlocklistAppState;
   calendar: CalendarAppState;
   captcha: CaptchaAppState;
   commands: CommandAppState;
   customFilters: CustomFiltersAppState;
-  history: HistoryAppState;
   interactiveImport: InteractiveImportAppState;
   movieCollections: MovieCollectionAppState;
   movieFiles: MovieFilesAppState;

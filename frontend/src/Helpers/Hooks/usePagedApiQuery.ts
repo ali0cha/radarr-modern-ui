@@ -1,4 +1,5 @@
 import { keepPreviousData } from '@tanstack/react-query';
+import { PropertyFilter } from 'App/State/AppState';
 import { SortDirection } from 'Helpers/Props/sortDirections';
 import useApiQuery from './useApiQuery';
 
@@ -17,6 +18,9 @@ interface PagedQueryOptions {
   pageSize: number;
   sortKey?: string;
   sortDirection?: SortDirection;
+  // The server filters by query parameters named after the key of the filter,
+  // lists are sent as repeated parameters.
+  filters?: PropertyFilter[];
 }
 
 const NO_RECORDS: never[] = [];
@@ -29,6 +33,7 @@ function usePagedApiQuery<T>({
   pageSize,
   sortKey,
   sortDirection,
+  filters = [],
 }: PagedQueryOptions) {
   const params = new URLSearchParams({
     page: String(page),
@@ -43,7 +48,17 @@ function usePagedApiQuery<T>({
     params.set('sortDirection', sortDirection);
   }
 
-  const { data, isFetching, isSuccess, error } = useApiQuery<PagedResponse<T>>({
+  filters.forEach(({ key, value }) => {
+    if (Array.isArray(value)) {
+      value.forEach((item) => params.append(key, String(item)));
+    } else {
+      params.set(key, String(value));
+    }
+  });
+
+  const { data, isFetching, isSuccess, error, refetch } = useApiQuery<
+    PagedResponse<T>
+  >({
     path: `${path}?${params.toString()}`,
     queryOptions: {
       retry: false,
@@ -60,6 +75,7 @@ function usePagedApiQuery<T>({
     isFetching,
     isPopulated: isSuccess,
     error,
+    refetch,
   };
 }
 

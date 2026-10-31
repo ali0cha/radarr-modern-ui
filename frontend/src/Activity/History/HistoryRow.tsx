@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useState } from 'react';
 import IconButton from 'Components/Link/IconButton';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import Column from 'Components/Table/Column';
 import TableRow from 'Components/Table/TableRow';
 import Tooltip from 'Components/Tooltip/Tooltip';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons, tooltipPositions } from 'Helpers/Props';
 import Language from 'Language/Language';
 import MovieFormats from 'Movie/MovieFormats';
@@ -15,12 +13,12 @@ import MovieQuality from 'Movie/MovieQuality';
 import MovieTitleLink from 'Movie/MovieTitleLink';
 import useMovie from 'Movie/useMovie';
 import { QualityModel } from 'Quality/Quality';
-import { fetchHistory, markAsFailed } from 'Store/Actions/historyActions';
 import CustomFormat from 'typings/CustomFormat';
 import { HistoryData, HistoryEventType } from 'typings/History';
 import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
 import HistoryDetailsModal from './Details/HistoryDetailsModal';
 import HistoryEventTypeCell from './HistoryEventTypeCell';
+import { useMarkHistoryAsFailed } from './useHistory';
 import styles from './HistoryRow.module.css';
 
 interface HistoryRowProps {
@@ -36,8 +34,6 @@ interface HistoryRowProps {
   date: string;
   data: HistoryData;
   downloadId?: string;
-  isMarkingAsFailed?: boolean;
-  markAsFailedError?: object;
   columns: Column[];
 }
 
@@ -55,13 +51,9 @@ function HistoryRow(props: HistoryRowProps) {
     date,
     data,
     downloadId,
-    isMarkingAsFailed = false,
-    markAsFailedError,
     columns,
   } = props;
 
-  const wasMarkingAsFailed = usePrevious(isMarkingAsFailed);
-  const dispatch = useDispatch();
   const movie = useMovie(movieId);
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -74,22 +66,10 @@ function HistoryRow(props: HistoryRowProps) {
     setIsDetailsModalOpen(false);
   }, [setIsDetailsModalOpen]);
 
-  const handleMarkAsFailedPress = useCallback(() => {
-    dispatch(markAsFailed({ id }));
-  }, [id, dispatch]);
-
-  useEffect(() => {
-    if (wasMarkingAsFailed && !isMarkingAsFailed && !markAsFailedError) {
-      setIsDetailsModalOpen(false);
-      dispatch(fetchHistory());
-    }
-  }, [
-    wasMarkingAsFailed,
-    isMarkingAsFailed,
-    markAsFailedError,
-    setIsDetailsModalOpen,
-    dispatch,
-  ]);
+  const { markAsFailed, isMarkingAsFailed } = useMarkHistoryAsFailed(
+    id,
+    handleDetailsModalClose
+  );
 
   if (!movie) {
     return null;
@@ -219,7 +199,7 @@ function HistoryRow(props: HistoryRowProps) {
         data={data}
         downloadId={downloadId}
         isMarkingAsFailed={isMarkingAsFailed}
-        onMarkAsFailedPress={handleMarkAsFailedPress}
+        onMarkAsFailedPress={markAsFailed}
         onModalClose={handleDetailsModalClose}
       />
     </TableRow>

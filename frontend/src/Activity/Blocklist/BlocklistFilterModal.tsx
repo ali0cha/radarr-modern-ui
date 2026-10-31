@@ -1,54 +1,19 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
-import FilterModal from 'Components/Filter/FilterModal';
-import { setBlocklistFilter } from 'Store/Actions/blocklistActions';
+import React from 'react';
+import PagedTableFilterModal from 'Components/Filter/PagedTableFilterModal';
+import { blocklistTable } from './useBlocklist';
 
-function createBlocklistSelector() {
-  return createSelector(
-    (state: AppState) => state.blocklist.items,
-    (blocklistItems) => {
-      return blocklistItems;
-    }
-  );
-}
-
-function createFilterBuilderPropsSelector() {
-  return createSelector(
-    (state: AppState) => state.blocklist.filterBuilderProps,
-    (filterBuilderProps) => {
-      return filterBuilderProps;
-    }
-  );
-}
-
-interface BlocklistFilterModalProps {
-  isOpen: boolean;
-}
+// The filter menu passes it the state of the filters
+type BlocklistFilterModalProps = Omit<
+  React.ComponentProps<typeof PagedTableFilterModal>,
+  'filterBuilderProps' | 'customFilterType'
+>;
 
 export default function BlocklistFilterModal(props: BlocklistFilterModalProps) {
-  const sectionItems = useSelector(createBlocklistSelector());
-  const filterBuilderProps = useSelector(createFilterBuilderPropsSelector());
-  const customFilterType = 'blocklist';
-
-  const dispatch = useDispatch();
-
-  const dispatchSetFilter = useCallback(
-    (payload: unknown) => {
-      dispatch(setBlocklistFilter(payload));
-    },
-    [dispatch]
-  );
-
   return (
-    <FilterModal
-      // TODO: Don't spread all the props
+    <PagedTableFilterModal
       {...props}
-      sectionItems={sectionItems}
-      filterBuilderProps={filterBuilderProps}
-      customFilterType={customFilterType}
-      dispatchSetFilter={dispatchSetFilter}
+      filterBuilderProps={blocklistTable.filterBuilderProps}
+      customFilterType="blocklist"
     />
   );
 }
