@@ -20,6 +20,7 @@ import MovieIndexProgressBar from 'Movie/Index/ProgressBar/MovieIndexProgressBar
 import MovieIndexPosterSelect from 'Movie/Index/Select/MovieIndexPosterSelect';
 import { Statistics } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
+import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import formatDate from 'Utilities/Date/formatDate';
@@ -41,8 +42,10 @@ interface MovieIndexPosterProps {
 function MovieIndexPoster(props: MovieIndexPosterProps) {
   const { movieId, sortKey, isSelectMode, posterWidth, posterHeight } = props;
 
-  const { movie, qualityProfile, isRefreshingMovie, isSearchingMovie } =
-    useSelector(createMovieIndexItemSelector(props.movieId));
+  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
+    createMovieIndexItemSelector(props.movieId)
+  );
+  const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
   const {
     detailedProgressBar,

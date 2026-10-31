@@ -1,8 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { Error } from 'App/State/AppSectionState';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useMemo, useState } from 'react';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -16,36 +12,10 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import Quality, { QualityModel } from 'Quality/Quality';
-import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
+import { useQualityProfileSchema } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { InputChanged } from 'typings/inputs';
 import getQualities from 'Utilities/Quality/getQualities';
 import translate from 'Utilities/String/translate';
-
-interface QualitySchemaState {
-  isFetching: boolean;
-  isPopulated: boolean;
-  error: Error;
-  items: Quality[];
-}
-
-function createQualitySchemaSelector() {
-  return createSelector(
-    (state: AppState) => state.settings.qualityProfiles,
-    (qualityProfiles): QualitySchemaState => {
-      const { isSchemaFetching, isSchemaPopulated, schemaError, schema } =
-        qualityProfiles;
-
-      const items = getQualities(schema.items) as Quality[];
-
-      return {
-        isFetching: isSchemaFetching,
-        isPopulated: isSchemaPopulated,
-        error: schemaError,
-        items,
-      };
-    }
-  );
-}
 
 interface SelectQualityModalContentProps {
   qualityId: number;
@@ -63,17 +33,16 @@ function SelectQualityModalContent(props: SelectQualityModalContentProps) {
   const [proper, setProper] = useState(props.proper);
   const [real, setReal] = useState(props.real);
 
-  const { isFetching, isPopulated, error, items } = useSelector(
-    createQualitySchemaSelector()
-  );
-  const dispatch = useDispatch();
+  const {
+    data: schema,
+    isFetching,
+    isSuccess: isPopulated,
+    error,
+  } = useQualityProfileSchema();
 
-  useEffect(
-    () => {
-      dispatch(fetchQualityProfileSchema());
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  const items = useMemo(
+    () => getQualities(schema?.items) as Quality[],
+    [schema]
   );
 
   const qualityOptions = useMemo(() => {

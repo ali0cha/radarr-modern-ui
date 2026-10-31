@@ -10,12 +10,12 @@ import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClien
 import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
+import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQualityDefinitions';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchQueue, fetchQueueDetails } from 'Store/Actions/queueActions';
-import { fetchQualityDefinitions } from 'Store/Actions/settingsActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
@@ -53,7 +53,6 @@ const mapDispatchToProps = {
   dispatchUpdateItem: updateItem,
   dispatchRemoveItem: removeItem,
   dispatchFetchHealth: fetchHealth,
-  dispatchFetchQualityDefinitions: fetchQualityDefinitions,
   dispatchFetchQueue: fetchQueue,
   dispatchFetchQueueDetails: fetchQueueDetails,
   dispatchFetchMovies: fetchMovies
@@ -250,7 +249,7 @@ class SignalRConnector extends Component {
   };
 
   handleQualitydefinition = () => {
-    this.props.dispatchFetchQualityDefinitions();
+    invalidateApiQueries(queryClient, QUALITY_DEFINITIONS_PATH);
   };
 
   handleQueue = () => {
@@ -391,7 +390,6 @@ SignalRConnector.propTypes = {
   dispatchUpdateItem: PropTypes.func.isRequired,
   dispatchRemoveItem: PropTypes.func.isRequired,
   dispatchFetchHealth: PropTypes.func.isRequired,
-  dispatchFetchQualityDefinitions: PropTypes.func.isRequired,
   dispatchFetchQueue: PropTypes.func.isRequired,
   dispatchFetchQueueDetails: PropTypes.func.isRequired,
   dispatchFetchMovies: PropTypes.func.isRequired

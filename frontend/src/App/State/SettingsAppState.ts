@@ -1,12 +1,10 @@
 import AppSectionState, {
   AppSectionDeleteState,
-  AppSectionItemSchemaState,
   AppSectionItemState,
   AppSectionSaveState,
   PagedAppSectionState,
 } from 'App/State/AppSectionState';
 import ImportListExclusion from 'typings/ImportListExclusion';
-import QualityProfile from 'typings/QualityProfile';
 import General from 'typings/Settings/General';
 import MediaManagement from 'typings/Settings/MediaManagement';
 import NamingConfig from 'typings/Settings/NamingConfig';
@@ -28,10 +26,6 @@ export interface NamingAppState
 
 export type NamingExamplesAppState = AppSectionItemState<NamingExample>;
 
-export interface QualityProfilesAppState
-  extends AppSectionState<QualityProfile>,
-    AppSectionItemSchemaState<QualityProfile> {}
-
 export interface ImportListExclusionsSettingsAppState
   extends AppSectionState<ImportListExclusion>,
     AppSectionSaveState,
@@ -50,7 +44,6 @@ interface SettingsAppState {
   metadata: MetadataAppState;
   naming: NamingAppState;
   namingExamples: NamingExamplesAppState;
-  qualityProfiles: QualityProfilesAppState;
   ui: UiSettingsAppState;
 }
 

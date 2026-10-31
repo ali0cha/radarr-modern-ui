@@ -1,13 +1,11 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withLanguages from 'Language/withLanguages';
-import { fetchQualityProfileSchema, saveQualityProfile, setQualityProfileValue } from 'Store/Actions/settingsActions';
-import createProviderSettingsSelector from 'Store/Selectors/createProviderSettingsSelector';
+import React, { Component, useCallback } from 'react';
+import useLanguages from 'Language/useLanguages';
+import { useManageItem } from 'Settings/useManageItem';
 import useProfileInUse from '../useProfileInUse';
 import EditQualityProfileModalContent from './EditQualityProfileModalContent';
+import { QUALITY_PROFILES_PATH, useQualityProfiles, useQualityProfileSchema } from './useQualityProfiles';
 
 function getQualityItemGroupId(qualityProfile) {
   // Get items with an `id` and filter out null/undefined values
@@ -32,111 +30,70 @@ function parseIndex(index) {
   ];
 }
 
-function createQualitiesSelector() {
-  return createSelector(
-    createProviderSettingsSelector('qualityProfiles'),
-    (qualityProfile) => {
-      const items = qualityProfile.item.items;
-      if (!items || !items.value) {
-        return [];
+function getQualities(qualityProfile) {
+  const items = qualityProfile.items;
+
+  if (!items || !items.value) {
+    return [];
+  }
+
+  return _.reduceRight(items.value, (result, { allowed, id, name, quality }) => {
+    if (allowed) {
+      if (id) {
+        result.push({
+          key: id,
+          value: name
+        });
+      } else {
+        result.push({
+          key: quality.id,
+          value: quality.name
+        });
       }
-
-      return _.reduceRight(items.value, (result, { allowed, id, name, quality }) => {
-        if (allowed) {
-          if (id) {
-            result.push({
-              key: id,
-              value: name
-            });
-          } else {
-            result.push({
-              key: quality.id,
-              value: quality.name
-            });
-          }
-        }
-
-        return result;
-      }, []);
     }
-  );
+
+    return result;
+  }, []);
 }
 
-function createFormatsSelector() {
-  return createSelector(
-    createProviderSettingsSelector('qualityProfiles'),
-    (customFormat) => {
-      const items = customFormat.item.formatItems;
-      if (!items || !items.value) {
-        return [];
-      }
+function getFormats(qualityProfile) {
+  const items = qualityProfile.formatItems;
 
-      return _.reduceRight(items.value, (result, { id, name, format, score }) => {
-        if (id) {
-          result.push({
-            key: id,
-            value: name,
-            score
-          });
-        } else {
-          result.push({
-            key: format,
-            value: name,
-            score
-          });
-        }
+  if (!items || !items.value) {
+    return [];
+  }
 
-        return result;
-      }, []);
-    }
-  );
-}
-
-function createLanguagesSelector() {
-  return createSelector(
-    (state, { languagesState }) => languagesState,
-    (languages) => {
-      const items = languages.items;
-      const filterItems = ['Unknown'];
-
-      if (!items) {
-        return [];
-      }
-
-      const newItems = items.filter((lang) => !filterItems.includes(lang.name)).map((item) => {
-        return {
-          key: item.id,
-          value: item.name
-        };
+  return _.reduceRight(items.value, (result, { id, name, format, score }) => {
+    if (id) {
+      result.push({
+        key: id,
+        value: name,
+        score
       });
-
-      return newItems;
+    } else {
+      result.push({
+        key: format,
+        value: name,
+        score
+      });
     }
-  );
+
+    return result;
+  }, []);
 }
 
-function createMapStateToProps() {
-  return createSelector(
-    createProviderSettingsSelector('qualityProfiles'),
-    createQualitiesSelector(),
-    createFormatsSelector(),
-    createLanguagesSelector(),
-    (qualityProfile, qualities, customFormats, languages) => {
+function getLanguages(languages) {
+  const filterItems = ['Unknown'];
+
+  return languages
+    .filter((lang) => !filterItems.includes(lang.name))
+    .map((item) => {
       return {
-        qualities,
-        customFormats,
-        languages,
-        ...qualityProfile
+        key: item.id,
+        value: item.name
       };
-    }
-  );
+    });
 }
-
-const mapDispatchToProps = {
-  fetchQualityProfileSchema,
-  setQualityProfileValue,
-  saveQualityProfile
-};
 
 class EditQualityProfileModalContentConnectorBase extends Component {
 
@@ -152,18 +109,6 @@ class EditQualityProfileModalContentConnectorBase extends Component {
       dropPosition: null,
       editGroups: false
     };
-  }
-
-  componentDidMount() {
-    if (!this.props.id && !this.props.isPopulated) {
-      this.props.fetchQualityProfileSchema();
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.isSaving && !this.props.isSaving && !this.props.saveError) {
-      this.props.onModalClose();
-    }
   }
 
   //
@@ -225,7 +170,7 @@ class EditQualityProfileModalContentConnectorBase extends Component {
   };
 
   onSavePress = () => {
-    this.props.saveQualityProfile({ id: this.props.id });
+    this.props.saveQualityProfile();
   };
 
   onQualityProfileItemAllowedChange = (id, allowed) => {
@@ -509,32 +454,84 @@ class EditQualityProfileModalContentConnectorBase extends Component {
 EditQualityProfileModalContentConnectorBase.propTypes = {
   id: PropTypes.number,
   isFetching: PropTypes.bool.isRequired,
-  isPopulated: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
   item: PropTypes.object.isRequired,
   languages: PropTypes.arrayOf(PropTypes.object).isRequired,
   setQualityProfileValue: PropTypes.func.isRequired,
-  fetchQualityProfileSchema: PropTypes.func.isRequired,
   saveQualityProfile: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };
 
-const ConnectedEditQualityProfileModalContent = withLanguages(connect(createMapStateToProps, mapDispatchToProps)(EditQualityProfileModalContentConnectorBase));
+const NO_QUALITY_PROFILE = { items: [], formatItems: [] };
 
 function EditQualityProfileModalContentConnector(props) {
-  const isInUse = useProfileInUse('qualityProfileId', props.id);
+  const { id, defaultQualityProfile, onModalClose } = props;
+
+  const isInUse = useProfileInUse('qualityProfileId', id);
+  const { items: languageItems } = useLanguages();
+  const {
+    isFetching: isFetchingQualityProfiles,
+    isPopulated,
+    error
+  } = useQualityProfiles();
+  const {
+    data: schema,
+    isFetching: isFetchingSchema,
+    error: schemaError
+  } = useQualityProfileSchema();
+
+  // A new profile starts from the clone it is given, or else from the schema
+  const startingProfile = defaultQualityProfile ?? schema ?? NO_QUALITY_PROFILE;
+
+  const {
+    item,
+    validationErrors,
+    validationWarnings,
+    isSaving,
+    saveError,
+    updateValue,
+    saveItem
+  } = useManageItem(
+    QUALITY_PROFILES_PATH,
+    id,
+    startingProfile,
+    onModalClose
+  );
+
+  const setQualityProfileValue = useCallback(({ name, value }) => {
+    updateValue(name, value);
+  }, [updateValue]);
+
+  const isFetching = (isFetchingQualityProfiles && !isPopulated) ||
+    (!id && !defaultQualityProfile && isFetchingSchema && !schema);
 
   return (
-    <ConnectedEditQualityProfileModalContent
+    <EditQualityProfileModalContentConnectorBase
       {...props}
+      isFetching={isFetching}
+      error={error ?? (!id && !defaultQualityProfile ? schemaError : null)}
+      isSaving={isSaving}
+      saveError={saveError}
+      item={item}
+      validationErrors={validationErrors}
+      validationWarnings={validationWarnings}
+      qualities={getQualities(item)}
+      customFormats={getFormats(item)}
+      languages={getLanguages(languageItems)}
       isInUse={isInUse}
+      setQualityProfileValue={setQualityProfileValue}
+      saveQualityProfile={saveItem}
     />
   );
 }
 
 EditQualityProfileModalContentConnector.propTypes = {
-  id: PropTypes.number
+  id: PropTypes.number,
+  defaultQualityProfile: PropTypes.object,
+  onContentHeightChange: PropTypes.func,
+  onDeleteQualityProfilePress: PropTypes.func,
+  onModalClose: PropTypes.func.isRequired
 };
 
 export default EditQualityProfileModalContentConnector;

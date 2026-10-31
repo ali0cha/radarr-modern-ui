@@ -6,14 +6,12 @@ import { useInitializeLanguage } from 'Language/useLanguageName';
 import { useLanguages } from 'Language/useLanguages';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
+import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { fetchTranslations } from 'Store/Actions/appActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
-import {
-  fetchQualityProfiles,
-  fetchUISettings,
-} from 'Store/Actions/settingsActions';
+import { fetchUISettings } from 'Store/Actions/settingsActions';
 import { fetchStatus } from 'Store/Actions/systemActions';
 import { useTagsQuery } from 'Tags/useTags';
 
@@ -23,7 +21,6 @@ const createErrorsSelector = () =>
     (state: AppState) => state.movieCollections.error,
     (state: AppState) => state.customFilters.error,
     (state: AppState) => state.settings.ui.error,
-    (state: AppState) => state.settings.qualityProfiles.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
     (
@@ -31,7 +28,6 @@ const createErrorsSelector = () =>
       movieCollectionsError,
       customFiltersError,
       uiSettingsError,
-      qualityProfilesError,
       systemStatusError,
       translationsError
     ) => {
@@ -40,7 +36,6 @@ const createErrorsSelector = () =>
         movieCollectionsError ||
         customFiltersError ||
         uiSettingsError ||
-        qualityProfilesError ||
         systemStatusError ||
         translationsError
       );
@@ -52,7 +47,6 @@ const createErrorsSelector = () =>
           movieCollectionsError,
           customFiltersError,
           uiSettingsError,
-          qualityProfilesError,
           systemStatusError,
           translationsError,
         },
@@ -68,6 +62,10 @@ const useAppPage = () => {
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
   const { isPopulated: isImportListsPopulated, error: importListsError } =
     useImportLists();
+  const {
+    isPopulated: isQualityProfilesPopulated,
+    error: qualityProfilesError,
+  } = useQualityProfiles();
   const { isPopulated: isLanguagesPopulated, error: languagesError } =
     useLanguages();
   const { isPopulated: isIndexerFlagsPopulated, error: indexerFlagsError } =
@@ -79,7 +77,6 @@ const useAppPage = () => {
       state.movieCollections.isPopulated &&
       state.customFilters.isPopulated &&
       state.settings.ui.isPopulated &&
-      state.settings.qualityProfiles.isPopulated &&
       state.system.status.isPopulated &&
       state.app.translations.isPopulated
   );
@@ -88,6 +85,7 @@ const useAppPage = () => {
     isStatePopulated &&
     isTagsPopulated &&
     isImportListsPopulated &&
+    isQualityProfilesPopulated &&
     isLanguagesPopulated &&
     isIndexerFlagsPopulated;
 
@@ -99,6 +97,7 @@ const useAppPage = () => {
     hasStateError ||
     !!tagsError ||
     !!importListsError ||
+    !!qualityProfilesError ||
     !!languagesError ||
     !!indexerFlagsError;
 
@@ -107,6 +106,7 @@ const useAppPage = () => {
       ...stateErrors,
       tagsError: tagsError ?? undefined,
       importListsError: importListsError ?? undefined,
+      qualityProfilesError: qualityProfilesError ?? undefined,
       languagesError: languagesError ?? undefined,
       indexerFlagsError: indexerFlagsError ?? undefined,
     }),
@@ -114,6 +114,7 @@ const useAppPage = () => {
       stateErrors,
       tagsError,
       importListsError,
+      qualityProfilesError,
       languagesError,
       indexerFlagsError,
     ]
@@ -136,7 +137,6 @@ const useAppPage = () => {
     dispatch(fetchMovies());
     dispatch(fetchMovieCollections());
     dispatch(fetchCustomFilters());
-    dispatch(fetchQualityProfiles());
     dispatch(fetchUISettings());
     dispatch(fetchStatus());
     dispatch(fetchTranslations());

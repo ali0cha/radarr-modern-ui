@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import withLanguages from 'Language/withLanguages';
+import withQualityProfileSchema from 'Settings/Profiles/Quality/withQualityProfileSchema';
 import { updateMovieFiles } from 'Store/Actions/movieFileActions';
-import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
 import createMovieFileSelector from 'Store/Selectors/createMovieFileSelector';
 import getQualities from 'Utilities/Quality/getQualities';
 import FileEditModalContent from './FileEditModalContent';
@@ -12,7 +12,7 @@ import FileEditModalContent from './FileEditModalContent';
 function createMapStateToProps() {
   return createSelector(
     createMovieFileSelector(),
-    (state) => state.settings.qualityProfiles,
+    (state, { qualityProfileSchemaState }) => qualityProfileSchemaState,
     (state, { languagesState }) => languagesState,
     (movieFile, qualityProfiles, languages) => {
 
@@ -22,13 +22,13 @@ function createMapStateToProps() {
       const quality = movieFile.quality;
 
       return {
-        isFetching: qualityProfiles.isSchemaFetching || languages.isFetching,
-        isPopulated: qualityProfiles.isSchemaPopulated && languages.isPopulated,
+        isFetching: qualityProfiles.isFetching || languages.isFetching,
+        isPopulated: qualityProfiles.isPopulated && languages.isPopulated,
         error: qualityProfiles.error || languages.error,
         qualityId: quality ? quality.quality.id : 0,
         real: quality ? quality.revision.real > 0 : false,
         proper: quality ? quality.revision.version > 1 : false,
-        qualities: getQualities(qualityProfiles.schema.items),
+        qualities: getQualities(qualityProfiles.schema?.items),
         languageIds: movieFile.languages ? movieFile.languages.map((l) => l.id) : [],
         languages: filteredLanguages,
         indexerFlags: movieFile.indexerFlags,
@@ -41,20 +41,10 @@ function createMapStateToProps() {
 }
 
 const mapDispatchToProps = {
-  dispatchFetchQualityProfileSchema: fetchQualityProfileSchema,
   dispatchUpdateMovieFiles: updateMovieFiles
 };
 
 class FileEditModalContentConnector extends Component {
-
-  //
-  // Lifecycle
-
-  componentDidMount = () => {
-    if (!this.props.isPopulated) {
-      this.props.dispatchFetchQualityProfileSchema();
-    }
-  };
 
   //
   // Listeners
@@ -132,9 +122,8 @@ FileEditModalContentConnector.propTypes = {
   releaseGroup: PropTypes.string.isRequired,
   relativePath: PropTypes.string.isRequired,
   proper: PropTypes.bool.isRequired,
-  dispatchFetchQualityProfileSchema: PropTypes.func.isRequired,
   dispatchUpdateMovieFiles: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };
 
-export default withLanguages(connect(createMapStateToProps, mapDispatchToProps)(FileEditModalContentConnector));
+export default withQualityProfileSchema(withLanguages(connect(createMapStateToProps, mapDispatchToProps)(FileEditModalContentConnector)));

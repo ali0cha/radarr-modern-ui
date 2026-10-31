@@ -16,6 +16,7 @@ import MovieIndexProgressBar from 'Movie/Index/ProgressBar/MovieIndexProgressBar
 import MovieIndexPosterSelect from 'Movie/Index/Select/MovieIndexPosterSelect';
 import { Statistics } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
+import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { executeCommand } from 'Store/Actions/commandActions';
 import dimensions from 'Styles/Variables/dimensions';
 import fonts from 'Styles/Variables/fonts';
@@ -57,8 +58,10 @@ function MovieIndexOverview(props: MovieIndexOverviewProps) {
     isSmallScreen,
   } = props;
 
-  const { movie, qualityProfile, isRefreshingMovie, isSearchingMovie } =
-    useSelector(createMovieIndexItemSelector(props.movieId));
+  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
+    createMovieIndexItemSelector(props.movieId)
+  );
+  const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
   const overviewOptions = useSelector(selectOverviewOptions);
 

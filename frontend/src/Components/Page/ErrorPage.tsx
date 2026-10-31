@@ -11,7 +11,7 @@ interface ErrorPageProps {
   moviesError?: Error;
   customFiltersError?: Error;
   tagsError?: Error | ApiError;
-  qualityProfilesError?: Error;
+  qualityProfilesError?: Error | ApiError;
   languagesError?: Error | ApiError;
   uiSettingsError?: Error;
   systemStatusError?: Error;

@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import withLanguages from 'Language/withLanguages';
+import withQualityProfileSchema from 'Settings/Profiles/Quality/withQualityProfileSchema';
 import { deleteMovieFile, setMovieFilesSort, setMovieFilesTableOption } from 'Store/Actions/movieFileActions';
-import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import createMovieSelector from 'Store/Selectors/createMovieSelector';
 import getQualities from 'Utilities/Quality/getQualities';
@@ -15,7 +15,7 @@ function createMapStateToProps() {
     (state, { movieId }) => movieId,
     createClientSideCollectionSelector('movieFiles'),
     (state, { languagesState }) => languagesState,
-    (state) => state.settings.qualityProfiles,
+    (state, { qualityProfileSchemaState }) => qualityProfileSchemaState,
     createMovieSelector(),
     (
       movieId,
@@ -24,7 +24,7 @@ function createMapStateToProps() {
       qualityProfiles
     ) => {
       const languages = languageProfiles.items;
-      const qualities = getQualities(qualityProfiles.schema.items);
+      const qualities = getQualities(qualityProfiles.schema?.items);
       const filesForMovie = movieFiles.items.filter((file) => file.movieId === movieId);
 
       return {
@@ -43,20 +43,12 @@ function createMapStateToProps() {
 }
 
 const mapDispatchToProps = {
-  fetchQualityProfileSchema,
   deleteMovieFile,
   setMovieFilesTableOption,
   setMovieFilesSort
 };
 
 class MovieFileEditorTableContentConnector extends Component {
-
-  //
-  // Lifecycle
-
-  componentDidMount() {
-    this.props.fetchQualityProfileSchema();
-  }
 
   //
   // Listeners
@@ -97,10 +89,9 @@ MovieFileEditorTableContentConnector.propTypes = {
   movieId: PropTypes.number.isRequired,
   languages: PropTypes.arrayOf(PropTypes.object).isRequired,
   qualities: PropTypes.arrayOf(PropTypes.object).isRequired,
-  fetchQualityProfileSchema: PropTypes.func.isRequired,
   deleteMovieFile: PropTypes.func.isRequired,
   setMovieFilesTableOption: PropTypes.func.isRequired,
   setMovieFilesSort: PropTypes.func.isRequired
 };
 
-export default withLanguages(connect(createMapStateToProps, mapDispatchToProps)(MovieFileEditorTableContentConnector));
+export default withQualityProfileSchema(withLanguages(connect(createMapStateToProps, mapDispatchToProps)(MovieFileEditorTableContentConnector)));

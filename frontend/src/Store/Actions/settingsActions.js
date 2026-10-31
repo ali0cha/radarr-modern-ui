@@ -7,8 +7,6 @@ import metadata from './Settings/metadata';
 import metadataOptions from './Settings/metadataOptions';
 import naming from './Settings/naming';
 import namingExamples from './Settings/namingExamples';
-import qualityDefinitions from './Settings/qualityDefinitions';
-import qualityProfiles from './Settings/qualityProfiles';
 import remotePathMappings from './Settings/remotePathMappings';
 import ui from './Settings/ui';
 
@@ -19,8 +17,6 @@ export * from './Settings/metadata';
 export * from './Settings/metadataOptions';
 export * from './Settings/naming';
 export * from './Settings/namingExamples';
-export * from './Settings/qualityDefinitions';
-export * from './Settings/qualityProfiles';
 export * from './Settings/remotePathMappings';
 export * from './Settings/ui';
 
@@ -41,8 +37,6 @@ export const defaultState = {
   metadataOptions: metadataOptions.defaultState,
   naming: naming.defaultState,
   namingExamples: namingExamples.defaultState,
-  qualityDefinitions: qualityDefinitions.defaultState,
-  qualityProfiles: qualityProfiles.defaultState,
   remotePathMappings: remotePathMappings.defaultState,
   ui: ui.defaultState
 };
@@ -62,8 +56,6 @@ export const actionHandlers = handleThunks({
   ...metadataOptions.actionHandlers,
   ...naming.actionHandlers,
   ...namingExamples.actionHandlers,
-  ...qualityDefinitions.actionHandlers,
-  ...qualityProfiles.actionHandlers,
   ...remotePathMappings.actionHandlers,
   ...ui.actionHandlers
 });
@@ -80,8 +72,6 @@ export const reducers = createHandleActions({
   ...metadataOptions.reducers,
   ...naming.reducers,
   ...namingExamples.reducers,
-  ...qualityDefinitions.reducers,
-  ...qualityProfiles.reducers,
   ...remotePathMappings.reducers,
   ...ui.reducers
 

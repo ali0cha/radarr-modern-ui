@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { useRootFolder } from 'RootFolder/useRootFolders';
+import withQualityProfiles from 'Settings/Profiles/Quality/withQualityProfiles';
 import { setAddMovieDefault } from 'Store/Actions/addMovieActions';
 import { clearImportMovie, importMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
 import ImportMovie from './ImportMovie';
@@ -14,7 +15,7 @@ function createMapStateToProps() {
     (state, { rootFolder }) => rootFolder,
     (state) => state.addMovie,
     (state) => state.importMovie,
-    (state) => state.settings.qualityProfiles,
+    (state, { qualityProfilesState }) => qualityProfilesState,
     (
       rootFolderIdParam,
       rootFolder,
@@ -127,7 +128,7 @@ ImportMovieConnectorBase.propTypes = {
   dispatchSetAddMovieDefault: PropTypes.func.isRequired
 };
 
-const ConnectedImportMovie = connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnectorBase);
+const ConnectedImportMovie = withQualityProfiles(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnectorBase));
 
 function ImportMovieConnector() {
   const { rootFolderId } = useParams();

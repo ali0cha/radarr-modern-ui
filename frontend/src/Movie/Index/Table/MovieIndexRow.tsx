@@ -23,6 +23,7 @@ import createMovieIndexItemSelector from 'Movie/Index/createMovieIndexItemSelect
 import { Statistics } from 'Movie/Movie';
 import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import MovieTitleLink from 'Movie/MovieTitleLink';
+import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import { SelectStateInputProps } from 'typings/props';
@@ -45,8 +46,10 @@ interface MovieIndexRowProps {
 function MovieIndexRow(props: MovieIndexRowProps) {
   const { movieId, columns, isSelectMode } = props;
 
-  const { movie, qualityProfile, isRefreshingMovie, isSearchingMovie } =
-    useSelector(createMovieIndexItemSelector(props.movieId));
+  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
+    createMovieIndexItemSelector(props.movieId)
+  );
+  const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
   const { showSearchAction } = useSelector(selectTableOptions);
 

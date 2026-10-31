@@ -1,11 +1,10 @@
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import MovieTagList from 'Components/MovieTagList';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableSelectCell from 'Components/Table/Cells/TableSelectCell';
 import Column from 'Components/Table/Column';
 import TableRow from 'Components/Table/TableRow';
-import { createQualityProfileSelectorForHook } from 'Store/Selectors/createQualityProfileSelector';
+import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { SelectStateInputProps } from 'typings/props';
 import firstCharToUpper from 'Utilities/String/firstCharToUpper';
 import translate from 'Utilities/String/translate';
@@ -41,9 +40,7 @@ function ManageImportListsModalRow(props: ManageImportListsModalRowProps) {
     onSelectedChange,
   } = props;
 
-  const qualityProfile = useSelector(
-    createQualityProfileSelectorForHook(qualityProfileId)
-  );
+  const qualityProfile = useQualityProfile(qualityProfileId);
 
   const onSelectedChangeWrapper = useCallback(
     (result: SelectStateInputProps) => {

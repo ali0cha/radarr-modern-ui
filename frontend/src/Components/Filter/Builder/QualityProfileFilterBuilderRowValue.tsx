@@ -1,28 +1,18 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useMemo } from 'react';
 import FilterBuilderRowValueProps from 'Components/Filter/Builder/FilterBuilderRowValueProps';
+import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import sortByProp from 'Utilities/Array/sortByProp';
 import FilterBuilderRowValue from './FilterBuilderRowValue';
-
-function createQualityProfilesSelector() {
-  return createSelector(
-    (state: AppState) => state.settings.qualityProfiles.items,
-    (qualityProfiles) => {
-      return qualityProfiles;
-    }
-  );
-}
 
 function QualityProfileFilterBuilderRowValue(
   props: FilterBuilderRowValueProps
 ) {
-  const qualityProfiles = useSelector(createQualityProfilesSelector());
+  const { items } = useQualityProfiles();
 
-  const tagList = qualityProfiles
-    .map(({ id, name }) => ({ id, name }))
-    .sort(sortByProp('name'));
+  const tagList = useMemo(
+    () => items.map(({ id, name }) => ({ id, name })).sort(sortByProp('name')),
+    [items]
+  );
 
   return <FilterBuilderRowValue {...props} tagList={tagList} />;
 }
