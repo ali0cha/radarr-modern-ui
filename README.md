@@ -1,4 +1,57 @@
-# Radarr
+# Radarr — modern UI (experimental fork)
+
+An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports its web UI to the front-end stack [Sonarr](https://github.com/Sonarr/Sonarr) already uses. The backend is untouched: only `frontend/` and its build change.
+
+This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
+
+## Goal
+
+Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on:
+
+| | Radarr (upstream) | This fork |
+| --- | --- | --- |
+| Language | JavaScript, partly TypeScript | TypeScript, converting what is left |
+| Build | Webpack | Vite |
+| Routing | React Router 5 | React Router 7, data router |
+| Server data | Redux (thunks, one section per resource) | TanStack Query hooks |
+| Client state | Redux | zustand stores, local to the component or persisted |
+
+## Status
+
+The migration goes one piece at a time, each on its own branch stacked on the previous one, so that every step can be reviewed (and tried) alone.
+
+| Branch | What it does |
+| --- | --- |
+| `build/vite` | Webpack to Vite 8 (CSS Modules, JSX in `.js` files, same output in `_output/UI`) |
+| `build/router` | React Router 5 to 7 with a data router and the URL base |
+| `redux/query-pilot` | TanStack Query and the first Redux sections moved to it |
+| `redux/tags`, `redux/root-folders`, `redux/small-sections` | Tags, root folders, movie history, extra files, organize preview, parse, file system paths |
+| `redux/settings-infra` | Generic settings hooks, zustand stores, persisted advanced settings |
+| `redux/providers` | Generic provider hooks (list, schema, save, test, bulk edit and delete), indexers |
+| `redux/download-clients` | Download clients and their options |
+| `redux/import-lists` | Import lists, their options and the lists that follow a person |
+| `ts/utilities` | TypeScript conversion of the utilities, independent of the others |
+
+Still on Redux: notifications, custom formats, auto tagging, delay and release profiles, quality profiles and definitions, naming, media management, metadata, UI and general settings, import list exclusions, remote path mappings; then the paged collections (history, queue, blocklist, wanted), the movie index and details, commands, and finally removing Redux itself.
+
+## Build and try it
+
+```bash
+yarn install
+yarn build        # writes the UI to _output/UI
+yarn typecheck
+yarn lint
+```
+
+The UI is served by the Radarr backend from `_output/UI`, so to try it, point a Radarr build at that folder. Each migrated screen was also checked by hand against a real Radarr (7.0.0.10815, `develop`): adding, editing, testing and deleting providers, bulk actions, validation errors, and live updates through SignalR.
+
+## Upstream
+
+This repository is a copy of Radarr's `develop` history, licensed under the [GPL-3.0](LICENSE) like Radarr. Bugs and features of Radarr itself belong in the [upstream project](https://github.com/Radarr/Radarr); its original README follows.
+
+---
+
+## Radarr
 
 [![Build Status](https://dev.azure.com/Radarr/Radarr/_apis/build/status/Radarr.Radarr?branchName=develop)](https://dev.azure.com/Radarr/Radarr/_build/latest?definitionId=1&branchName=develop)
 [![Translation status](https://translate.servarr.com/widget/servarr/radarr/svg-badge.svg)](https://translate.servarr.com/engage/servarr/?utm_source=widget)
