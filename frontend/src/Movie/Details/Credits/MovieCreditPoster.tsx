@@ -1,19 +1,16 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import {
-  selectImportListSchema,
-  setImportListFieldValue,
-  setImportListValue,
-} from 'Store/Actions/settingsActions';
-import createMovieCreditImportListSelector from 'Store/Selectors/createMovieCreditImportListSelector';
+  useNewPersonImportList,
+  usePersonImportList,
+} from 'Settings/ImportLists/useImportLists';
 import { MovieCastPosterProps } from './Cast/MovieCastPoster';
 import { MovieCrewPosterProps } from './Crew/MovieCrewPoster';
 
 type MovieCreditPosterProps = {
   component: React.ElementType;
 } & (
-  | Omit<MovieCrewPosterProps, 'onImportListSelect'>
-  | Omit<MovieCastPosterProps, 'onImportListSelect'>
+  | Omit<MovieCrewPosterProps, 'importList' | 'defaultImportList'>
+  | Omit<MovieCastPosterProps, 'importList' | 'defaultImportList'>
 );
 
 function MovieCreditPoster({
@@ -22,29 +19,8 @@ function MovieCreditPoster({
   personName,
   ...otherProps
 }: MovieCreditPosterProps) {
-  const importList = useSelector(createMovieCreditImportListSelector(tmdbId));
-
-  const dispatch = useDispatch();
-
-  const handleImportListSelect = useCallback(() => {
-    dispatch(
-      selectImportListSchema({
-        implementation: 'TMDbPersonImport',
-        implementationName: 'TMDb Person',
-        presetName: undefined,
-      })
-    );
-
-    dispatch(
-      // @ts-expect-error 'setImportListFieldValue' isn't typed yet
-      setImportListFieldValue({ name: 'personId', value: tmdbId.toString() })
-    );
-
-    dispatch(
-      // @ts-expect-error 'setImportListValue' isn't typed yet
-      setImportListValue({ name: 'name', value: `${personName} - ${tmdbId}` })
-    );
-  }, [dispatch, tmdbId, personName]);
+  const importList = usePersonImportList(tmdbId);
+  const defaultImportList = useNewPersonImportList(tmdbId, personName);
 
   return (
     <ItemComponent
@@ -52,7 +28,7 @@ function MovieCreditPoster({
       tmdbId={tmdbId}
       personName={personName}
       importList={importList}
-      onImportListSelect={handleImportListSelect}
+      defaultImportList={defaultImportList}
     />
   );
 }

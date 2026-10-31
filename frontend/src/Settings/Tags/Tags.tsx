@@ -5,10 +5,10 @@ import FieldSet from 'Components/FieldSet';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { kinds } from 'Helpers/Props';
 import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
+import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import {
   fetchDelayProfiles,
-  fetchImportLists,
   fetchNotifications,
   fetchReleaseProfiles,
 } from 'Store/Actions/settingsActions';
@@ -21,7 +21,9 @@ import styles from './Tags.module.css';
 function Tags() {
   const dispatch = useDispatch();
 
-  // The indexers and the download clients are listed in the details of a tag
+  // The import lists, indexers and download clients are listed in the details
+  // of a tag
+  useImportLists();
   useIndexers();
   useDownloadClients();
 
@@ -46,7 +48,6 @@ function Tags() {
 
   useEffect(() => {
     dispatch(fetchDelayProfiles());
-    dispatch(fetchImportLists());
     dispatch(fetchNotifications());
     dispatch(fetchReleaseProfiles());
   }, [dispatch]);

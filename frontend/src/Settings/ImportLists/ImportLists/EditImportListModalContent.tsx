@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import MovieMinimumAvailabilityPopoverContent from 'AddMovie/MovieMinimumAvailabilityPopoverContent';
-import { ImportListAppState } from 'App/State/SettingsAppState';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -21,53 +19,59 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import AdvancedSettingsButton from 'Settings/AdvancedSettingsButton';
-import {
-  saveImportList,
-  setImportListFieldValue,
-  setImportListValue,
-  testImportList,
-} from 'Store/Actions/settingsActions';
-import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProviderSettingsSelector';
+import { useManageProviderSettings } from 'Settings/useProviderSettings';
 import ImportList from 'typings/ImportList';
 import { InputChanged } from 'typings/inputs';
 import formatShortTimeSpan from 'Utilities/Date/formatShortTimeSpan';
 import translate from 'Utilities/String/translate';
+import { IMPORT_LISTS_PATH, useImportLists } from '../useImportLists';
 import styles from './EditImportListModalContent.module.css';
+
+const NO_IMPORT_LIST = { fields: [] } as unknown as ImportList;
 
 export interface EditImportListModalContentProps {
   id?: number;
+  // The import list to start from when it is new
+  defaultImportList?: ImportList;
   onModalClose: () => void;
   onDeleteImportListPress?: () => void;
 }
 
 function EditImportListModalContent({
   id,
+  defaultImportList = NO_IMPORT_LIST,
   onModalClose,
   onDeleteImportListPress,
 }: EditImportListModalContentProps) {
-  const dispatch = useDispatch();
   const showAdvancedSettings = useShowAdvancedSettings();
+  const {
+    isFetching: isFetchingImportLists,
+    isPopulated,
+    error,
+  } = useImportLists();
+  const isFetching = isFetchingImportLists && !isPopulated;
 
   const {
-    isFetching,
     isSaving,
-    isTesting = false,
-    error,
+    isTesting,
     saveError,
     item,
     validationErrors,
     validationWarnings,
-  } = useSelector(
-    createProviderSettingsSelectorHook<ImportList, ImportListAppState>(
-      'importLists',
-      id
-    )
+    updateValue,
+    updateFieldValue,
+    saveProvider,
+    testProvider,
+  } = useManageProviderSettings<ImportList>(
+    id,
+    defaultImportList,
+    IMPORT_LISTS_PATH
   );
 
   const wasSaving = usePrevious(isSaving);
 
   const {
-    implementationName,
+    implementationName = '',
     name,
     enabled,
     enableAuto,
@@ -82,28 +86,21 @@ function EditImportListModalContent({
   } = item;
 
   const handleInputChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setImportListValue(change));
+    ({ name, value }: InputChanged) => {
+      updateValue(
+        name as keyof ImportList,
+        value as ImportList[keyof ImportList]
+      );
     },
-    [dispatch]
+    [updateValue]
   );
 
   const handleFieldChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setImportListFieldValue(change));
+    ({ name, value }: InputChanged) => {
+      updateFieldValue({ [name]: value });
     },
-    [dispatch]
+    [updateFieldValue]
   );
-
-  const handleTestPress = useCallback(() => {
-    dispatch(testImportList({ id }));
-  }, [id, dispatch]);
-
-  const handleSavePress = useCallback(() => {
-    dispatch(saveImportList({ id }));
-  }, [id, dispatch]);
 
   useEffect(() => {
     if (wasSaving && !isSaving && !saveError) {
@@ -291,7 +288,7 @@ function EditImportListModalContent({
         <SpinnerErrorButton
           isSpinning={isTesting}
           error={saveError}
-          onPress={handleTestPress}
+          onPress={testProvider}
         >
           {translate('Test')}
         </SpinnerErrorButton>
@@ -301,7 +298,7 @@ function EditImportListModalContent({
         <SpinnerErrorButton
           isSpinning={isSaving}
           error={saveError}
-          onPress={handleSavePress}
+          onPress={saveProvider}
         >
           {translate('Save')}
         </SpinnerErrorButton>

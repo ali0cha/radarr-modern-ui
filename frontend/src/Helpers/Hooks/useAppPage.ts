@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
 import { useInitializeLanguage } from 'Language/useLanguageName';
+import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { fetchTranslations } from 'Store/Actions/appActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
 import {
-  fetchImportLists,
   fetchIndexerFlags,
   fetchLanguages,
   fetchQualityProfiles,
@@ -25,7 +25,6 @@ const createErrorsSelector = () =>
     (state: AppState) => state.settings.ui.error,
     (state: AppState) => state.settings.qualityProfiles.error,
     (state: AppState) => state.settings.languages.error,
-    (state: AppState) => state.settings.importLists.error,
     (state: AppState) => state.settings.indexerFlags.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
@@ -36,7 +35,6 @@ const createErrorsSelector = () =>
       uiSettingsError,
       qualityProfilesError,
       languagesError,
-      importListsError,
       indexerFlagsError,
       systemStatusError,
       translationsError
@@ -48,7 +46,6 @@ const createErrorsSelector = () =>
         uiSettingsError ||
         qualityProfilesError ||
         languagesError ||
-        importListsError ||
         indexerFlagsError ||
         systemStatusError ||
         translationsError
@@ -63,7 +60,6 @@ const createErrorsSelector = () =>
           uiSettingsError,
           qualityProfilesError,
           languagesError,
-          importListsError,
           indexerFlagsError,
           systemStatusError,
           translationsError,
@@ -78,6 +74,8 @@ const useAppPage = () => {
   useInitializeLanguage();
 
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
+  const { isPopulated: isImportListsPopulated, error: importListsError } =
+    useImportLists();
 
   const isStatePopulated = useSelector(
     (state: AppState) =>
@@ -87,23 +85,27 @@ const useAppPage = () => {
       state.settings.ui.isPopulated &&
       state.settings.qualityProfiles.isPopulated &&
       state.settings.languages.isPopulated &&
-      state.settings.importLists.isPopulated &&
       state.settings.indexerFlags.isPopulated &&
       state.system.status.isPopulated &&
       state.app.translations.isPopulated
   );
 
-  const isPopulated = isStatePopulated && isTagsPopulated;
+  const isPopulated =
+    isStatePopulated && isTagsPopulated && isImportListsPopulated;
 
   const { hasError: hasStateError, errors: stateErrors } = useSelector(
     createErrorsSelector()
   );
 
-  const hasError = hasStateError || !!tagsError;
+  const hasError = hasStateError || !!tagsError || !!importListsError;
 
   const errors = useMemo(
-    () => ({ ...stateErrors, tagsError: tagsError ?? undefined }),
-    [stateErrors, tagsError]
+    () => ({
+      ...stateErrors,
+      tagsError: tagsError ?? undefined,
+      importListsError: importListsError ?? undefined,
+    }),
+    [stateErrors, tagsError, importListsError]
   );
 
   const isLocalStorageSupported = useMemo(() => {
@@ -125,7 +127,6 @@ const useAppPage = () => {
     dispatch(fetchCustomFilters());
     dispatch(fetchQualityProfiles());
     dispatch(fetchLanguages());
-    dispatch(fetchImportLists());
     dispatch(fetchIndexerFlags());
     dispatch(fetchUISettings());
     dispatch(fetchStatus());

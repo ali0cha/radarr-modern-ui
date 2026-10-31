@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
@@ -11,7 +10,8 @@ import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
 import { icons, kinds, sizes } from 'Helpers/Props';
 import MovieHeadshot from 'Movie/MovieHeadshot';
 import EditImportListModal from 'Settings/ImportLists/ImportLists/EditImportListModal';
-import { deleteImportList } from 'Store/Actions/Settings/importLists';
+import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
+import { useDeleteProvider } from 'Settings/useProviderSettings';
 import ImportList from 'typings/ImportList';
 import MovieCredit from 'typings/MovieCredit';
 import translate from 'Utilities/String/translate';
@@ -23,7 +23,8 @@ export interface MovieCrewPosterProps
   posterWidth: number;
   posterHeight: number;
   importList?: ImportList;
-  onImportListSelect(): void;
+  // The import list to edit when the person is not followed yet
+  defaultImportList?: ImportList;
 }
 
 function MovieCrewPoster(props: MovieCrewPosterProps) {
@@ -35,12 +36,15 @@ function MovieCrewPoster(props: MovieCrewPosterProps) {
     posterWidth,
     posterHeight,
     importList,
-    onImportListSelect,
+    defaultImportList,
   } = props;
 
   const importListId = importList?.id ?? 0;
 
-  const dispatch = useDispatch();
+  const { deleteProvider } = useDeleteProvider<ImportList>(
+    importListId,
+    IMPORT_LISTS_PATH
+  );
 
   const [hasPosterError, setHasPosterError] = useState(false);
 
@@ -65,23 +69,18 @@ function MovieCrewPoster(props: MovieCrewPosterProps) {
   }, [setHasPosterError]);
 
   const handleManageImportListPress = useCallback(() => {
-    if (importListId === 0) {
-      onImportListSelect();
-    }
-
     setEditImportListModalOpen();
-  }, [importListId, onImportListSelect, setEditImportListModalOpen]);
+  }, [setEditImportListModalOpen]);
 
   const handleDeleteImportListConfirmed = useCallback(() => {
-    dispatch(deleteImportList({ id: importListId }));
+    deleteProvider();
 
     setEditImportListModalClosed();
     setDeleteImportListModalClosed();
   }, [
-    importListId,
+    deleteProvider,
     setEditImportListModalClosed,
     setDeleteImportListModalClosed,
-    dispatch,
   ]);
 
   const elementStyle = {
@@ -154,6 +153,7 @@ function MovieCrewPoster(props: MovieCrewPosterProps) {
 
       <EditImportListModal
         id={importListId}
+        defaultImportList={defaultImportList}
         isOpen={isEditImportListModalOpen}
         onModalClose={setEditImportListModalClosed}
         onDeleteImportListPress={setDeleteImportListModalOpen}

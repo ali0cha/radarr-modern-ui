@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Card from 'Components/Card';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TagList from 'Components/TagList';
 import { icons, kinds } from 'Helpers/Props';
-import { deleteImportList } from 'Store/Actions/settingsActions';
+import { useDeleteProvider } from 'Settings/useProviderSettings';
 import useTags from 'Tags/useTags';
+import ImportListModel from 'typings/ImportList';
 import formatShortTimeSpan from 'Utilities/Date/formatShortTimeSpan';
 import translate from 'Utilities/String/translate';
+import { IMPORT_LISTS_PATH } from '../useImportLists';
 import EditImportListModal from './EditImportListModal';
 import styles from './ImportList.module.css';
 
@@ -32,7 +33,10 @@ function ImportList({
   minRefreshInterval,
   onCloneImportListPress,
 }: ImportListProps) {
-  const dispatch = useDispatch();
+  const { deleteProvider } = useDeleteProvider<ImportListModel>(
+    id,
+    IMPORT_LISTS_PATH
+  );
   const tagList = useTags();
 
   const [isEditImportListModalOpen, setIsEditImportListModalOpen] =
@@ -59,8 +63,8 @@ function ImportList({
   }, []);
 
   const handleConfirmDeleteImportList = useCallback(() => {
-    dispatch(deleteImportList({ id }));
-  }, [id, dispatch]);
+    deleteProvider();
+  }, [deleteProvider]);
 
   const handleCloneImportListPress = useCallback(() => {
     onCloneImportListPress(id);

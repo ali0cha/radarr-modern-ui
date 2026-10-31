@@ -69,7 +69,6 @@ import {
   cancelFetchReleases,
   clearReleases,
 } from 'Store/Actions/releaseActions';
-import { fetchImportListSchema } from 'Store/Actions/Settings/importLists';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
@@ -435,7 +434,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     refetchExtraFiles({ cancelRefetch: false });
     refetchMovieCredits({ cancelRefetch: false });
     dispatch(fetchQueueDetails({ movieId }));
-    dispatch(fetchImportListSchema());
   }, [movieId, dispatch, refetchMovieCredits, refetchExtraFiles]);
 
   useEffect(() => {

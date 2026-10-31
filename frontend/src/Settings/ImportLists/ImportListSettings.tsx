@@ -1,13 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import { icons } from 'Helpers/Props';
 import SettingsToolbar from 'Settings/SettingsToolbar';
-import { testAllImportLists } from 'Store/Actions/settingsActions';
+import { useTestAllProviders } from 'Settings/useProviderSettings';
 import {
   SaveCallback,
   SettingsStateChange,
@@ -17,12 +15,10 @@ import ImportListExclusions from './ImportListExclusions/ImportListExclusions';
 import ImportLists from './ImportLists/ImportLists';
 import ManageImportListsModal from './ImportLists/Manage/ManageImportListsModal';
 import ImportListOptions from './Options/ImportListOptions';
+import { IMPORT_LISTS_PATH } from './useImportLists';
 
 function ImportListSettings() {
-  const dispatch = useDispatch();
-  const isTestingAll = useSelector(
-    (state: AppState) => state.settings.importLists.isTestingAll
-  );
+  const { testAll, isTestingAll } = useTestAllProviders(IMPORT_LISTS_PATH);
 
   const saveOptions = useRef<() => void>();
 
@@ -55,10 +51,6 @@ function ImportListSettings() {
     saveOptions.current?.();
   }, []);
 
-  const handleTestAllIndexersPress = useCallback(() => {
-    dispatch(testAllImportLists());
-  }, [dispatch]);
-
   return (
     <PageContent title={translate('ImportListSettings')}>
       <SettingsToolbar
@@ -72,7 +64,7 @@ function ImportListSettings() {
               label={translate('TestAllLists')}
               iconName={icons.TEST}
               isSpinning={isTestingAll}
-              onPress={handleTestAllIndexersPress}
+              onPress={testAll}
             />
 
             <PageToolbarButton

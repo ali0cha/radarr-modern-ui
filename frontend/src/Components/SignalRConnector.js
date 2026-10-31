@@ -7,6 +7,7 @@ import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
+import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
@@ -201,14 +202,8 @@ class SignalRConnector extends Component {
     this.props.dispatchFetchHealth();
   };
 
-  handleImportlist = ({ action, resource }) => {
-    const section = 'settings.importLists';
-
-    if (action === 'created' || action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...resource });
-    } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: resource.id });
-    }
+  handleImportlist = () => {
+    invalidateApiQueries(queryClient, IMPORT_LISTS_PATH);
   };
 
   handleIndexer = () => {

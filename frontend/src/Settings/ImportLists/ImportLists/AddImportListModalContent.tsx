@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useMemo } from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Button from 'Components/Link/Button';
@@ -10,15 +8,16 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
-import { fetchImportListSchema } from 'Store/Actions/settingsActions';
+import { useProviderSchema } from 'Settings/useProviderSettings';
 import ImportList from 'typings/ImportList';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
+import { IMPORT_LISTS_PATH } from '../useImportLists';
 import AddImportListItem from './AddImportListItem';
 import styles from './AddImportListModalContent.module.css';
 
 export interface AddImportListModalContentProps {
-  onImportListSelect: () => void;
+  onImportListSelect: (importList: ImportList) => void;
   onModalClose: () => void;
 }
 
@@ -26,9 +25,12 @@ function AddImportListModalContent({
   onImportListSelect,
   onModalClose,
 }: AddImportListModalContentProps) {
-  const dispatch = useDispatch();
-  const { isSchemaFetching, isSchemaPopulated, schemaError, schema } =
-    useSelector((state: AppState) => state.settings.importLists);
+  const {
+    data: schema,
+    isFetching: isSchemaFetching,
+    isSuccess: isSchemaPopulated,
+    error: schemaError,
+  } = useProviderSchema<ImportList>(IMPORT_LISTS_PATH);
 
   const listGroups = useMemo(() => {
     const result = schema.reduce<Record<string, ImportList[]>>((acc, item) => {
@@ -50,10 +52,6 @@ function AddImportListModalContent({
 
     return result;
   }, [schema]);
-
-  useEffect(() => {
-    dispatch(fetchImportListSchema());
-  }, [dispatch]);
 
   return (
     <ModalContent onModalClose={onModalClose}>
@@ -85,8 +83,7 @@ function AddImportListModalContent({
                       return (
                         <AddImportListItem
                           key={list.implementation}
-                          {...list}
-                          implementation={list.implementation}
+                          importList={list}
                           onImportListSelect={onImportListSelect}
                         />
                       );

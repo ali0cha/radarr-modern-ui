@@ -1,27 +1,25 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import createImportListSelector from 'Store/Selectors/createImportListSelector';
+import React, { useMemo } from 'react';
+import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import FilterBuilderRowValue from './FilterBuilderRowValue';
 
-function createMapStateToProps() {
-  return createSelector(
-    createImportListSelector(),
-    (importLists) => {
-      return {
-        tagList: importLists.map((importList) => {
-          const {
-            id,
-            name
-          } = importList;
+function ImportListFilterBuilderRowValueConnector(props) {
+  const { items } = useImportLists();
 
-          return {
-            id,
-            name
-          };
-        })
+  const tagList = useMemo(() => {
+    return items.map((item) => {
+      return {
+        id: item.id,
+        name: item.name
       };
-    }
+    });
+  }, [items]);
+
+  return (
+    <FilterBuilderRowValue
+      {...props}
+      tagList={tagList}
+    />
   );
 }
 
-export default connect(createMapStateToProps)(FilterBuilderRowValue);
+export default ImportListFilterBuilderRowValueConnector;

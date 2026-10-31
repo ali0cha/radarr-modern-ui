@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { fetchQualityProfileSchema, saveQualityProfile, setQualityProfileValue } from 'Store/Actions/settingsActions';
-import createProfileInUseSelector from 'Store/Selectors/createProfileInUseSelector';
 import createProviderSettingsSelector from 'Store/Selectors/createProviderSettingsSelector';
+import useProfileInUse from '../useProfileInUse';
 import EditQualityProfileModalContent from './EditQualityProfileModalContent';
 
 function getQualityItemGroupId(qualityProfile) {
@@ -120,14 +120,12 @@ function createMapStateToProps() {
     createQualitiesSelector(),
     createFormatsSelector(),
     createLanguagesSelector(),
-    createProfileInUseSelector('qualityProfileId'),
-    (qualityProfile, qualities, customFormats, languages, isInUse) => {
+    (qualityProfile, qualities, customFormats, languages) => {
       return {
         qualities,
         customFormats,
         languages,
-        ...qualityProfile,
-        isInUse
+        ...qualityProfile
       };
     }
   );
@@ -139,7 +137,7 @@ const mapDispatchToProps = {
   saveQualityProfile
 };
 
-class EditQualityProfileModalContentConnector extends Component {
+class EditQualityProfileModalContentConnectorBase extends Component {
 
   //
   // Lifecycle
@@ -507,7 +505,7 @@ class EditQualityProfileModalContentConnector extends Component {
   }
 }
 
-EditQualityProfileModalContentConnector.propTypes = {
+EditQualityProfileModalContentConnectorBase.propTypes = {
   id: PropTypes.number,
   isFetching: PropTypes.bool.isRequired,
   isPopulated: PropTypes.bool.isRequired,
@@ -521,4 +519,21 @@ EditQualityProfileModalContentConnector.propTypes = {
   onModalClose: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(EditQualityProfileModalContentConnector);
+const ConnectedEditQualityProfileModalContent = connect(createMapStateToProps, mapDispatchToProps)(EditQualityProfileModalContentConnectorBase);
+
+function EditQualityProfileModalContentConnector(props) {
+  const isInUse = useProfileInUse('qualityProfileId', props.id);
+
+  return (
+    <ConnectedEditQualityProfileModalContent
+      {...props}
+      isInUse={isInUse}
+    />
+  );
+}
+
+EditQualityProfileModalContentConnector.propTypes = {
+  id: PropTypes.number
+};
+
+export default EditQualityProfileModalContentConnector;

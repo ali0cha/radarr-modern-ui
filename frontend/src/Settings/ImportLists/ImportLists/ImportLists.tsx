@@ -1,41 +1,32 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ImportListAppState } from 'App/State/SettingsAppState';
+import React, { useCallback, useState } from 'react';
 import Card from 'Components/Card';
 import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons } from 'Helpers/Props';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
-import {
-  cloneImportList,
-  fetchImportLists,
-} from 'Store/Actions/settingsActions';
-import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
 import ImportListModel from 'typings/ImportList';
-import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
+import { getClonedImportList, useImportLists } from '../useImportLists';
 import AddImportListModal from './AddImportListModal';
 import EditImportListModal from './EditImportListModal';
 import ImportList from './ImportList';
 import styles from './ImportLists.module.css';
 
 function ImportLists() {
-  const dispatch = useDispatch();
-
   usePrefetchRootFolders();
 
-  const { isFetching, isPopulated, items, error } = useSelector(
-    createSortedSectionSelector<ImportListModel, ImportListAppState>(
-      'settings.importLists',
-      sortByProp('name')
-    )
-  );
+  const { items, isFetching, isPopulated, error } = useImportLists();
 
   const [isAddImportListModalOpen, setIsAddImportListModalOpen] =
     useState(false);
   const [isEditImportListModalOpen, setIsEditImportListModalOpen] =
     useState(false);
+
+  // The import list that is edited when it is new: a chosen implementation or a clone
+  const [newImportList, setNewImportList] = useState<
+    ImportListModel | undefined
+  >();
 
   const handleAddImportListPress = useCallback(() => {
     setIsAddImportListModalOpen(true);
@@ -45,7 +36,8 @@ function ImportLists() {
     setIsAddImportListModalOpen(false);
   }, []);
 
-  const handleImportListSelect = useCallback(() => {
+  const handleImportListSelect = useCallback((importList: ImportListModel) => {
+    setNewImportList(importList);
     setIsAddImportListModalOpen(false);
     setIsEditImportListModalOpen(true);
   }, []);
@@ -56,21 +48,21 @@ function ImportLists() {
 
   const handleCloneImportListPress = useCallback(
     (id: number) => {
-      dispatch(cloneImportList({ id }));
-      setIsEditImportListModalOpen(true);
-    },
-    [dispatch]
-  );
+      const importList = items.find((item) => item.id === id);
 
-  useEffect(() => {
-    dispatch(fetchImportLists());
-  }, [dispatch]);
+      if (importList) {
+        setNewImportList(getClonedImportList(importList));
+        setIsEditImportListModalOpen(true);
+      }
+    },
+    [items]
+  );
 
   return (
     <FieldSet legend={translate('ImportLists')}>
       <PageSectionContent
         errorMessage={translate('ImportListsLoadError')}
-        error={error}
+        error={error ?? undefined}
         isFetching={isFetching}
         isPopulated={isPopulated}
       >
@@ -100,6 +92,7 @@ function ImportLists() {
 
         <EditImportListModal
           isOpen={isEditImportListModalOpen}
+          defaultImportList={newImportList}
           onModalClose={handleEditImportListModalClose}
         />
       </PageSectionContent>

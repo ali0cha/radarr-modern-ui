@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ImportListAppState } from 'App/State/SettingsAppState';
 import Alert from 'Components/Alert';
 import Button from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
@@ -15,14 +13,15 @@ import TableBody from 'Components/Table/TableBody';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds } from 'Helpers/Props';
 import {
-  bulkDeleteImportLists,
-  bulkEditImportLists,
-} from 'Store/Actions/settingsActions';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
+  useBulkDeleteProviders,
+  useBulkEditProviders,
+} from 'Settings/useProviderSettings';
+import ImportList from 'typings/ImportList';
 import { CheckInputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+import { IMPORT_LISTS_PATH, useImportLists } from '../../useImportLists';
 import ManageImportListsEditModal from './Edit/ManageImportListsEditModal';
 import ManageImportListsModalRow from './ManageImportListsModalRow';
 import TagsModal from './Tags/TagsModal';
@@ -94,16 +93,23 @@ function ManageImportListsModalContent(
   const { onModalClose } = props;
 
   const {
-    isFetching,
-    isPopulated,
-    isDeleting,
-    isSaving,
-    error,
     items,
-  }: ImportListAppState = useSelector(
-    createClientSideCollectionSelector('settings.importLists')
-  );
-  const dispatch = useDispatch();
+    isFetching: isFetchingImportLists,
+    isPopulated,
+    error,
+  } = useImportLists();
+
+  // The table must stay while the import lists are refreshed in the
+  // background: its rows unselect their item when they go away.
+  const isFetching = isFetchingImportLists && !isPopulated;
+
+  const { bulkDelete, isBulkDeleting: isDeleting } =
+    useBulkDeleteProviders<ImportList>(IMPORT_LISTS_PATH);
+
+  const { bulkEdit, isBulkEditing: isSaving } = useBulkEditProviders<
+    ImportList,
+    object
+  >(IMPORT_LISTS_PATH);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -137,22 +143,20 @@ function ManageImportListsModalContent(
   }, [setIsEditModalOpen]);
 
   const onConfirmDelete = useCallback(() => {
-    dispatch(bulkDeleteImportLists({ ids: selectedIds }));
+    bulkDelete({ ids: selectedIds });
     setIsDeleteModalOpen(false);
-  }, [selectedIds, dispatch]);
+  }, [selectedIds, bulkDelete]);
 
   const onSavePress = useCallback(
     (payload: object) => {
       setIsEditModalOpen(false);
 
-      dispatch(
-        bulkEditImportLists({
-          ids: selectedIds,
-          ...payload,
-        })
-      );
+      bulkEdit({
+        ids: selectedIds,
+        ...payload,
+      });
     },
-    [selectedIds, dispatch]
+    [selectedIds, bulkEdit]
   );
 
   const onTagsPress = useCallback(() => {
@@ -168,15 +172,13 @@ function ManageImportListsModalContent(
       setIsSavingTags(true);
       setIsTagsModalOpen(false);
 
-      dispatch(
-        bulkEditImportLists({
-          ids: selectedIds,
-          tags,
-          applyTags,
-        })
-      );
+      bulkEdit({
+        ids: selectedIds,
+        tags,
+        applyTags,
+      });
     },
-    [selectedIds, dispatch]
+    [selectedIds, bulkEdit]
   );
 
   const onSelectAllChange = useCallback(

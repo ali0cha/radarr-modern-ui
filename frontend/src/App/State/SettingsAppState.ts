@@ -10,9 +10,7 @@ import Language from 'Language/Language';
 import AutoTagging, { AutoTaggingSpecification } from 'typings/AutoTagging';
 import CustomFormat from 'typings/CustomFormat';
 import DelayProfile from 'typings/DelayProfile';
-import ImportList from 'typings/ImportList';
 import ImportListExclusion from 'typings/ImportListExclusion';
-import ImportListOptionsSettings from 'typings/ImportListOptionsSettings';
 import IndexerFlag from 'typings/IndexerFlag';
 import Notification from 'typings/Notification';
 import QualityProfile from 'typings/QualityProfile';
@@ -23,10 +21,6 @@ import NamingExample from 'typings/Settings/NamingExample';
 import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import UiSettings from 'typings/Settings/UiSettings';
 import MetadataAppState from './MetadataAppState';
-
-type Presets<T> = T & {
-  presets: T[];
-};
 
 export interface AutoTaggingAppState
   extends AppSectionState<AutoTagging>,
@@ -58,14 +52,6 @@ export interface NamingAppState
 
 export type NamingExamplesAppState = AppSectionItemState<NamingExample>;
 
-export interface ImportListAppState
-  extends AppSectionState<ImportList>,
-    AppSectionDeleteState,
-    AppSectionSaveState,
-    AppSectionSchemaState<Presets<ImportList>> {
-  isTestingAll: boolean;
-}
-
 export interface NotificationAppState
   extends AppSectionState<Notification>,
     AppSectionDeleteState {}
@@ -83,10 +69,6 @@ export interface ReleaseProfilesAppState
 export interface CustomFormatAppState
   extends AppSectionState<CustomFormat>,
     AppSectionDeleteState,
-    AppSectionSaveState {}
-
-export interface ImportListOptionsSettingsAppState
-  extends AppSectionItemState<ImportListOptionsSettings>,
     AppSectionSaveState {}
 
 export interface ImportListExclusionsSettingsAppState
@@ -109,8 +91,6 @@ interface SettingsAppState {
   delayProfiles: DelayProfileAppState;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;
-  importListOptions: ImportListOptionsSettingsAppState;
-  importLists: ImportListAppState;
   indexerFlags: IndexerFlagSettingsAppState;
   languages: LanguageSettingsAppState;
   mediaManagement: MediaManagementAppState;

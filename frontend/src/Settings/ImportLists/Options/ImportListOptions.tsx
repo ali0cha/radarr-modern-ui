@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Form from 'Components/Form/Form';
@@ -10,16 +9,17 @@ import { EnhancedSelectInputValue } from 'Components/Form/Select/EnhancedSelectI
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds } from 'Helpers/Props';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
+import { useManageSettings } from 'Settings/useSettings';
+import ImportListOptionsSettings from 'typings/ImportListOptionsSettings';
+import { InputChanged } from 'typings/inputs';
 import {
-  fetchImportListOptions,
-  saveImportListOptions,
-  setImportListOptionsValue,
-} from 'Store/Actions/settingsActions';
-import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
+  OnChildStateChange,
+  SetChildSave,
+} from 'typings/Settings/SettingsState';
 import translate from 'Utilities/String/translate';
 
-const SECTION = 'importListOptions';
+const PATH = '/config/importlist';
+
 const cleanLibraryLevelOptions: EnhancedSelectInputValue<string>[] = [
   {
     key: 'disabled',
@@ -54,44 +54,42 @@ const cleanLibraryLevelOptions: EnhancedSelectInputValue<string>[] = [
 ];
 
 interface ImportListOptionsProps {
-  setChildSave(saveCallback: () => void): void;
-  onChildStateChange(payload: unknown): void;
+  setChildSave: SetChildSave;
+  onChildStateChange: OnChildStateChange;
 }
 
 function ImportListOptions({
   setChildSave,
   onChildStateChange,
 }: ImportListOptionsProps) {
-  const dispatch = useDispatch();
   const showAdvancedSettings = useShowAdvancedSettings();
 
   const {
+    isFetching,
     isSaving,
     hasPendingChanges,
-    isFetching,
     error,
     settings,
     hasSettings,
-  } = useSelector(createSettingsSectionSelector(SECTION));
+    updateSetting,
+    saveSettings,
+  } = useManageSettings<ImportListOptionsSettings>(PATH);
 
   const { listSyncLevel } = settings;
 
   const onInputChange = useCallback(
-    ({ name, value }: { name: string; value: unknown }) => {
-      // @ts-expect-error 'setImportListOptionsValue' isn't typed yet
-      dispatch(setImportListOptionsValue({ name, value }));
+    ({ name, value }: InputChanged) => {
+      updateSetting(
+        name as keyof ImportListOptionsSettings,
+        value as ImportListOptionsSettings[keyof ImportListOptionsSettings]
+      );
     },
-    [dispatch]
+    [updateSetting]
   );
 
   useEffect(() => {
-    dispatch(fetchImportListOptions());
-    setChildSave(() => dispatch(saveImportListOptions()));
-
-    return () => {
-      dispatch(clearPendingChanges({ section: `settings.${SECTION}` }));
-    };
-  }, [dispatch, setChildSave]);
+    setChildSave(saveSettings);
+  }, [saveSettings, setChildSave]);
 
   useEffect(() => {
     onChildStateChange({

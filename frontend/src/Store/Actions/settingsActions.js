@@ -7,8 +7,6 @@ import customFormatSpecifications from './Settings/customFormatSpecifications';
 import delayProfiles from './Settings/delayProfiles';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
-import importListOptions from './Settings/importListOptions';
-import importLists from './Settings/importLists';
 import indexerFlags from './Settings/indexerFlags';
 import languages from './Settings/languages';
 import mediaManagement from './Settings/mediaManagement';
@@ -29,8 +27,6 @@ export * from './Settings/customFormatSpecifications.js';
 export * from './Settings/customFormats';
 export * from './Settings/delayProfiles';
 export * from './Settings/general';
-export * from './Settings/importListOptions';
-export * from './Settings/importLists';
 export * from './Settings/importListExclusions';
 export * from './Settings/indexerFlags';
 export * from './Settings/languages';
@@ -62,9 +58,7 @@ export const defaultState = {
   customFormats: customFormats.defaultState,
   delayProfiles: delayProfiles.defaultState,
   general: general.defaultState,
-  importLists: importLists.defaultState,
   importListExclusions: importListExclusions.defaultState,
-  importListOptions: importListOptions.defaultState,
   indexerFlags: indexerFlags.defaultState,
   languages: languages.defaultState,
   mediaManagement: mediaManagement.defaultState,
@@ -94,9 +88,7 @@ export const actionHandlers = handleThunks({
   ...customFormats.actionHandlers,
   ...delayProfiles.actionHandlers,
   ...general.actionHandlers,
-  ...importLists.actionHandlers,
   ...importListExclusions.actionHandlers,
-  ...importListOptions.actionHandlers,
   ...indexerFlags.actionHandlers,
   ...languages.actionHandlers,
   ...mediaManagement.actionHandlers,
@@ -123,9 +115,7 @@ export const reducers = createHandleActions({
   ...customFormats.reducers,
   ...delayProfiles.reducers,
   ...general.reducers,
-  ...importLists.reducers,
   ...importListExclusions.reducers,
-  ...importListOptions.reducers,
   ...indexerFlags.reducers,
   ...languages.reducers,
   ...mediaManagement.reducers,
