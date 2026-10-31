@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Alert from 'Components/Alert';
 import { PathInputInternal } from 'Components/Form/PathInput';
 import Button from 'Components/Link/Button';
@@ -15,12 +15,11 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds, scrollDirections } from 'Helpers/Props';
-import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
 import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import createPathsSelector from './createPathsSelector';
 import FileBrowserRow from './FileBrowserRow';
+import usePaths, { PathsRequest } from './usePaths';
 import styles from './FileBrowserModalContent.module.css';
 
 const columns: Column[] = [
@@ -36,8 +35,6 @@ const columns: Column[] = [
   },
 ];
 
-const handleClearPaths = () => {};
-
 export interface FileBrowserModalContentProps {
   name: string;
   value: string;
@@ -49,13 +46,16 @@ export interface FileBrowserModalContentProps {
 function FileBrowserModalContent(props: FileBrowserModalContentProps) {
   const { name, value, includeFiles = true, onChange, onModalClose } = props;
 
-  const dispatch = useDispatch();
-
   const { isWindows, mode } = useSelector(createSystemStatusSelector());
-  const { isFetching, isPopulated, error, parent, directories, files, paths } =
-    useSelector(createPathsSelector());
 
   const [currentPath, setCurrentPath] = useState(value);
+  const [request, setRequest] = useState<PathsRequest | null>({
+    path: value,
+    allowFoldersWithoutTrailingSlashes: true,
+    includeFiles,
+  });
+  const { isFetching, isPopulated, error, parent, directories, files, paths } =
+    usePaths(request);
   const scrollerRef = useRef(null);
   const previousValue = usePrevious(value);
 
@@ -73,15 +73,13 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
     (path: string) => {
       setCurrentPath(path);
 
-      dispatch(
-        fetchPaths({
-          path,
-          allowFoldersWithoutTrailingSlashes: true,
-          includeFiles,
-        })
-      );
+      setRequest({
+        path,
+        allowFoldersWithoutTrailingSlashes: true,
+        includeFiles,
+      });
     },
-    [includeFiles, dispatch, setCurrentPath]
+    [includeFiles]
   );
 
   const handleOkPress = useCallback(() => {
@@ -90,21 +88,14 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
       value: currentPath,
     });
 
-    dispatch(clearPaths());
     onModalClose();
-  }, [name, currentPath, dispatch, onChange, onModalClose]);
+  }, [name, currentPath, onChange, onModalClose]);
 
   const handleFetchPaths = useCallback(
     (path: string) => {
-      dispatch(
-        fetchPaths({
-          path,
-          allowFoldersWithoutTrailingSlashes: true,
-          includeFiles,
-        })
-      );
+      setRequest({ path, includeFiles });
     },
-    [includeFiles, dispatch]
+    [includeFiles]
   );
 
   useEffect(() => {
@@ -112,26 +103,6 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
       setCurrentPath(value);
     }
   }, [value, previousValue, currentPath, setCurrentPath]);
-
-  useEffect(
-    () => {
-      dispatch(
-        fetchPaths({
-          path: currentPath,
-          allowFoldersWithoutTrailingSlashes: true,
-          includeFiles,
-        })
-      );
-
-      return () => {
-        dispatch(clearPaths());
-      };
-    },
-    // This should only run once when the component mounts,
-    // so we don't need to include the other dependencies.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch]
-  );
 
   return (
     <ModalContent onModalClose={onModalClose}>
@@ -161,7 +132,6 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
           value={currentPath}
           onChange={handlePathInputChange}
           onFetchPaths={handleFetchPaths}
-          onClearPaths={handleClearPaths}
         />
 
         <Scroller

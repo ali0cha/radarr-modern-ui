@@ -10,16 +10,13 @@ import {
   ChangeEvent,
   SuggestionsFetchRequestedParams,
 } from 'react-autosuggest';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
-import { Path } from 'App/State/PathsAppState';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
+import usePaths, { PathsRequest } from 'Components/FileBrowser/usePaths';
 import Icon from 'Components/Icon';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
-import { clearPaths, fetchPaths } from 'Store/Actions/pathActions';
 import { InputChanged } from 'typings/inputs';
+import { Path } from 'typings/Path';
 import AutoSuggestInput from './AutoSuggestInput';
 import FormInputButton from './FormInputButton';
 import styles from './PathInput.module.css';
@@ -38,7 +35,6 @@ export interface PathInputProps {
 interface PathInputInternalProps extends PathInputProps {
   paths: Path[];
   onFetchPaths: (path: string) => void;
-  onClearPaths: () => void;
 }
 
 function handleSuggestionsClearRequested() {
@@ -46,45 +42,24 @@ function handleSuggestionsClearRequested() {
   // because we don't want to reset the paths after a path is selected.
 }
 
-function createPathsSelector() {
-  return createSelector(
-    (state: AppState) => state.paths,
-    (paths) => {
-      const { currentPath, directories, files } = paths;
-
-      const filteredPaths = [...directories, ...files].filter(({ path }) => {
-        return path.toLowerCase().startsWith(currentPath.toLowerCase());
-      });
-
-      return filteredPaths;
-    }
-  );
-}
-
 function PathInput(props: PathInputProps) {
   const { includeFiles } = props;
 
-  const dispatch = useDispatch();
-
-  const paths = useSelector(createPathsSelector());
+  const [request, setRequest] = useState<PathsRequest | null>(null);
+  const { paths } = usePaths(request);
 
   const handleFetchPaths = useCallback(
     (path: string) => {
-      dispatch(fetchPaths({ path, includeFiles }));
+      setRequest({ path, includeFiles });
     },
-    [includeFiles, dispatch]
+    [includeFiles]
   );
-
-  const handleClearPaths = useCallback(() => {
-    dispatch(clearPaths);
-  }, [dispatch]);
 
   return (
     <PathInputInternal
       {...props}
       paths={paths}
       onFetchPaths={handleFetchPaths}
-      onClearPaths={handleClearPaths}
     />
   );
 }
@@ -102,21 +77,12 @@ export function PathInputInternal(props: PathInputInternalProps) {
     hasFileBrowser = true,
     onChange,
     onFetchPaths,
-    onClearPaths,
     ...otherProps
   } = props;
 
   const [value, setValue] = useState(inputValue);
   const [isFileBrowserModalOpen, setIsFileBrowserModalOpen] = useState(false);
   const previousInputValue = usePrevious(inputValue);
-  const dispatch = useDispatch();
-
-  const handleFetchPaths = useCallback(
-    (path: string) => {
-      dispatch(fetchPaths({ path, includeFiles }));
-    },
-    [includeFiles, dispatch]
-  );
 
   const handleInputChange = useCallback(
     (_event: SyntheticEvent, { newValue }: ChangeEvent) => {
@@ -138,34 +104,32 @@ export function PathInputInternal(props: PathInputInternalProps) {
           });
 
           if (path.type !== 'file') {
-            handleFetchPaths(path.path);
+            onFetchPaths(path.path);
           }
         }
       }
     },
-    [name, paths, handleFetchPaths, onChange]
+    [name, paths, onFetchPaths, onChange]
   );
   const handleInputBlur = useCallback(() => {
     onChange({
       name,
       value,
     });
-
-    onClearPaths();
-  }, [name, value, onClearPaths, onChange]);
+  }, [name, value, onChange]);
 
   const handleSuggestionSelected = useCallback(
     (_event: SyntheticEvent, { suggestion }: { suggestion: Path }) => {
-      handleFetchPaths(suggestion.path);
+      onFetchPaths(suggestion.path);
     },
-    [handleFetchPaths]
+    [onFetchPaths]
   );
 
   const handleSuggestionsFetchRequested = useCallback(
     ({ value: newValue }: SuggestionsFetchRequestedParams) => {
-      handleFetchPaths(newValue);
+      onFetchPaths(newValue);
     },
-    [handleFetchPaths]
+    [onFetchPaths]
   );
 
   const handleFileBrowserOpenPress = useCallback(() => {

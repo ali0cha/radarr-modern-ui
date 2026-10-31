@@ -14,7 +14,6 @@ import * as movieCollections from './movieCollectionActions';
 import * as movieFiles from './movieFileActions';
 import * as movieIndex from './movieIndexActions';
 import * as oAuth from './oAuthActions';
-import * as paths from './pathActions';
 import * as providerOptions from './providerOptionActions';
 import * as queue from './queueActions';
 import * as releases from './releaseActions';
@@ -36,7 +35,6 @@ export default [
   importMovie,
   interactiveImportActions,
   oAuth,
-  paths,
   providerOptions,
   queue,
   releases,

@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { PathType } from 'App/State/PathsAppState';
 import Icon from 'Components/Icon';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowButton from 'Components/Table/TableRowButton';
 import { icons } from 'Helpers/Props';
+import { PathType } from 'typings/Path';
 import styles from './FileBrowserRow.module.css';
 
 function getIconName(type: PathType) {

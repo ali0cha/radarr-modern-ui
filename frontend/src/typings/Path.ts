@@ -15,15 +15,4 @@ interface Folder extends BasePath {
 
 export type PathType = 'file' | 'folder' | 'drive' | 'computer' | 'parent';
 export type Path = File | Folder;
-
-interface PathsAppState {
-  currentPath: string;
-  isFetching: boolean;
-  isPopulated: boolean;
-  error: Error;
-  directories: Folder[];
-  files: File[];
-  parent: string | null;
-}
-
-export default PathsAppState;
+export type { File as PathFile, Folder as PathFolder };
