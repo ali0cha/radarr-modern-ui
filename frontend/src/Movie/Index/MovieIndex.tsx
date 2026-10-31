@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useNavigationType } from 'react-router-dom';
 import { SelectProvider } from 'App/SelectContext';
 import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
 import MoviesAppState, { MovieIndexAppState } from 'App/State/MoviesAppState';
@@ -77,7 +77,7 @@ interface MovieIndexProps {
 }
 
 const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
-  const history = useHistory();
+  const initialNavigationType = useRef(useNavigationType());
 
   const {
     isFetching,
@@ -110,10 +110,10 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
   const [isSelectMode, setIsSelectMode] = useState(false);
 
   useEffect(() => {
-    if (history.action === 'PUSH') {
+    if (initialNavigationType.current === 'PUSH') {
       dispatch(fetchMovies());
     }
-  }, [history, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchQueueDetails({ all: true }));

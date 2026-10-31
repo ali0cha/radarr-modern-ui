@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { clearAddMovie, lookupMovie } from 'Store/Actions/addMovieActions';
 import { clearMovieFiles, fetchMovieFiles } from 'Store/Actions/movieFileActions';
@@ -15,9 +16,9 @@ function createMapStateToProps() {
   return createSelector(
     (state) => state.addMovie,
     (state) => state.movies.items.length,
-    (state) => state.router.location,
-    (addMovie, existingMoviesCount, location) => {
-      const { params } = parseUrl(location.search);
+    (state, { locationSearch }) => locationSearch,
+    (addMovie, existingMoviesCount, locationSearch) => {
+      const { params } = parseUrl(locationSearch);
 
       return {
         ...addMovie,
@@ -38,7 +39,7 @@ const mapDispatchToProps = {
   clearMovieFiles
 };
 
-class AddNewMovieConnector extends Component {
+class AddNewMovieConnectorBase extends Component {
 
   //
   // Lifecycle
@@ -119,8 +120,9 @@ class AddNewMovieConnector extends Component {
   }
 }
 
-AddNewMovieConnector.propTypes = {
+AddNewMovieConnectorBase.propTypes = {
   term: PropTypes.string,
+  locationSearch: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   lookupMovie: PropTypes.func.isRequired,
   clearAddMovie: PropTypes.func.isRequired,
@@ -131,4 +133,12 @@ AddNewMovieConnector.propTypes = {
   clearMovieFiles: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieConnector);
+const ConnectedAddNewMovie = connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieConnectorBase);
+
+function AddNewMovieConnector() {
+  const { search } = useLocation();
+
+  return <ConnectedAddNewMovie locationSearch={search} />;
+}
+
+export default AddNewMovieConnector;

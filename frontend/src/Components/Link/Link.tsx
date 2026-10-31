@@ -67,7 +67,7 @@ export default function Link<C extends ElementType = 'button'>({
 
     return (
       <RouterLink
-        to={`${window.Radarr.urlBase}/${to.replace(/^\//, '')}`}
+        to={`/${to.replace(/^\//, '')}`}
         target={target}
         className={linkClass}
         onClick={onClick}

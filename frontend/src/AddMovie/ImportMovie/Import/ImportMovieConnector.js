@@ -2,8 +2,8 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { createSelector } from 'reselect';
-import createRouteMatchShape from 'Helpers/Props/Shapes/createRouteMatchShape';
 import { setAddMovieDefault } from 'Store/Actions/addMovieActions';
 import { clearImportMovie, importMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
 import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
@@ -11,13 +11,13 @@ import ImportMovie from './ImportMovie';
 
 function createMapStateToProps() {
   return createSelector(
-    (state, { match }) => match,
+    (state, { rootFolderIdParam }) => rootFolderIdParam,
     (state) => state.rootFolders,
     (state) => state.addMovie,
     (state) => state.importMovie,
     (state) => state.settings.qualityProfiles,
     (
-      match,
+      rootFolderIdParam,
       rootFolders,
       addMovie,
       importMovieState,
@@ -30,7 +30,7 @@ function createMapStateToProps() {
         items
       } = rootFolders;
 
-      const rootFolderId = parseInt(match.params.rootFolderId);
+      const rootFolderId = parseInt(rootFolderIdParam);
 
       const result = {
         rootFolderId,
@@ -64,7 +64,7 @@ const mapDispatchToProps = {
   dispatchSetAddMovieDefault: setAddMovieDefault
 };
 
-class ImportMovieConnector extends Component {
+class ImportMovieConnectorBase extends Component {
 
   //
   // Lifecycle
@@ -132,12 +132,8 @@ class ImportMovieConnector extends Component {
   }
 }
 
-const routeMatchShape = createRouteMatchShape({
-  rootFolderId: PropTypes.string.isRequired
-});
-
-ImportMovieConnector.propTypes = {
-  match: routeMatchShape.isRequired,
+ImportMovieConnectorBase.propTypes = {
+  rootFolderIdParam: PropTypes.string.isRequired,
   rootFolderId: PropTypes.number.isRequired,
   rootFoldersFetching: PropTypes.bool.isRequired,
   rootFoldersPopulated: PropTypes.bool.isRequired,
@@ -150,4 +146,12 @@ ImportMovieConnector.propTypes = {
   dispatchSetAddMovieDefault: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnector);
+const ConnectedImportMovie = connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnectorBase);
+
+function ImportMovieConnector() {
+  const { rootFolderId } = useParams();
+
+  return <ConnectedImportMovie rootFolderIdParam={rootFolderId} />;
+}
+
+export default ImportMovieConnector;

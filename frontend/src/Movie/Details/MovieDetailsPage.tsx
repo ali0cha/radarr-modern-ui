@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import NotFound from 'Components/NotFound';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
@@ -10,7 +10,7 @@ import MovieDetails from './MovieDetails';
 function MovieDetailsPage() {
   const allMovies = useSelector(createAllMoviesSelector());
   const { titleSlug } = useParams<{ titleSlug: string }>();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const movieIndex = allMovies.findIndex(
     (movie) => movie.titleSlug === titleSlug
@@ -24,9 +24,9 @@ function MovieDetailsPage() {
       previousIndex !== -1 &&
       previousIndex !== undefined
     ) {
-      history.push(`${window.Radarr.urlBase}/`);
+      navigate('/');
     }
-  }, [movieIndex, previousIndex, history]);
+  }, [movieIndex, previousIndex, navigate]);
 
   if (movieIndex === -1) {
     return <NotFound message={translate('MovieCannotBeFound')} />;
