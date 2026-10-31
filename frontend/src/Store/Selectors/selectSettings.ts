@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { Error } from 'App/State/AppSectionState';
+import { ApiError } from 'Helpers/Hooks/useApiQuery';
 import Field from 'typings/Field';
 import {
   Failure,
@@ -17,15 +18,36 @@ interface ValidationFailures {
   warnings: ValidationWarning[];
 }
 
-function getValidationFailures(saveError?: Error): ValidationFailures {
-  if (!saveError || saveError.status !== 400) {
+// The server answers a 400 with the list of the failed validations.
+function getFailureList(saveError?: Error | ApiError | null) {
+  if (!saveError) {
+    return undefined;
+  }
+
+  if (saveError instanceof ApiError) {
+    return saveError.statusCode === 400 && Array.isArray(saveError.statusBody)
+      ? (saveError.statusBody as ValidationFailure[])
+      : undefined;
+  }
+
+  return saveError.status === 400
+    ? (saveError.responseJSON as ValidationFailure[])
+    : undefined;
+}
+
+function getValidationFailures(
+  saveError?: Error | ApiError | null
+): ValidationFailures {
+  const failures = getFailureList(saveError);
+
+  if (!failures) {
     return {
       errors: [],
       warnings: [],
     };
   }
 
-  return cloneDeep(saveError.responseJSON as ValidationFailure[]).reduce(
+  return cloneDeep(failures).reduce(
     (acc: ValidationFailures, failure: ValidationFailure) => {
       if (failure.isWarning) {
         acc.warnings.push(failure as ValidationWarning);
@@ -77,7 +99,7 @@ export interface ModelBaseSetting {
 function selectSettings<T extends ModelBaseSetting>(
   item: T,
   pendingChanges?: Partial<ModelBaseSetting>,
-  saveError?: Error
+  saveError?: Error | ApiError | null
 ) {
   const { errors, warnings } = getValidationFailures(saveError);
 

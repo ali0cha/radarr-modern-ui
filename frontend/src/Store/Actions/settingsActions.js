@@ -1,4 +1,3 @@
-import { createAction } from 'redux-actions';
 import { handleThunks } from 'Store/thunks';
 import createHandleActions from './Creators/createHandleActions';
 import autoTaggings from './Settings/autoTaggings';
@@ -13,7 +12,6 @@ import importListExclusions from './Settings/importListExclusions';
 import importListOptions from './Settings/importListOptions';
 import importLists from './Settings/importLists';
 import indexerFlags from './Settings/indexerFlags';
-import indexerOptions from './Settings/indexerOptions';
 import indexers from './Settings/indexers';
 import languages from './Settings/languages';
 import mediaManagement from './Settings/mediaManagement';
@@ -40,7 +38,6 @@ export * from './Settings/importListOptions';
 export * from './Settings/importLists';
 export * from './Settings/importListExclusions';
 export * from './Settings/indexerFlags';
-export * from './Settings/indexerOptions';
 export * from './Settings/indexers';
 export * from './Settings/languages';
 export * from './Settings/mediaManagement';
@@ -77,7 +74,6 @@ export const defaultState = {
   importListExclusions: importListExclusions.defaultState,
   importListOptions: importListOptions.defaultState,
   indexerFlags: indexerFlags.defaultState,
-  indexerOptions: indexerOptions.defaultState,
   indexers: indexers.defaultState,
   languages: languages.defaultState,
   mediaManagement: mediaManagement.defaultState,
@@ -94,19 +90,8 @@ export const defaultState = {
 };
 
 export const persistState = [
-  'settings.advancedSettings',
   'settings.importListExclusions.pageSize'
 ];
-
-//
-// Actions Types
-
-export const TOGGLE_ADVANCED_SETTINGS = 'settings/toggleAdvancedSettings';
-
-//
-// Action Creators
-
-export const toggleAdvancedSettings = createAction(TOGGLE_ADVANCED_SETTINGS);
 
 //
 // Action Handlers
@@ -124,7 +109,6 @@ export const actionHandlers = handleThunks({
   ...importListExclusions.actionHandlers,
   ...importListOptions.actionHandlers,
   ...indexerFlags.actionHandlers,
-  ...indexerOptions.actionHandlers,
   ...indexers.actionHandlers,
   ...languages.actionHandlers,
   ...mediaManagement.actionHandlers,
@@ -145,10 +129,6 @@ export const actionHandlers = handleThunks({
 
 export const reducers = createHandleActions({
 
-  [TOGGLE_ADVANCED_SETTINGS]: (state, { payload }) => {
-    return Object.assign({}, state, { advancedSettings: !state.advancedSettings });
-  },
-
   ...autoTaggingSpecifications.reducers,
   ...autoTaggings.reducers,
   ...customFormatSpecifications.reducers,
@@ -161,7 +141,6 @@ export const reducers = createHandleActions({
   ...importListExclusions.reducers,
   ...importListOptions.reducers,
   ...indexerFlags.reducers,
-  ...indexerOptions.reducers,
   ...indexers.reducers,
   ...languages.reducers,
   ...mediaManagement.reducers,

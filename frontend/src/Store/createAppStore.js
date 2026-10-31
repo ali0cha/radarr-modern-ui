@@ -1,6 +1,7 @@
 import { createStore } from 'redux';
 import createReducers, { defaultState } from 'Store/Actions/createReducers';
 import middlewares from 'Store/Middleware/middlewares';
+import syncAdvancedSettings from './syncAdvancedSettings';
 
 function createAppStore() {
   const appStore = createStore(
@@ -8,6 +9,8 @@ function createAppStore() {
     defaultState,
     middlewares()
   );
+
+  syncAdvancedSettings(appStore);
 
   return appStore;
 }

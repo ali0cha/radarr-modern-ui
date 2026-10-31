@@ -1,8 +1,3 @@
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
-
-function useShowAdvancedSettings() {
-  return useSelector((state: AppState) => state.settings.advancedSettings);
-}
+import { useShowAdvancedSettings } from 'Settings/advancedSettingsStore';
 
 export default useShowAdvancedSettings;

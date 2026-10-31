@@ -1,12 +1,13 @@
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React from 'react';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
-import { toggleAdvancedSettings } from 'Store/Actions/settingsActions';
 import translate from 'Utilities/String/translate';
+import {
+  toggleShowAdvancedSettings,
+  useShowAdvancedSettings,
+} from './advancedSettingsStore';
 import styles from './AdvancedSettingsButton.module.css';
 
 interface AdvancedSettingsButtonProps {
@@ -14,14 +15,7 @@ interface AdvancedSettingsButtonProps {
 }
 
 function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
-  const showAdvancedSettings = useSelector(
-    (state: AppState) => state.settings.advancedSettings
-  );
-  const dispatch = useDispatch();
-
-  const handlePress = useCallback(() => {
-    dispatch(toggleAdvancedSettings());
-  }, [dispatch]);
+  const showAdvancedSettings = useShowAdvancedSettings();
 
   return (
     <Link
@@ -31,7 +25,7 @@ function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
           ? translate('ShownClickToHide')
           : translate('HiddenClickToShow')
       }
-      onPress={handlePress}
+      onPress={toggleShowAdvancedSettings}
     >
       <Icon name={icons.ADVANCED_SETTINGS} size={21} />
 

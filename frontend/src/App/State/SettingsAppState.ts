@@ -19,7 +19,6 @@ import IndexerFlag from 'typings/IndexerFlag';
 import Notification from 'typings/Notification';
 import QualityProfile from 'typings/QualityProfile';
 import General from 'typings/Settings/General';
-import IndexerOptions from 'typings/Settings/IndexerOptions';
 import MediaManagement from 'typings/Settings/MediaManagement';
 import NamingConfig from 'typings/Settings/NamingConfig';
 import NamingExample from 'typings/Settings/NamingExample';
@@ -76,10 +75,6 @@ export interface ImportListAppState
   isTestingAll: boolean;
 }
 
-export interface IndexerOptionsAppState
-  extends AppSectionItemState<IndexerOptions>,
-    AppSectionSaveState {}
-
 export interface IndexerAppState
   extends AppSectionState<Indexer>,
     AppSectionDeleteState,
@@ -135,7 +130,6 @@ interface SettingsAppState {
   importListOptions: ImportListOptionsSettingsAppState;
   importLists: ImportListAppState;
   indexerFlags: IndexerFlagSettingsAppState;
-  indexerOptions: IndexerOptionsAppState;
   indexers: IndexerAppState;
   languages: LanguageSettingsAppState;
   mediaManagement: MediaManagementAppState;
