@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useState } from 'react';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -9,12 +8,11 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons } from 'Helpers/Props';
-import { clear, fetch } from 'Store/Actions/parseActions';
 import { InputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import ParseResult from './ParseResult';
-import parseStateSelector from './parseStateSelector';
+import useParse from './useParse';
 import styles from './ParseModalContent.module.css';
 
 interface ParseModalContentProps {
@@ -23,40 +21,16 @@ interface ParseModalContentProps {
 
 function ParseModalContent(props: ParseModalContentProps) {
   const { onModalClose } = props;
-  const { isFetching, error, item } = useSelector(parseStateSelector());
-
   const [title, setTitle] = useState('');
-  const dispatch = useDispatch();
+  const { isFetching, error, item } = useParse(title);
 
-  const onInputChange = useCallback(
-    ({ value }: InputChanged<string>) => {
-      const trimmedValue = value.trim();
-
-      setTitle(value);
-
-      if (trimmedValue === '') {
-        dispatch(clear());
-      } else {
-        dispatch(fetch({ title: trimmedValue }));
-      }
-    },
-    [setTitle, dispatch]
-  );
+  const onInputChange = useCallback(({ value }: InputChanged<string>) => {
+    setTitle(value);
+  }, []);
 
   const onClearPress = useCallback(() => {
     setTitle('');
-    dispatch(clear());
-  }, [setTitle, dispatch]);
-
-  useEffect(
-    () => {
-      return () => {
-        dispatch(clear());
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  }, []);
 
   return (
     <ModalContent onModalClose={onModalClose}>
@@ -93,13 +67,13 @@ function ParseModalContent(props: ParseModalContentProps) {
           </div>
         ) : null}
 
-        {!isFetching && title && !error && !item.parsedMovieInfo ? (
+        {!isFetching && title && !error && !item?.parsedMovieInfo ? (
           <div className={styles.message}>
             {translate('ParseModalUnableToParse')}
           </div>
         ) : null}
 
-        {!isFetching && !error && item.parsedMovieInfo ? (
+        {!isFetching && !error && item?.parsedMovieInfo ? (
           <ParseResult item={item} />
         ) : null}
 

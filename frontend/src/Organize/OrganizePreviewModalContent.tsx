@@ -15,13 +15,13 @@ import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds } from 'Helpers/Props';
 import useMovie from 'Movie/useMovie';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { fetchOrganizePreview } from 'Store/Actions/organizePreviewActions';
 import { fetchNamingSettings } from 'Store/Actions/settingsActions';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import OrganizePreviewRow from './OrganizePreviewRow';
+import useOrganizePreview from './useOrganizePreview';
 import styles from './OrganizePreviewModalContent.module.css';
 
 function getValue(allSelected: boolean, allUnselected: boolean) {
@@ -45,11 +45,11 @@ function OrganizePreviewModalContent({
 }: OrganizePreviewModalContentProps) {
   const dispatch = useDispatch();
   const {
-    items,
+    data: items = [],
     isFetching: isPreviewFetching,
-    isPopulated: isPreviewPopulated,
+    isSuccess: isPreviewPopulated,
     error: previewError,
-  } = useSelector((state: AppState) => state.organizePreview);
+  } = useOrganizePreview(movieId);
 
   const {
     isFetching: isNamingFetching,
@@ -104,9 +104,8 @@ function OrganizePreviewModalContent({
   }, [movieId, selectedState, dispatch, onModalClose]);
 
   useEffect(() => {
-    dispatch(fetchOrganizePreview({ movieId }));
     dispatch(fetchNamingSettings());
-  }, [movieId, dispatch]);
+  }, [dispatch]);
 
   return (
     <ModalContent onModalClose={onModalClose}>
