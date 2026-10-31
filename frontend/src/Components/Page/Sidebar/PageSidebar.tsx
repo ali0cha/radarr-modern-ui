@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import ReactDOM from 'react-dom';
 import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import QueueStatus from 'Activity/Queue/Status/QueueStatus';
 import { IconName } from 'Components/Icon';
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
@@ -239,10 +239,7 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
     height: `${window.innerHeight - HEADER_HEIGHT}px`,
   });
 
-  const urlBase = window.Radarr.urlBase;
-  const pathname = urlBase
-    ? location.pathname.substr(urlBase.length) || '/'
-    : location.pathname;
+  const pathname = location.pathname;
 
   const activeParent = useMemo(() => {
     return (

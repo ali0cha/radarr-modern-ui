@@ -1,4 +1,3 @@
-import { push } from 'connected-react-router';
 import { ExtendedKeyboardEvent } from 'mousetrap';
 import React, {
   FormEvent,
@@ -11,7 +10,8 @@ import React, {
   useState,
 } from 'react';
 import Autosuggest from 'react-autosuggest';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { useDebouncedCallback } from 'use-debounce';
 import { Tag } from 'App/State/TagsAppState';
@@ -124,7 +124,7 @@ function createMoviesSelector() {
 
 function MovieSearchInput() {
   const movies = useSelector(createMoviesSelector());
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
   const [value, setValue] = useState('');
@@ -304,11 +304,7 @@ function MovieSearchInput() {
         autosuggestRef.current.state;
 
       if (!suggestions.length || highlightedSectionIndex) {
-        dispatch(
-          push(
-            `${window.Radarr.urlBase}/add/new?term=${encodeURIComponent(value)}`
-          )
-        );
+        navigate(`/add/new?term=${encodeURIComponent(value)}`);
 
         inputRef.current?.blur();
         reset();
@@ -324,16 +320,12 @@ function MovieSearchInput() {
           ? suggestions[0]
           : suggestions[highlightedSuggestionIndex];
 
-      dispatch(
-        push(
-          `${window.Radarr.urlBase}/movie/${selectedSuggestion.item.titleSlug}`
-        )
-      );
+      navigate(`/movie/${selectedSuggestion.item.titleSlug}`);
 
       inputRef.current?.blur();
       reset();
     },
-    [value, suggestions, dispatch, reset]
+    [value, suggestions, navigate, reset]
   );
 
   const handleBlur = useCallback(() => {
@@ -360,19 +352,13 @@ function MovieSearchInput() {
       { suggestion }: { suggestion: MovieSuggestion | AddNewMovieSuggestion }
     ) => {
       if ('type' in suggestion) {
-        dispatch(
-          push(
-            `${window.Radarr.urlBase}/add/new?term=${encodeURIComponent(value)}`
-          )
-        );
+        navigate(`/add/new?term=${encodeURIComponent(value)}`);
       } else {
         setValue('');
-        dispatch(
-          push(`${window.Radarr.urlBase}/movie/${suggestion.item.titleSlug}`)
-        );
+        navigate(`/movie/${suggestion.item.titleSlug}`);
       }
     },
-    [value, dispatch]
+    [value, navigate]
   );
 
   const inputProps = {

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import TextTruncate from 'react-text-truncate';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
@@ -85,7 +85,6 @@ import fonts from 'Styles/Variables/fonts';
 import sortByProp from 'Utilities/Array/sortByProp';
 import { findCommand, isCommandExecuting } from 'Utilities/Command';
 import formatRuntime from 'Utilities/Date/formatRuntime';
-import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import formatBytes from 'Utilities/Number/formatBytes';
 import {
   registerPagePopulator,
@@ -157,7 +156,7 @@ interface MovieDetailsProps {
 
 function MovieDetails({ movieId }: MovieDetailsProps) {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const movie = useMovie(movieId);
   const allMovies = useSelector(createAllMoviesSelector());
@@ -399,18 +398,18 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
         currentTouch - touchStart.current > 100 &&
         previousMovie !== undefined
       ) {
-        history.push(getPathWithUrlBase(`/movie/${previousMovie.titleSlug}`));
+        navigate(`/movie/${previousMovie.titleSlug}`);
       } else if (
         currentTouch < touchStart.current &&
         touchStart.current - currentTouch > 100 &&
         nextMovie !== undefined
       ) {
-        history.push(getPathWithUrlBase(`/movie/${nextMovie.titleSlug}`));
+        navigate(`/movie/${nextMovie.titleSlug}`);
       }
 
       touchStart.current = null;
     },
-    [previousMovie, nextMovie, history]
+    [previousMovie, nextMovie, navigate]
   );
 
   const handleTouchCancel = useCallback(() => {
@@ -438,11 +437,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
 
       if (event.composedPath && event.composedPath().length === 4) {
         if (event.key === 'ArrowLeft' && previousMovie !== undefined) {
-          history.push(getPathWithUrlBase(`/movie/${previousMovie.titleSlug}`));
+          navigate(`/movie/${previousMovie.titleSlug}`);
         }
 
         if (event.key === 'ArrowRight' && nextMovie !== undefined) {
-          history.push(getPathWithUrlBase(`/movie/${nextMovie.titleSlug}`));
+          navigate(`/movie/${nextMovie.titleSlug}`);
         }
       }
     },
@@ -455,7 +454,7 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
       isMovieHistoryModalOpen,
       previousMovie,
       nextMovie,
-      history,
+      navigate,
     ]
   );
 

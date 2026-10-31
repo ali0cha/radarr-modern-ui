@@ -1,8 +1,8 @@
-import { push } from 'connected-react-router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { addRootFolder, deleteRootFolder, fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
@@ -25,11 +25,10 @@ function createMapStateToProps() {
 const mapDispatchToProps = {
   fetchRootFolders,
   addRootFolder,
-  deleteRootFolder,
-  push
+  deleteRootFolder
 };
 
-class ImportMovieSelectFolderConnector extends Component {
+class ImportMovieSelectFolderConnectorBase extends Component {
 
   //
   // Lifecycle
@@ -49,7 +48,7 @@ class ImportMovieSelectFolderConnector extends Component {
       const newRootFolders = _.differenceBy(items, prevProps.items, (item) => item.id);
 
       if (newRootFolders.length === 1) {
-        this.props.push(`${window.Radarr.urlBase}/add/import/${newRootFolders[0].id}`);
+        this.props.navigate(`/add/import/${newRootFolders[0].id}`);
       }
     }
   }
@@ -79,14 +78,22 @@ class ImportMovieSelectFolderConnector extends Component {
   }
 }
 
-ImportMovieSelectFolderConnector.propTypes = {
+ImportMovieSelectFolderConnectorBase.propTypes = {
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   fetchRootFolders: PropTypes.func.isRequired,
   addRootFolder: PropTypes.func.isRequired,
   deleteRootFolder: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired
+  navigate: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(ImportMovieSelectFolderConnector);
+const ConnectedImportMovieSelectFolder = connect(createMapStateToProps, mapDispatchToProps)(ImportMovieSelectFolderConnectorBase);
+
+function ImportMovieSelectFolderConnector() {
+  const navigate = useNavigate();
+
+  return <ConnectedImportMovieSelectFolder navigate={navigate} />;
+}
+
+export default ImportMovieSelectFolderConnector;
