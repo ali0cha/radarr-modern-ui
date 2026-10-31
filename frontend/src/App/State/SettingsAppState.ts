@@ -8,7 +8,6 @@ import AppSectionState, {
 } from 'App/State/AppSectionState';
 import Language from 'Language/Language';
 import AutoTagging, { AutoTaggingSpecification } from 'typings/AutoTagging';
-import CustomFormat from 'typings/CustomFormat';
 import DelayProfile from 'typings/DelayProfile';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import IndexerFlag from 'typings/IndexerFlag';
@@ -61,11 +60,6 @@ export interface ReleaseProfilesAppState
   pendingChanges: Partial<ReleaseProfile>;
 }
 
-export interface CustomFormatAppState
-  extends AppSectionState<CustomFormat>,
-    AppSectionDeleteState,
-    AppSectionSaveState {}
-
 export interface ImportListExclusionsSettingsAppState
   extends AppSectionState<ImportListExclusion>,
     AppSectionSaveState,
@@ -82,7 +76,6 @@ interface SettingsAppState {
   advancedSettings: boolean;
   autoTaggings: AutoTaggingAppState;
   autoTaggingSpecifications: AutoTaggingSpecificationAppState;
-  customFormats: CustomFormatAppState;
   delayProfiles: DelayProfileAppState;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;

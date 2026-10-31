@@ -2,8 +2,6 @@ import { handleThunks } from 'Store/thunks';
 import createHandleActions from './Creators/createHandleActions';
 import autoTaggings from './Settings/autoTaggings';
 import autoTaggingSpecifications from './Settings/autoTaggingSpecifications';
-import customFormats from './Settings/customFormats';
-import customFormatSpecifications from './Settings/customFormatSpecifications';
 import delayProfiles from './Settings/delayProfiles';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
@@ -22,8 +20,6 @@ import ui from './Settings/ui';
 
 export * from './Settings/autoTaggingSpecifications';
 export * from './Settings/autoTaggings';
-export * from './Settings/customFormatSpecifications.js';
-export * from './Settings/customFormats';
 export * from './Settings/delayProfiles';
 export * from './Settings/general';
 export * from './Settings/importListExclusions';
@@ -52,8 +48,6 @@ export const defaultState = {
   advancedSettings: false,
   autoTaggingSpecifications: autoTaggingSpecifications.defaultState,
   autoTaggings: autoTaggings.defaultState,
-  customFormatSpecifications: customFormatSpecifications.defaultState,
-  customFormats: customFormats.defaultState,
   delayProfiles: delayProfiles.defaultState,
   general: general.defaultState,
   importListExclusions: importListExclusions.defaultState,
@@ -81,8 +75,6 @@ export const persistState = [
 export const actionHandlers = handleThunks({
   ...autoTaggingSpecifications.actionHandlers,
   ...autoTaggings.actionHandlers,
-  ...customFormatSpecifications.actionHandlers,
-  ...customFormats.actionHandlers,
   ...delayProfiles.actionHandlers,
   ...general.actionHandlers,
   ...importListExclusions.actionHandlers,
@@ -107,8 +99,6 @@ export const reducers = createHandleActions({
 
   ...autoTaggingSpecifications.reducers,
   ...autoTaggings.reducers,
-  ...customFormatSpecifications.reducers,
-  ...customFormats.reducers,
   ...delayProfiles.reducers,
   ...general.reducers,
   ...importListExclusions.reducers,
