@@ -9,6 +9,7 @@ import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
+import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
@@ -218,14 +219,8 @@ class SignalRConnector extends Component {
     }
   };
 
-  handleNotification = ({ action, resource }) => {
-    const section = 'settings.notifications';
-
-    if (action === 'created' || action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...resource });
-    } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: resource.id });
-    }
+  handleNotification = () => {
+    invalidateApiQueries(queryClient, NOTIFICATIONS_PATH);
   };
 
   handleMovie = (body) => {

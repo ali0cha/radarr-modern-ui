@@ -7,9 +7,9 @@ import { kinds } from 'Helpers/Props';
 import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
+import { useNotifications } from 'Settings/Notifications/useNotifications';
 import {
   fetchDelayProfiles,
-  fetchNotifications,
   fetchReleaseProfiles,
 } from 'Store/Actions/settingsActions';
 import { useTagDetails, useTagsQuery } from 'Tags/useTags';
@@ -21,11 +21,12 @@ import styles from './Tags.module.css';
 function Tags() {
   const dispatch = useDispatch();
 
-  // The import lists, indexers and download clients are listed in the details
-  // of a tag
+  // The import lists, indexers, download clients and notifications are listed
+  // in the details of a tag
   useImportLists();
   useIndexers();
   useDownloadClients();
+  useNotifications();
 
   // The tags are refetched every time the page is opened.
   const {
@@ -48,7 +49,6 @@ function Tags() {
 
   useEffect(() => {
     dispatch(fetchDelayProfiles());
-    dispatch(fetchNotifications());
     dispatch(fetchReleaseProfiles());
   }, [dispatch]);
 

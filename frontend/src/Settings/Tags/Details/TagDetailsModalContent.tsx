@@ -14,6 +14,7 @@ import { kinds } from 'Helpers/Props';
 import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
+import { useNotifications } from 'Settings/Notifications/useNotifications';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsDelayProfile from './TagDetailsDelayProfile';
@@ -102,11 +103,10 @@ function TagDetailsModalContent({
     [importListIds, allImportLists]
   );
 
-  const notifications = useSelector(
-    createMatchingItemSelector(
-      notificationIds,
-      (state: AppState) => state.settings.notifications.items
-    )
+  const { items: allNotifications } = useNotifications();
+  const notifications = useMemo(
+    () => findMatchingItems(notificationIds, allNotifications),
+    [notificationIds, allNotifications]
   );
 
   const releaseProfiles = useSelector(

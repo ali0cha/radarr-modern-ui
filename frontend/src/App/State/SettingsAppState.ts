@@ -12,7 +12,6 @@ import CustomFormat from 'typings/CustomFormat';
 import DelayProfile from 'typings/DelayProfile';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import IndexerFlag from 'typings/IndexerFlag';
-import Notification from 'typings/Notification';
 import QualityProfile from 'typings/QualityProfile';
 import General from 'typings/Settings/General';
 import MediaManagement from 'typings/Settings/MediaManagement';
@@ -51,10 +50,6 @@ export interface NamingAppState
     AppSectionSaveState {}
 
 export type NamingExamplesAppState = AppSectionItemState<NamingExample>;
-
-export interface NotificationAppState
-  extends AppSectionState<Notification>,
-    AppSectionDeleteState {}
 
 export interface QualityProfilesAppState
   extends AppSectionState<QualityProfile>,
@@ -97,7 +92,6 @@ interface SettingsAppState {
   metadata: MetadataAppState;
   naming: NamingAppState;
   namingExamples: NamingExamplesAppState;
-  notifications: NotificationAppState;
   qualityProfiles: QualityProfilesAppState;
   releaseProfiles: ReleaseProfilesAppState;
   ui: UiSettingsAppState;

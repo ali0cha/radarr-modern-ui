@@ -160,10 +160,12 @@ export const actionHandlers = handleThunks({
 
     promise.done(() => {
       // Clear any previously set save error.
-      dispatch(set({
-        section: actionSection,
-        saveError: null
-      }));
+      if (actionSection) {
+        dispatch(set({
+          section: actionSection,
+          saveError: null
+        }));
+      }
     });
 
     promise.fail((xhr) => {
@@ -175,7 +177,7 @@ export const actionHandlers = handleThunks({
         })
       ];
 
-      if (xhr.status === 400) {
+      if (xhr.status === 400 && actionSection) {
         // Set a save error so the UI can display validation errors to the user.
         actions.splice(0, 0, set({
           section: actionSection,
