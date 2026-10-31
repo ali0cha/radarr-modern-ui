@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import useUISettings from 'Settings/UI/useUISettings';
 import themes from 'Styles/Themes';
 
 const useTheme = (): 'dark' | 'light' => {
-  const { theme } = useSelector((state: AppState) => state.settings.ui.item);
+  const { theme } = useUISettings();
   const selectedTheme = theme ?? window.Radarr.theme;
   const [resolvedTheme, setResolvedTheme] = useState(() => {
     if (selectedTheme === 'auto') {

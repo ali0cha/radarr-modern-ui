@@ -1,13 +1,13 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withUISettings from 'Settings/UI/withUISettings';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import CollectionOverviews from './CollectionOverviews';
 
 function createMapStateToProps() {
   return createSelector(
     (state) => state.movieCollections.overviewOptions,
-    createUISettingsSelector(),
+    (state, { uiSettings }) => uiSettings,
     createDimensionsSelector(),
     (overviewOptions, uiSettings, dimensions) => {
       return {
@@ -22,4 +22,4 @@ function createMapStateToProps() {
   );
 }
 
-export default connect(createMapStateToProps)(CollectionOverviews);
+export default withUISettings(connect(createMapStateToProps)(CollectionOverviews));

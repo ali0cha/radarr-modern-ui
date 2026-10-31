@@ -1,13 +1,13 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withUISettings from 'Settings/UI/withUISettings';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import DiscoverMoviePosters from './DiscoverMoviePosters';
 
 function createMapStateToProps() {
   return createSelector(
     (state) => state.discoverMovie.posterOptions,
-    createUISettingsSelector(),
+    (state, { uiSettings }) => uiSettings,
     createDimensionsSelector(),
     (posterOptions, uiSettings, dimensions) => {
       return {
@@ -21,4 +21,4 @@ function createMapStateToProps() {
   );
 }
 
-export default connect(createMapStateToProps)(DiscoverMoviePosters);
+export default withUISettings(connect(createMapStateToProps)(DiscoverMoviePosters));

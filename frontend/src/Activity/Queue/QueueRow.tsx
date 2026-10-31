@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ProtocolLabel from 'Activity/Queue/ProtocolLabel';
 import { Error } from 'App/State/AppSectionState';
 import IconButton from 'Components/Link/IconButton';
@@ -21,8 +21,8 @@ import MovieQuality from 'Movie/MovieQuality';
 import MovieTitleLink from 'Movie/MovieTitleLink';
 import useMovie from 'Movie/useMovie';
 import { QualityModel } from 'Quality/Quality';
+import useUISettings from 'Settings/UI/useUISettings';
 import { grabQueueItem, removeQueueItem } from 'Store/Actions/queueActions';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import CustomFormat from 'typings/CustomFormat';
 import { SelectStateInputProps } from 'typings/props';
 import {
@@ -107,9 +107,7 @@ function QueueRow(props: QueueRowProps) {
 
   const dispatch = useDispatch();
   const movie = useMovie(movieId);
-  const { showRelativeDates, shortDateFormat, timeFormat } = useSelector(
-    createUISettingsSelector()
-  );
+  const { showRelativeDates, shortDateFormat, timeFormat } = useUISettings();
 
   const [isRemoveQueueItemModalOpen, setIsRemoveQueueItemModalOpen] =
     useState(false);

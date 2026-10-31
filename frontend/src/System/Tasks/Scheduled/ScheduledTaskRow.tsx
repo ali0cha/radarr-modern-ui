@@ -6,10 +6,10 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
+import useUISettings from 'Settings/UI/useUISettings';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchTask } from 'Store/Actions/systemActions';
 import createCommandSelector from 'Store/Selectors/createCommandSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import { isCommandExecuting } from 'Utilities/Command';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
@@ -42,7 +42,7 @@ function ScheduledTaskRow(props: ScheduledTaskRowProps) {
   const dispatch = useDispatch();
 
   const { showRelativeDates, longDateFormat, shortDateFormat, timeFormat } =
-    useSelector(createUISettingsSelector());
+    useUISettings();
   const command = useSelector(createCommandSelector(taskName));
 
   const [time, setTime] = useState(Date.now());

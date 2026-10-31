@@ -55,6 +55,7 @@ import ExtraFileTable from 'MovieFile/Extras/ExtraFileTable';
 import useExtraFiles from 'MovieFile/Extras/useExtraFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
+import useUISettings from 'Settings/UI/useUISettings';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { toggleMovieMonitored } from 'Store/Actions/movieActions';
 import {
@@ -72,7 +73,6 @@ import {
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import fonts from 'Styles/Variables/fonts';
 import sortByProp from 'Utilities/Array/sortByProp';
 import { findCommand, isCommandExecuting } from 'Utilities/Command';
@@ -141,7 +141,7 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     error: movieCreditsError,
     refetch: refetchMovieCredits,
   } = useMovieCredits(movieId);
-  const { movieRuntimeFormat } = useSelector(createUISettingsSelector());
+  const { movieRuntimeFormat } = useUISettings();
   const isSidebarVisible = useSelector(
     (state: AppState) => state.app.isSidebarVisible
   );

@@ -13,12 +13,12 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import { icons, kinds } from 'Helpers/Props';
+import useUISettings from 'Settings/UI/useUISettings';
 import { useSettings } from 'Settings/useSettings';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchUpdates } from 'Store/Actions/systemActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import General, { UpdateMechanism } from 'typings/Settings/General';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
@@ -44,9 +44,7 @@ function Updates() {
   const { packageUpdateMechanismMessage } = useSelector(
     createSystemStatusSelector()
   );
-  const { shortDateFormat, longDateFormat, timeFormat } = useSelector(
-    createUISettingsSelector()
-  );
+  const { shortDateFormat, longDateFormat, timeFormat } = useUISettings();
   const isInstallingUpdate = useSelector(
     createCommandExecutingSelector(commandNames.APPLICATION_UPDATE)
   );

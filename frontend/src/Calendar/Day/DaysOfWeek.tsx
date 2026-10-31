@@ -3,14 +3,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import * as calendarViews from 'Calendar/calendarViews';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import useUISettings from 'Settings/UI/useUISettings';
 import DayOfWeek from './DayOfWeek';
 import styles from './DaysOfWeek.module.css';
 
 function DaysOfWeek() {
   const { dates, view } = useSelector((state: AppState) => state.calendar);
   const { calendarWeekColumnHeader, shortDateFormat, showRelativeDates } =
-    useSelector(createUISettingsSelector());
+    useUISettings();
 
   const updateTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [todaysDate, setTodaysDate] = useState(

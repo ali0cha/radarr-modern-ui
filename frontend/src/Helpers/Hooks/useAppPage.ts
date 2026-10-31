@@ -7,11 +7,11 @@ import { useLanguages } from 'Language/useLanguages';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
+import { useUISettingsQuery } from 'Settings/UI/useUISettings';
 import { fetchTranslations } from 'Store/Actions/appActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
-import { fetchUISettings } from 'Store/Actions/settingsActions';
 import { fetchStatus } from 'Store/Actions/systemActions';
 import { useTagsQuery } from 'Tags/useTags';
 
@@ -20,14 +20,12 @@ const createErrorsSelector = () =>
     (state: AppState) => state.movies.error,
     (state: AppState) => state.movieCollections.error,
     (state: AppState) => state.customFilters.error,
-    (state: AppState) => state.settings.ui.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
     (
       moviesError,
       movieCollectionsError,
       customFiltersError,
-      uiSettingsError,
       systemStatusError,
       translationsError
     ) => {
@@ -35,7 +33,6 @@ const createErrorsSelector = () =>
         moviesError ||
         movieCollectionsError ||
         customFiltersError ||
-        uiSettingsError ||
         systemStatusError ||
         translationsError
       );
@@ -46,7 +43,6 @@ const createErrorsSelector = () =>
           moviesError,
           movieCollectionsError,
           customFiltersError,
-          uiSettingsError,
           systemStatusError,
           translationsError,
         },
@@ -66,6 +62,8 @@ const useAppPage = () => {
     isPopulated: isQualityProfilesPopulated,
     error: qualityProfilesError,
   } = useQualityProfiles();
+  const { isSuccess: isUISettingsPopulated, error: uiSettingsError } =
+    useUISettingsQuery();
   const { isPopulated: isLanguagesPopulated, error: languagesError } =
     useLanguages();
   const { isPopulated: isIndexerFlagsPopulated, error: indexerFlagsError } =
@@ -76,7 +74,6 @@ const useAppPage = () => {
       state.movies.isPopulated &&
       state.movieCollections.isPopulated &&
       state.customFilters.isPopulated &&
-      state.settings.ui.isPopulated &&
       state.system.status.isPopulated &&
       state.app.translations.isPopulated
   );
@@ -85,6 +82,7 @@ const useAppPage = () => {
     isStatePopulated &&
     isTagsPopulated &&
     isImportListsPopulated &&
+    isUISettingsPopulated &&
     isQualityProfilesPopulated &&
     isLanguagesPopulated &&
     isIndexerFlagsPopulated;
@@ -97,6 +95,7 @@ const useAppPage = () => {
     hasStateError ||
     !!tagsError ||
     !!importListsError ||
+    !!uiSettingsError ||
     !!qualityProfilesError ||
     !!languagesError ||
     !!indexerFlagsError;
@@ -106,6 +105,7 @@ const useAppPage = () => {
       ...stateErrors,
       tagsError: tagsError ?? undefined,
       importListsError: importListsError ?? undefined,
+      uiSettingsError: uiSettingsError ?? undefined,
       qualityProfilesError: qualityProfilesError ?? undefined,
       languagesError: languagesError ?? undefined,
       indexerFlagsError: indexerFlagsError ?? undefined,
@@ -114,6 +114,7 @@ const useAppPage = () => {
       stateErrors,
       tagsError,
       importListsError,
+      uiSettingsError,
       qualityProfilesError,
       languagesError,
       indexerFlagsError,
@@ -137,7 +138,6 @@ const useAppPage = () => {
     dispatch(fetchMovies());
     dispatch(fetchMovieCollections());
     dispatch(fetchCustomFilters());
-    dispatch(fetchUISettings());
     dispatch(fetchStatus());
     dispatch(fetchTranslations());
   }, [dispatch]);

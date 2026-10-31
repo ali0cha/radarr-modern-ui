@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import ProtocolLabel from 'Activity/Queue/ProtocolLabel';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
@@ -13,7 +12,7 @@ import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import MovieFormats from 'Movie/MovieFormats';
 import MovieLanguages from 'Movie/MovieLanguages';
 import MovieQuality from 'Movie/MovieQuality';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import useUISettings from 'Settings/UI/useUISettings';
 import Release from 'typings/Release';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import formatAge from 'Utilities/Number/formatAge';
@@ -105,9 +104,7 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
     onGrabPress,
   } = props;
 
-  const { longDateFormat, timeFormat } = useSelector(
-    createUISettingsSelector()
-  );
+  const { longDateFormat, timeFormat } = useUISettings();
 
   const [isConfirmGrabModalOpen, setIsConfirmGrabModalOpen] = useState(false);
   const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);

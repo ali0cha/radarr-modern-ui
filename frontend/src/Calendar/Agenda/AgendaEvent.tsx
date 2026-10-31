@@ -9,8 +9,8 @@ import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons, kinds } from 'Helpers/Props';
 import useMovieFile from 'MovieFile/useMovieFile';
+import useUISettings from 'Settings/UI/useUISettings';
 import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import styles from './AgendaEvent.module.css';
 
@@ -49,9 +49,7 @@ function AgendaEvent({
 }: AgendaEventProps) {
   const movieFile = useMovieFile(movieFileId);
   const queueItem = useSelector(createQueueItemSelectorForHook(id));
-  const { longDateFormat, enableColorImpairedMode } = useSelector(
-    createUISettingsSelector()
-  );
+  const { longDateFormat, enableColorImpairedMode } = useUISettings();
 
   const { showMovieInformation, showCutoffUnmetIcon } = useSelector(
     (state: AppState) => state.calendar.options

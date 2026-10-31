@@ -8,8 +8,8 @@ import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons, kinds } from 'Helpers/Props';
 import useMovieFile from 'MovieFile/useMovieFile';
+import useUISettings from 'Settings/UI/useUISettings';
 import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import CalendarEventQueueDetails from './CalendarEventQueueDetails';
 import styles from './CalendarEvent.module.css';
@@ -50,7 +50,7 @@ function CalendarEvent({
   const movieFile = useMovieFile(movieFileId);
   const queueItem = useSelector(createQueueItemSelectorForHook(id));
 
-  const { enableColorImpairedMode } = useSelector(createUISettingsSelector());
+  const { enableColorImpairedMode } = useUISettings();
 
   const {
     showMovieInformation,

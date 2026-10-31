@@ -10,6 +10,7 @@ import MenuButton from 'Components/Menu/MenuButton';
 import MenuContent from 'Components/Menu/MenuContent';
 import ViewMenuItem from 'Components/Menu/ViewMenuItem';
 import { align, icons } from 'Helpers/Props';
+import useUISettings from 'Settings/UI/useUISettings';
 import {
   gotoCalendarNextRange,
   gotoCalendarPreviousRange,
@@ -17,7 +18,6 @@ import {
   setCalendarView,
 } from 'Store/Actions/calendarActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import translate from 'Utilities/String/translate';
 import CalendarHeaderViewButton from './CalendarHeaderViewButton';
 import styles from './CalendarHeader.module.css';
@@ -33,7 +33,7 @@ function CalendarHeader() {
     createDimensionsSelector()
   );
 
-  const { longDateFormat } = useSelector(createUISettingsSelector());
+  const { longDateFormat } = useUISettings();
 
   const handleViewChange = useCallback(
     (newView: string) => {

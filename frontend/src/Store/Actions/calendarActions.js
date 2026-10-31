@@ -5,6 +5,7 @@ import { batchActions } from 'redux-batched-actions';
 import * as calendarViews from 'Calendar/calendarViews';
 import * as commandNames from 'Commands/commandNames';
 import { filterBuilderTypes, filterBuilderValueTypes, filterTypes } from 'Helpers/Props';
+import { getUISettings } from 'Settings/UI/useUISettings';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import findSelectedFilters from 'Utilities/Filter/findSelectedFilters';
@@ -243,7 +244,7 @@ export const actionHandlers = handleThunks({
     } = payload;
 
     const dayCount = state.calendar.dayCount;
-    const dates = getDates(moment(time), view, state.settings.ui.item.firstDayOfWeek, dayCount);
+    const dates = getDates(moment(time), view, getUISettings().firstDayOfWeek, dayCount);
     const { start, end } = getPopulatableRange(dates.start, dates.end, view);
     const isPrePopulated = isRangePopulated(start, end, state.calendar);
 

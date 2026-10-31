@@ -1,10 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import Icon from 'Components/Icon';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
 import { icons } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import useUISettings from 'Settings/UI/useUISettings';
 import formatDate from 'Utilities/Date/formatDate';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
@@ -22,7 +21,7 @@ function MovieReleaseDates({
   physicalRelease,
 }: MovieReleaseDatesProps) {
   const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } =
-    useSelector(createUISettingsSelector());
+    useUISettings();
 
   if (!inCinemas && !physicalRelease && !digitalRelease) {
     return (

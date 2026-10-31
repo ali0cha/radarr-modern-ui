@@ -24,8 +24,8 @@ import { Statistics } from 'Movie/Movie';
 import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import MovieTitleLink from 'Movie/MovieTitleLink';
 import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
+import useUISettings from 'Settings/UI/useUISettings';
 import { executeCommand } from 'Store/Actions/commandActions';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import { SelectStateInputProps } from 'typings/props';
 import formatRuntime from 'Utilities/Date/formatRuntime';
 import formatBytes from 'Utilities/Number/formatBytes';
@@ -53,7 +53,7 @@ function MovieIndexRow(props: MovieIndexRowProps) {
 
   const { showSearchAction } = useSelector(selectTableOptions);
 
-  const { movieRuntimeFormat } = useSelector(createUISettingsSelector());
+  const { movieRuntimeFormat } = useUISettings();
 
   const {
     monitored,

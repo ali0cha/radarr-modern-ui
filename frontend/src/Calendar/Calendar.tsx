@@ -8,6 +8,7 @@ import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
+import useUISettings from 'Settings/UI/useUISettings';
 import {
   clearCalendar,
   fetchCalendar,
@@ -50,9 +51,7 @@ function Calendar() {
     createCommandExecutingSelector(commandNames.REFRESH_MOVIE)
   );
 
-  const firstDayOfWeek = useSelector(
-    (state: AppState) => state.settings.ui.item.firstDayOfWeek
-  );
+  const { firstDayOfWeek } = useUISettings();
 
   const wasRefreshingMovie = usePrevious(isRefreshingMovie);
   const previousFirstDayOfWeek = usePrevious(firstDayOfWeek);

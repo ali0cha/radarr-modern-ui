@@ -17,9 +17,9 @@ import {
   timeFormatOptions,
   weekColumnOptions,
 } from 'Settings/UI/UISettings';
+import useUISettings, { UI_SETTINGS_PATH } from 'Settings/UI/useUISettings';
+import { useSaveSettings } from 'Settings/useSettings';
 import { setCalendarOption } from 'Store/Actions/calendarActions';
-import { saveUISettings } from 'Store/Actions/settingsActions';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import { InputChanged } from 'typings/inputs';
 import UiSettings from 'typings/Settings/UiSettings';
 import translate from 'Utilities/String/translate';
@@ -42,7 +42,9 @@ function CalendarOptionsModalContent({
     fullColorEvents,
   } = useSelector((state: AppState) => state.calendar.options);
 
-  const uiSettings = useSelector(createUISettingsSelector());
+  const uiSettings = useUISettings();
+  const { save: saveUISettings } =
+    useSaveSettings<UiSettings>(UI_SETTINGS_PATH);
 
   const [state, setState] = useState<Partial<UiSettings>>({
     firstDayOfWeek: uiSettings.firstDayOfWeek,
@@ -69,9 +71,9 @@ function CalendarOptionsModalContent({
     ({ name, value }: InputChanged) => {
       setState((prevState) => ({ ...prevState, [name]: value }));
 
-      dispatch(saveUISettings({ [name]: value }));
+      saveUISettings({ ...uiSettings, [name]: value });
     },
-    [dispatch]
+    [uiSettings, saveUISettings]
   );
 
   useEffect(() => {

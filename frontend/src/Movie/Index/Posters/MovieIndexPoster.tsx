@@ -21,8 +21,8 @@ import MovieIndexPosterSelect from 'Movie/Index/Select/MovieIndexPosterSelect';
 import { Statistics } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
 import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
+import useUISettings from 'Settings/UI/useUISettings';
 import { executeCommand } from 'Store/Actions/commandActions';
-import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import formatDate from 'Utilities/Date/formatDate';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
@@ -65,7 +65,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
   } = useSelector(selectPosterOptions);
 
   const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } =
-    useSelector(createUISettingsSelector());
+    useUISettings();
 
   const {
     title,

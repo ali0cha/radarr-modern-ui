@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withUISettings from 'Settings/UI/withUISettings';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createExistingMovieSelector from 'Store/Selectors/createExistingMovieSelector';
 import AddNewMovieSearchResult from './AddNewMovieSearchResult';
@@ -10,7 +11,7 @@ function createMapStateToProps() {
     createDimensionsSelector(),
     (state) => state.movieFiles.items,
     (state, { internalId }) => internalId,
-    (state) => state.settings.ui.item.movieRuntimeFormat,
+    (state, { uiSettings }) => uiSettings.movieRuntimeFormat,
     (isExistingMovie, dimensions, movieFiles, internalId, movieRuntimeFormat) => {
       const movieFile = movieFiles.find((item) => internalId > 0 && item.movieId === internalId);
 
@@ -25,4 +26,4 @@ function createMapStateToProps() {
   );
 }
 
-export default connect(createMapStateToProps)(AddNewMovieSearchResult);
+export default withUISettings(connect(createMapStateToProps)(AddNewMovieSearchResult));
