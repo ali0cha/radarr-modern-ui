@@ -66,7 +66,10 @@ export async function fetchApi<T>(
     throw new ApiError(path, response.status, response.statusText, body);
   }
 
-  return response.json() as T;
+  // Some requests, such as deleting an item, answer with an empty body.
+  const text = await response.text();
+
+  return (text ? JSON.parse(text) : undefined) as T;
 }
 
 function useApiQuery<T>(options: QueryOptions<T>) {
