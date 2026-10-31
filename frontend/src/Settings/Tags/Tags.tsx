@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import TagsAppState, { Tag as TagModel } from 'App/State/TagsAppState';
+import React, { useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import PageSectionContent from 'Components/Page/PageSectionContent';
@@ -13,8 +12,7 @@ import {
   fetchNotifications,
   fetchReleaseProfiles,
 } from 'Store/Actions/settingsActions';
-import { fetchTagDetails, fetchTags } from 'Store/Actions/tagActions';
-import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
+import { useTagDetails, useTagsQuery } from 'Tags/useTags';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import Tag from './Tag';
@@ -22,22 +20,27 @@ import styles from './Tags.module.css';
 
 function Tags() {
   const dispatch = useDispatch();
-  const { items, isFetching, isPopulated, error, details } = useSelector(
-    createSortedSectionSelector<TagModel, TagsAppState>(
-      'tags',
-      sortByProp('label')
-    )
-  );
+
+  // The tags are refetched every time the page is opened.
+  const {
+    data: tags,
+    isFetching,
+    isSuccess: isPopulated,
+    error,
+  } = useTagsQuery({ refetchOnMount: 'always' });
 
   const {
     isFetching: isDetailsFetching,
-    isPopulated: isDetailsPopulated,
+    isSuccess: isDetailsPopulated,
     error: detailsError,
-  } = details;
+  } = useTagDetails();
+
+  const items = useMemo(
+    () => [...(tags ?? [])].sort(sortByProp('label')),
+    [tags]
+  );
 
   useEffect(() => {
-    dispatch(fetchTags());
-    dispatch(fetchTagDetails());
     dispatch(fetchDelayProfiles());
     dispatch(fetchImportLists());
     dispatch(fetchNotifications());
@@ -56,7 +59,7 @@ function Tags() {
     <FieldSet legend={translate('Tags')}>
       <PageSectionContent
         errorMessage={translate('TagsLoadError')}
-        error={error || detailsError}
+        error={error ?? detailsError ?? undefined}
         isFetching={isFetching || isDetailsFetching}
         isPopulated={isPopulated || isDetailsPopulated}
       >

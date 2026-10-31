@@ -37,10 +37,42 @@ interface QueryOptions<T> {
 
 const apiRoot = window.Radarr.apiRoot;
 
+export function getApiPath(path: string) {
+  return apiRoot + path;
+}
+
+// Matches the queries made by useApiQuery for a path, whatever the headers.
+// Use it to invalidate or update them.
+export function getApiQueryKey(path: string) {
+  return [getApiPath(path)];
+}
+
+export async function fetchApi<T>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const response = await fetch(path, init);
+
+  if (!response.ok) {
+    // eslint-disable-next-line init-declarations
+    let body;
+
+    try {
+      body = (await response.json()) as ApiErrorResponse;
+    } catch {
+      throw new ApiError(path, response.status, response.statusText);
+    }
+
+    throw new ApiError(path, response.status, response.statusText, body);
+  }
+
+  return response.json() as T;
+}
+
 function useApiQuery<T>(options: QueryOptions<T>) {
   const { path, headers } = useMemo(() => {
     return {
-      path: apiRoot + options.path,
+      path: getApiPath(options.path),
       headers: {
         ...options.headers,
         'X-Api-Key': window.Radarr.apiKey,
@@ -51,27 +83,7 @@ function useApiQuery<T>(options: QueryOptions<T>) {
   return useQuery({
     ...options.queryOptions,
     queryKey: [path, headers],
-    queryFn: async ({ signal }) => {
-      const response = await fetch(path, {
-        headers,
-        signal,
-      });
-
-      if (!response.ok) {
-        // eslint-disable-next-line init-declarations
-        let body;
-
-        try {
-          body = (await response.json()) as ApiErrorResponse;
-        } catch {
-          throw new ApiError(path, response.status, response.statusText);
-        }
-
-        throw new ApiError(path, response.status, response.statusText, body);
-      }
-
-      return response.json() as T;
-    },
+    queryFn: ({ signal }) => fetchApi<T>(path, { headers, signal }),
   });
 }
 

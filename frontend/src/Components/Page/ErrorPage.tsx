@@ -1,5 +1,6 @@
 import React from 'react';
 import { Error } from 'App/State/AppSectionState';
+import { ApiError } from 'Helpers/Hooks/useApiQuery';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import styles from './ErrorPage.module.css';
 
@@ -9,7 +10,7 @@ interface ErrorPageProps {
   translationsError?: Error;
   moviesError?: Error;
   customFiltersError?: Error;
-  tagsError?: Error;
+  tagsError?: Error | ApiError;
   qualityProfilesError?: Error;
   languagesError?: Error;
   uiSettingsError?: Error;

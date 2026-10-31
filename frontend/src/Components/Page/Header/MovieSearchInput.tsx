@@ -14,7 +14,6 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { useDebouncedCallback } from 'use-debounce';
-import { Tag } from 'App/State/TagsAppState';
 import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
@@ -22,7 +21,8 @@ import { icons } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+import { Tag } from 'Tags/Tag';
+import useTags from 'Tags/useTags';
 import translate from 'Utilities/String/translate';
 import MovieSearchResult from './MovieSearchResult';
 import styles from './MovieSearchInput.module.css';
@@ -70,60 +70,61 @@ interface Section {
   suggestions: MovieSuggestion[] | AddNewMovieSuggestion[];
 }
 
-function createUnoptimizedSelector() {
-  return createSelector(
-    createAllMoviesSelector(),
-    createTagsSelector(),
-    (allMovies, allTags) => {
-      return allMovies.map((movie): SuggestedMovie => {
-        const {
-          title,
-          originalTitle,
-          year,
-          titleSlug,
-          sortTitle,
-          images,
-          alternateTitles = [],
-          tmdbId,
-          imdbId,
-          tags = [],
-        } = movie;
+function createUnoptimizedSelector(allTags: Tag[]) {
+  return createSelector(createAllMoviesSelector(), (allMovies) => {
+    return allMovies.map((movie): SuggestedMovie => {
+      const {
+        title,
+        originalTitle,
+        year,
+        titleSlug,
+        sortTitle,
+        images,
+        alternateTitles = [],
+        tmdbId,
+        imdbId,
+        tags = [],
+      } = movie;
 
-        return {
-          title,
-          originalTitle,
-          year,
-          titleSlug,
-          sortTitle,
-          images,
-          alternateTitles,
-          tmdbId,
-          imdbId,
-          firstCharacter: title.charAt(0).toLowerCase(),
-          tags: tags.reduce<Tag[]>((acc, id) => {
-            const matchingTag = allTags.find((tag) => tag.id === id);
+      return {
+        title,
+        originalTitle,
+        year,
+        titleSlug,
+        sortTitle,
+        images,
+        alternateTitles,
+        tmdbId,
+        imdbId,
+        firstCharacter: title.charAt(0).toLowerCase(),
+        tags: tags.reduce<Tag[]>((acc, id) => {
+          const matchingTag = allTags.find((tag) => tag.id === id);
 
-            if (matchingTag) {
-              acc.push(matchingTag);
-            }
+          if (matchingTag) {
+            acc.push(matchingTag);
+          }
 
-            return acc;
-          }, []),
-        };
-      });
-    }
-  );
+          return acc;
+        }, []),
+      };
+    });
+  });
 }
 
-function createMoviesSelector() {
+function createMoviesSelector(allTags: Tag[]) {
   return createDeepEqualSelector(
-    createUnoptimizedSelector(),
+    createUnoptimizedSelector(allTags),
     (movies) => movies
   );
 }
 
 function MovieSearchInput() {
-  const movies = useSelector(createMoviesSelector());
+  const allTags = useTags();
+  const moviesSelector = useMemo(
+    () => createMoviesSelector(allTags),
+    [allTags]
+  );
+  const movies = useSelector(moviesSelector);
   const navigate = useNavigate();
   const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 

@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { addTag } from 'Store/Actions/tagActions';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+import useTags, { useAddTag } from 'Tags/useTags';
 import { InputChanged } from 'typings/inputs';
 import sortByProp from 'Utilities/Array/sortByProp';
 import TagInput, { TagBase } from './TagInput';
@@ -28,9 +25,11 @@ function isValidTag(tagName: string) {
   }
 }
 
-function createMovieTagsSelector(tags: number[]) {
-  return createSelector(createTagsSelector(), (tagList) => {
-    const sortedTags = tagList.sort(sortByProp('label'));
+function useMovieTags(tags: number[]) {
+  const tagList = useTags();
+
+  return useMemo(() => {
+    const sortedTags = [...tagList].sort(sortByProp('label'));
     const filteredTagList = sortedTags.filter((tag) => !tags.includes(tag.id));
 
     return {
@@ -56,7 +55,7 @@ function createMovieTagsSelector(tags: number[]) {
 
       allTags: sortedTags,
     };
-  });
+  }, [tagList, tags]);
 }
 
 export default function MovieTagInput<V>({
@@ -64,7 +63,7 @@ export default function MovieTagInput<V>({
   value,
   onChange,
 }: MovieTagInputProps<V>) {
-  const dispatch = useDispatch();
+  const { mutate: addTag } = useAddTag();
   const isArray = Array.isArray(value);
 
   const arrayValue = useMemo(() => {
@@ -75,12 +74,10 @@ export default function MovieTagInput<V>({
     return value === 0 ? [] : [value as number];
   }, [isArray, value]);
 
-  const { tags, tagList, allTags } = useSelector(
-    createMovieTagsSelector(arrayValue)
-  );
+  const { tags, tagList, allTags } = useMovieTags(arrayValue);
 
   const handleTagCreated = useCallback(
-    (tag: MovieTag) => {
+    (tag: { id: number }) => {
       if (isArray) {
         onChange({ name, value: [...value, tag.id] as V });
       } else {
@@ -108,15 +105,10 @@ export default function MovieTagInput<V>({
       const existingTag = allTags.some((t) => t.label === newTag.name);
 
       if (isValidTag(newTag.name) && !existingTag) {
-        dispatch(
-          addTag({
-            tag: { label: newTag.name },
-            onTagCreated: handleTagCreated,
-          })
-        );
+        addTag({ label: newTag.name }, { onSuccess: handleTagCreated });
       }
     },
-    [name, value, isArray, allTags, handleTagCreated, onChange, dispatch]
+    [name, value, isArray, allTags, handleTagCreated, onChange, addTag]
   );
 
   const handleTagDelete = useCallback(

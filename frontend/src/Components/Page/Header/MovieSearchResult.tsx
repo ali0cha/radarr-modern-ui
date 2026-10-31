@@ -1,8 +1,8 @@
 import React from 'react';
-import { Tag } from 'App/State/TagsAppState';
 import Label from 'Components/Label';
 import { kinds } from 'Helpers/Props';
 import MoviePoster from 'Movie/MoviePoster';
+import { Tag } from 'Tags/Tag';
 import { SuggestedMovie } from './MovieSearchInput';
 import styles from './MovieSearchResult.module.css';
 
