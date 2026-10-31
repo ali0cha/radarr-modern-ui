@@ -6,7 +6,7 @@ import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons } from 'Helpers/Props';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
+import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import {
   cloneAutoTagging,
   deleteAutoTagging,
@@ -31,6 +31,8 @@ export default function AutoTaggings() {
 
   const tagList = useTags();
   const dispatch = useDispatch();
+
+  usePrefetchRootFolders();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [tagsFromId, setTagsFromId] = useState<number>();
 
@@ -61,7 +63,6 @@ export default function AutoTaggings() {
 
   useEffect(() => {
     dispatch(fetchAutoTaggings());
-    dispatch(fetchRootFolders());
   }, [dispatch]);
 
   return (

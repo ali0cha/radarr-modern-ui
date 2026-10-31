@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
 import withScrollPosition from 'Components/withScrollPosition';
+import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { addImportListExclusions, addMovies, clearAddMovie, fetchDiscoverMovies, setListMovieFilter, setListMovieSort, setListMovieTableOption, setListMovieView } from 'Store/Actions/discoverMovieActions';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import scrollPositions from 'Store/scrollPositions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
@@ -38,10 +38,6 @@ function createMapStateToProps() {
 
 function createMapDispatchToProps(dispatch, props) {
   return {
-    dispatchFetchRootFolders() {
-      dispatch(fetchRootFolders());
-    },
-
     dispatchClearListMovie() {
       dispatch(clearAddMovie());
     },
@@ -83,14 +79,13 @@ function createMapDispatchToProps(dispatch, props) {
   };
 }
 
-class DiscoverMovieConnector extends Component {
+class DiscoverMovieConnectorBase extends Component {
 
   //
   // Lifecycle
 
   componentDidMount() {
     registerPagePopulator(this.repopulate);
-    this.props.dispatchFetchRootFolders();
     this.props.dispatchFetchListMovies();
   }
 
@@ -135,10 +130,9 @@ class DiscoverMovieConnector extends Component {
   }
 }
 
-DiscoverMovieConnector.propTypes = {
+DiscoverMovieConnectorBase.propTypes = {
   isSmallScreen: PropTypes.bool.isRequired,
   view: PropTypes.string.isRequired,
-  dispatchFetchRootFolders: PropTypes.func.isRequired,
   dispatchFetchListMovies: PropTypes.func.isRequired,
   dispatchClearListMovie: PropTypes.func.isRequired,
   dispatchSetListMovieView: PropTypes.func.isRequired,
@@ -146,7 +140,15 @@ DiscoverMovieConnector.propTypes = {
   dispatchAddImportListExclusions: PropTypes.func.isRequired
 };
 
-export default withScrollPosition(
-  connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieConnector),
+const ConnectedDiscoverMovie = withScrollPosition(
+  connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieConnectorBase),
   'discoverMovie'
 );
+
+function DiscoverMovieConnector(props) {
+  usePrefetchRootFolders();
+
+  return <ConnectedDiscoverMovie {...props} />;
+}
+
+export default DiscoverMovieConnector;

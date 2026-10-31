@@ -11,6 +11,7 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { icons, kinds, sizes } from 'Helpers/Props';
+import AddRootFolderError from 'RootFolder/AddRootFolderError';
 import translate from 'Utilities/String/translate';
 import ImportMovieRootFolderRowConnector from './ImportMovieRootFolderRowConnector';
 import styles from './ImportMovieSelectFolder.module.css';
@@ -144,30 +145,10 @@ class ImportMovieSelectFolder extends Component {
 
                 {
                   !isSaving && saveError ?
-                    <Alert
+                    <AddRootFolderError
                       className={styles.addErrorAlert}
-                      kind={kinds.DANGER}
-                    >
-                      {translate('AddRootFolderError')}
-
-                      <ul>
-                        {
-                          Array.isArray(saveError.responseJSON) ?
-                            saveError.responseJSON.map((e, index) => {
-                              return (
-                                <li key={index}>
-                                  {e.errorMessage}
-                                </li>
-                              );
-                            }) :
-                            <li>
-                              {
-                                JSON.stringify(saveError.responseJSON)
-                              }
-                            </li>
-                        }
-                      </ul>
-                    </Alert> :
+                      error={saveError}
+                    /> :
                     null
                 }
 

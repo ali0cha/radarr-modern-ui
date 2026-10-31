@@ -22,7 +22,6 @@ import * as paths from './pathActions';
 import * as providerOptions from './providerOptionActions';
 import * as queue from './queueActions';
 import * as releases from './releaseActions';
-import * as rootFolders from './rootFolderActions';
 import * as settings from './settingsActions';
 import * as system from './systemActions';
 import * as wanted from './wantedActions';
@@ -48,7 +47,6 @@ export default [
   providerOptions,
   queue,
   releases,
-  rootFolders,
   movies,
   movieCollections,
   movieHistory,

@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { createAction } from 'redux-actions';
 import { batchActions } from 'redux-batched-actions';
+import { queryClient } from 'App/queryClient';
+import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getNewMovie from 'Utilities/Movie/getNewMovie';
@@ -8,7 +10,6 @@ import getSectionState from 'Utilities/State/getSectionState';
 import updateSectionState from 'Utilities/State/updateSectionState';
 import { removeItem, set, updateItem } from './baseActions';
 import createHandleActions from './Creators/createHandleActions';
-import { fetchRootFolders } from './rootFolderActions';
 
 //
 // Variables
@@ -253,7 +254,7 @@ export const actionHandlers = handleThunks({
         ...addedIds.map((id) => removeItem({ section, id }))
       ]));
 
-      dispatch(fetchRootFolders());
+      invalidateRootFolders(queryClient);
     });
 
     promise.fail((xhr) => {

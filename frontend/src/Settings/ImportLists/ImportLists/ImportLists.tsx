@@ -6,7 +6,7 @@ import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons } from 'Helpers/Props';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
+import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import {
   cloneImportList,
   fetchImportLists,
@@ -22,6 +22,8 @@ import styles from './ImportLists.module.css';
 
 function ImportLists() {
   const dispatch = useDispatch();
+
+  usePrefetchRootFolders();
 
   const { isFetching, isPopulated, items, error } = useSelector(
     createSortedSectionSelector<ImportListModel, ImportListAppState>(
@@ -62,7 +64,6 @@ function ImportLists() {
 
   useEffect(() => {
     dispatch(fetchImportLists());
-    dispatch(fetchRootFolders());
   }, [dispatch]);
 
   return (

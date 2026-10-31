@@ -1,49 +1,36 @@
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { createSelector } from 'reselect';
+import { useRootFolder } from 'RootFolder/useRootFolders';
 import { setAddMovieDefault } from 'Store/Actions/addMovieActions';
 import { clearImportMovie, importMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import ImportMovie from './ImportMovie';
 
 function createMapStateToProps() {
   return createSelector(
     (state, { rootFolderIdParam }) => rootFolderIdParam,
-    (state) => state.rootFolders,
+    (state, { rootFolder }) => rootFolder,
     (state) => state.addMovie,
     (state) => state.importMovie,
     (state) => state.settings.qualityProfiles,
     (
       rootFolderIdParam,
-      rootFolders,
+      rootFolder,
       addMovie,
       importMovieState,
       qualityProfiles
     ) => {
-      const {
-        isFetching: rootFoldersFetching,
-        isPopulated: rootFoldersPopulated,
-        error: rootFoldersError,
-        items
-      } = rootFolders;
-
       const rootFolderId = parseInt(rootFolderIdParam);
 
       const result = {
         rootFolderId,
-        rootFoldersFetching,
-        rootFoldersPopulated,
-        rootFoldersError,
         qualityProfiles: qualityProfiles.items,
         defaultQualityProfileId: addMovie.defaults.qualityProfileId
       };
 
-      if (items.length) {
-        const rootFolder = _.find(items, { id: rootFolderId });
-
+      if (rootFolder) {
         return {
           ...result,
           ...rootFolder,
@@ -60,7 +47,6 @@ const mapDispatchToProps = {
   dispatchSetImportMovieValue: setImportMovieValue,
   dispatchImportMovie: importMovie,
   dispatchClearImportMovie: clearImportMovie,
-  dispatchFetchRootFolders: fetchRootFolders,
   dispatchSetAddMovieDefault: setAddMovieDefault
 };
 
@@ -71,14 +57,10 @@ class ImportMovieConnectorBase extends Component {
 
   componentDidMount() {
     const {
-      rootFolderId,
       qualityProfiles,
       defaultQualityProfileId,
-      dispatchFetchRootFolders,
       dispatchSetAddMovieDefault
     } = this.props;
-
-    dispatchFetchRootFolders({ id: rootFolderId, timeout: false });
 
     let setDefaults = false;
     const setDefaultPayload = {};
@@ -142,7 +124,6 @@ ImportMovieConnectorBase.propTypes = {
   dispatchSetImportMovieValue: PropTypes.func.isRequired,
   dispatchImportMovie: PropTypes.func.isRequired,
   dispatchClearImportMovie: PropTypes.func.isRequired,
-  dispatchFetchRootFolders: PropTypes.func.isRequired,
   dispatchSetAddMovieDefault: PropTypes.func.isRequired
 };
 
@@ -150,8 +131,17 @@ const ConnectedImportMovie = connect(createMapStateToProps, mapDispatchToProps)(
 
 function ImportMovieConnector() {
   const { rootFolderId } = useParams();
+  const { data: rootFolder, isFetching, isSuccess, error } = useRootFolder(parseInt(rootFolderId));
 
-  return <ConnectedImportMovie rootFolderIdParam={rootFolderId} />;
+  return (
+    <ConnectedImportMovie
+      rootFolderIdParam={rootFolderId}
+      rootFolder={rootFolder}
+      rootFoldersFetching={isFetching}
+      rootFoldersPopulated={isSuccess}
+      rootFoldersError={error ?? undefined}
+    />
+  );
 }
 
 export default ImportMovieConnector;

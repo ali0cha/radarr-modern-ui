@@ -8,8 +8,8 @@ import SpinnerButton from 'Components/Link/SpinnerButton';
 import PageContentFooter from 'Components/Page/PageContentFooter';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
+import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import { saveMovieEditor } from 'Store/Actions/movieActions';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -48,6 +48,8 @@ function MovieIndexSelectFooter() {
   );
 
   const dispatch = useDispatch();
+
+  usePrefetchRootFolders();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
@@ -141,10 +143,6 @@ function MovieIndexSelectFooter() {
       selectDispatch({ type: 'unselectAll' });
     }
   }, [previousIsDeleting, isDeleting, deleteError, selectDispatch]);
-
-  useEffect(() => {
-    dispatch(fetchRootFolders());
-  }, [dispatch]);
 
   const anySelected = selectedCount > 0;
 

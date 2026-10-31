@@ -1,13 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import FileBrowserModal from 'Components/FileBrowser/FileBrowserModal';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import {
-  addRootFolder,
-  fetchRootFolders,
-} from 'Store/Actions/rootFolderActions';
-import createRootFoldersSelector from 'Store/Selectors/createRootFoldersSelector';
+import { useAddRootFolder, useRootFolders } from 'RootFolder/useRootFolders';
 import { EnhancedSelectInputChanged, InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import EnhancedSelectInput, {
@@ -37,23 +30,27 @@ export interface RootFolderSelectInputProps
   includeNoChangeDisabled?: boolean;
 }
 
-function createRootFolderOptionsSelector(
-  value: string | undefined,
-  includeMissingValue: boolean,
-  includeNoChange: boolean,
-  includeNoChangeDisabled: boolean
-) {
-  return createSelector(createRootFoldersSelector(), (rootFolders) => {
-    const values: RootFolderSelectInputValue[] = rootFolders.items.map(
-      (rootFolder) => {
-        return {
-          key: rootFolder.path,
-          value: rootFolder.path,
-          freeSpace: rootFolder.freeSpace,
-          isMissing: false,
-        };
-      }
-    );
+function RootFolderSelectInput({
+  name,
+  value,
+  includeMissingValue = true,
+  includeNoChange = false,
+  includeNoChangeDisabled = true,
+  onChange,
+  ...otherProps
+}: RootFolderSelectInputProps) {
+  const { items } = useRootFolders();
+  const { mutate: addRootFolder } = useAddRootFolder();
+
+  const values = useMemo(() => {
+    const values: RootFolderSelectInputValue[] = items.map((rootFolder) => {
+      return {
+        key: rootFolder.path,
+        value: rootFolder.path,
+        freeSpace: rootFolder.freeSpace,
+        isMissing: false,
+      };
+    });
 
     if (includeNoChange) {
       values.unshift({
@@ -89,36 +86,17 @@ function createRootFolderOptionsSelector(
       value: translate('AddANewPath'),
     });
 
-    return {
-      values,
-      isSaving: rootFolders.isSaving,
-      saveError: rootFolders.saveError,
-    };
-  });
-}
+    return values;
+  }, [
+    items,
+    value,
+    includeMissingValue,
+    includeNoChange,
+    includeNoChangeDisabled,
+  ]);
 
-function RootFolderSelectInput({
-  name,
-  value,
-  includeMissingValue = true,
-  includeNoChange = false,
-  includeNoChangeDisabled = true,
-  onChange,
-  ...otherProps
-}: RootFolderSelectInputProps) {
-  const dispatch = useDispatch();
-  const { values, isSaving, saveError } = useSelector(
-    createRootFolderOptionsSelector(
-      value,
-      includeMissingValue,
-      includeNoChange,
-      includeNoChangeDisabled
-    )
-  );
   const [isAddNewRootFolderModalOpen, setIsAddNewRootFolderModalOpen] =
     useState(false);
-  const [newRootFolderPath, setNewRootFolderPath] = useState('');
-  const previousIsSaving = usePrevious(isSaving);
 
   const handleChange = useCallback(
     ({ value: newValue }: EnhancedSelectInputChanged<string>) => {
@@ -133,10 +111,16 @@ function RootFolderSelectInput({
 
   const handleNewRootFolderSelect = useCallback(
     ({ value: newValue }: InputChanged<string>) => {
-      setNewRootFolderPath(newValue);
-      dispatch(addRootFolder({ path: newValue }));
+      addRootFolder(
+        { path: newValue },
+        {
+          onSuccess: () => {
+            onChange({ name, value: newValue });
+          },
+        }
+      );
     },
-    [setNewRootFolderPath, dispatch]
+    [name, addRootFolder, onChange]
   );
 
   const handleAddRootFolderModalClose = useCallback(() => {
@@ -155,21 +139,7 @@ function RootFolderSelectInput({
         onChange({ name, value: defaultValue.key });
       }
     }
-
-    if (previousIsSaving && !isSaving && !saveError && newRootFolderPath) {
-      onChange({ name, value: newRootFolderPath });
-      setNewRootFolderPath('');
-    }
-  }, [
-    name,
-    value,
-    values,
-    isSaving,
-    saveError,
-    previousIsSaving,
-    newRootFolderPath,
-    onChange,
-  ]);
+  }, [name, value, values, onChange]);
 
   useEffect(() => {
     if (value == null && values[0].key === '') {
@@ -191,10 +161,6 @@ function RootFolderSelectInput({
     // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    dispatch(fetchRootFolders());
-  }, [dispatch]);
 
   return (
     <>

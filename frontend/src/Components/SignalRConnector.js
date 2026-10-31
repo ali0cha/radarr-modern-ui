@@ -4,12 +4,12 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { queryClient } from 'App/queryClient';
+import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchQueue, fetchQueueDetails } from 'Store/Actions/queueActions';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import { fetchQualityDefinitions } from 'Store/Actions/settingsActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import { invalidateTags } from 'Tags/useTags';
@@ -51,7 +51,6 @@ const mapDispatchToProps = {
   dispatchFetchQualityDefinitions: fetchQualityDefinitions,
   dispatchFetchQueue: fetchQueue,
   dispatchFetchQueueDetails: fetchQueueDetails,
-  dispatchFetchRootFolders: fetchRootFolders,
   dispatchFetchMovies: fetchMovies
 };
 
@@ -318,7 +317,7 @@ class SignalRConnector extends Component {
   };
 
   handleRootfolder = () => {
-    this.props.dispatchFetchRootFolders();
+    invalidateRootFolders(queryClient);
   };
 
   handleTag = (body) => {
@@ -414,7 +413,6 @@ SignalRConnector.propTypes = {
   dispatchFetchQualityDefinitions: PropTypes.func.isRequired,
   dispatchFetchQueue: PropTypes.func.isRequired,
   dispatchFetchQueueDetails: PropTypes.func.isRequired,
-  dispatchFetchRootFolders: PropTypes.func.isRequired,
   dispatchFetchMovies: PropTypes.func.isRequired
 };
 

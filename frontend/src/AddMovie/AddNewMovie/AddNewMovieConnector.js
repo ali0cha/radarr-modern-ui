@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { createSelector } from 'reselect';
+import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import { clearAddMovie, lookupMovie } from 'Store/Actions/addMovieActions';
 import { clearMovieFiles, fetchMovieFiles } from 'Store/Actions/movieFileActions';
 import { clearQueueDetails, fetchQueueDetails } from 'Store/Actions/queueActions';
-import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import parseUrl from 'Utilities/String/parseUrl';
@@ -32,7 +32,6 @@ function createMapStateToProps() {
 const mapDispatchToProps = {
   lookupMovie,
   clearAddMovie,
-  fetchRootFolders,
   fetchQueueDetails,
   clearQueueDetails,
   fetchMovieFiles,
@@ -51,7 +50,6 @@ class AddNewMovieConnectorBase extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchRootFolders();
     this.props.fetchQueueDetails();
   }
 
@@ -126,7 +124,6 @@ AddNewMovieConnectorBase.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   lookupMovie: PropTypes.func.isRequired,
   clearAddMovie: PropTypes.func.isRequired,
-  fetchRootFolders: PropTypes.func.isRequired,
   fetchQueueDetails: PropTypes.func.isRequired,
   clearQueueDetails: PropTypes.func.isRequired,
   fetchMovieFiles: PropTypes.func.isRequired,
@@ -137,6 +134,8 @@ const ConnectedAddNewMovie = connect(createMapStateToProps, mapDispatchToProps)(
 
 function AddNewMovieConnector() {
   const { search } = useLocation();
+
+  usePrefetchRootFolders();
 
   return <ConnectedAddNewMovie locationSearch={search} />;
 }

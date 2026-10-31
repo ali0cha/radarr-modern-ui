@@ -18,7 +18,6 @@ import PathsAppState from './PathsAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import QueueAppState from './QueueAppState';
 import ReleasesAppState from './ReleasesAppState';
-import RootFolderAppState from './RootFolderAppState';
 import SettingsAppState from './SettingsAppState';
 import SystemAppState from './SystemAppState';
 import WantedAppState from './WantedAppState';
@@ -98,7 +97,6 @@ interface AppState {
   providerOptions: ProviderOptionsAppState;
   queue: QueueAppState;
   releases: ReleasesAppState;
-  rootFolders: RootFolderAppState;
   settings: SettingsAppState;
   system: SystemAppState;
   wanted: WantedAppState;
