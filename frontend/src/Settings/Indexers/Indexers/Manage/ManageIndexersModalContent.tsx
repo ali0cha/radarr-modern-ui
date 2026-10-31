@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { IndexerAppState } from 'App/State/SettingsAppState';
 import Alert from 'Components/Alert';
 import Button from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
@@ -13,18 +11,19 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
+import { useClientSideSort } from 'Helpers/Hooks/useClientSideSort';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds } from 'Helpers/Props';
 import {
-  bulkDeleteIndexers,
-  bulkEditIndexers,
-  setManageIndexersSort,
-} from 'Store/Actions/settingsActions';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
+  useBulkDeleteProviders,
+  useBulkEditProviders,
+} from 'Settings/useProviderSettings';
+import Indexer from 'typings/Indexer';
 import { CheckInputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
+import { INDEXERS_PATH, useIndexers } from '../../useIndexers';
 import ManageIndexersEditModal from './Edit/ManageIndexersEditModal';
 import ManageIndexersModalRow from './ManageIndexersModalRow';
 import TagsModal from './Tags/TagsModal';
@@ -84,22 +83,36 @@ interface ManageIndexersModalContentProps {
   onModalClose(): void;
 }
 
+const sortPredicates = {
+  name: ({ name }: Indexer) => name.toLocaleLowerCase(),
+};
+
 function ManageIndexersModalContent(props: ManageIndexersModalContentProps) {
   const { onModalClose } = props;
 
   const {
-    isFetching,
+    items: indexers,
+    isFetching: isFetchingIndexers,
     isPopulated,
-    isDeleting,
-    isSaving,
     error,
-    items,
-    sortKey,
-    sortDirection,
-  }: IndexerAppState = useSelector(
-    createClientSideCollectionSelector('settings.indexers')
+  } = useIndexers();
+
+  // The table must stay while the indexers are refreshed in the background:
+  // its rows unselect their item when they go away.
+  const isFetching = isFetchingIndexers && !isPopulated;
+
+  const { items, sortKey, sortDirection, onSortPress } = useClientSideSort(
+    indexers,
+    { sortKey: 'name', sortDirection: 'ascending', predicates: sortPredicates }
   );
-  const dispatch = useDispatch();
+
+  const { bulkDelete, isBulkDeleting: isDeleting } =
+    useBulkDeleteProviders<Indexer>(INDEXERS_PATH);
+
+  const { bulkEdit, isBulkEditing: isSaving } = useBulkEditProviders<
+    Indexer,
+    object
+  >(INDEXERS_PATH);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -115,13 +128,6 @@ function ManageIndexersModalContent(props: ManageIndexersModalContentProps) {
   }, [selectedState]);
 
   const selectedCount = selectedIds.length;
-
-  const onSortPress = useCallback(
-    (value: string) => {
-      dispatch(setManageIndexersSort({ sortKey: value }));
-    },
-    [dispatch]
-  );
 
   const onDeletePress = useCallback(() => {
     setIsDeleteModalOpen(true);
@@ -140,22 +146,20 @@ function ManageIndexersModalContent(props: ManageIndexersModalContentProps) {
   }, [setIsEditModalOpen]);
 
   const onConfirmDelete = useCallback(() => {
-    dispatch(bulkDeleteIndexers({ ids: selectedIds }));
+    bulkDelete({ ids: selectedIds });
     setIsDeleteModalOpen(false);
-  }, [selectedIds, dispatch]);
+  }, [selectedIds, bulkDelete]);
 
   const onSavePress = useCallback(
     (payload: object) => {
       setIsEditModalOpen(false);
 
-      dispatch(
-        bulkEditIndexers({
-          ids: selectedIds,
-          ...payload,
-        })
-      );
+      bulkEdit({
+        ids: selectedIds,
+        ...payload,
+      });
     },
-    [selectedIds, dispatch]
+    [selectedIds, bulkEdit]
   );
 
   const onTagsPress = useCallback(() => {
@@ -171,15 +175,13 @@ function ManageIndexersModalContent(props: ManageIndexersModalContentProps) {
       setIsSavingTags(true);
       setIsTagsModalOpen(false);
 
-      dispatch(
-        bulkEditIndexers({
-          ids: selectedIds,
-          tags,
-          applyTags,
-        })
-      );
+      bulkEdit({
+        ids: selectedIds,
+        tags,
+        applyTags,
+      });
     },
-    [selectedIds, dispatch]
+    [selectedIds, bulkEdit]
   );
 
   const onSelectAllChange = useCallback(

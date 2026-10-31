@@ -1,44 +1,27 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import Button from 'Components/Link/Button';
 import Link from 'Components/Link/Link';
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
-import { selectIndexerSchema } from 'Store/Actions/settingsActions';
 import Indexer from 'typings/Indexer';
 import translate from 'Utilities/String/translate';
+import { getNewIndexer } from '../useIndexers';
 import AddIndexerPresetMenuItem from './AddIndexerPresetMenuItem';
 import styles from './AddIndexerItem.module.css';
 
 interface AddIndexerItemProps {
-  implementation: string;
-  implementationName: string;
-  infoLink: string;
-  presets?: Indexer[];
-  onIndexerSelect: () => void;
+  indexer: Indexer & { presets?: Indexer[] };
+  onIndexerSelect: (indexer: Indexer) => void;
 }
 
-function AddIndexerItem({
-  implementation,
-  implementationName,
-  infoLink,
-  presets,
-  onIndexerSelect,
-}: AddIndexerItemProps) {
-  const dispatch = useDispatch();
+function AddIndexerItem({ indexer, onIndexerSelect }: AddIndexerItemProps) {
+  const { implementationName, infoLink, presets } = indexer;
   const hasPresets = !!presets && !!presets.length;
 
   const handleIndexerSelect = useCallback(() => {
-    dispatch(
-      selectIndexerSchema({
-        implementation,
-        implementationName,
-      })
-    );
-
-    onIndexerSelect();
-  }, [implementation, implementationName, dispatch, onIndexerSelect]);
+    onIndexerSelect(getNewIndexer(indexer));
+  }, [indexer, onIndexerSelect]);
 
   return (
     <div className={styles.indexer}>
@@ -65,8 +48,7 @@ function AddIndexerItem({
                       <AddIndexerPresetMenuItem
                         key={preset.name}
                         name={preset.name}
-                        implementation={implementation}
-                        implementationName={implementationName}
+                        indexer={indexer}
                         onPress={onIndexerSelect}
                       />
                     );

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import { ReleaseProfilesAppState } from 'App/State/SettingsAppState';
 import Card from 'Components/Card';
 import FieldSet from 'Components/FieldSet';
@@ -8,7 +7,7 @@ import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
 import { icons } from 'Helpers/Props';
-import { fetchIndexers } from 'Store/Actions/Settings/indexers';
+import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { fetchReleaseProfiles } from 'Store/Actions/Settings/releaseProfiles';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import useTags from 'Tags/useTags';
@@ -22,9 +21,7 @@ function ReleaseProfiles() {
     useSelector(createClientSideCollectionSelector('settings.releaseProfiles'));
 
   const tagList = useTags();
-  const indexerList = useSelector(
-    (state: AppState) => state.settings.indexers.items
-  );
+  const { items: indexerList } = useIndexers();
 
   const dispatch = useDispatch();
 
@@ -36,7 +33,6 @@ function ReleaseProfiles() {
 
   useEffect(() => {
     dispatch(fetchReleaseProfiles());
-    dispatch(fetchIndexers());
   }, [dispatch]);
 
   return (

@@ -1,33 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { IndexerAppState } from 'App/State/SettingsAppState';
+import React, { useCallback, useState } from 'react';
 import Card from 'Components/Card';
 import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons } from 'Helpers/Props';
-import { cloneIndexer, fetchIndexers } from 'Store/Actions/settingsActions';
-import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
-import IndexerModel from 'typings/Indexer';
-import sortByProp from 'Utilities/Array/sortByProp';
+import Indexer from 'typings/Indexer';
 import translate from 'Utilities/String/translate';
+import { getClonedIndexer, useIndexers } from '../useIndexers';
 import AddIndexerModal from './AddIndexerModal';
 import EditIndexerModal from './EditIndexerModal';
-import Indexer from './Indexer';
+import IndexerComponent from './Indexer';
 import styles from './Indexers.module.css';
 
 function Indexers() {
-  const dispatch = useDispatch();
-
-  const { isFetching, isPopulated, items, error } = useSelector(
-    createSortedSectionSelector<IndexerModel, IndexerAppState>(
-      'settings.indexers',
-      sortByProp('name')
-    )
-  );
+  const { items, isFetching, isPopulated, error } = useIndexers();
 
   const [isAddIndexerModalOpen, setIsAddIndexerModalOpen] = useState(false);
   const [isEditIndexerModalOpen, setIsEditIndexerModalOpen] = useState(false);
+
+  // The indexer that is edited when it is new: a chosen implementation or a clone
+  const [newIndexer, setNewIndexer] = useState<Indexer | undefined>();
 
   const showPriority = items.some((index) => index.priority !== 25);
 
@@ -37,13 +29,18 @@ function Indexers() {
 
   const handleCloneIndexerPress = useCallback(
     (id: number) => {
-      dispatch(cloneIndexer({ id }));
-      setIsEditIndexerModalOpen(true);
+      const indexer = items.find((item) => item.id === id);
+
+      if (indexer) {
+        setNewIndexer(getClonedIndexer(indexer));
+        setIsEditIndexerModalOpen(true);
+      }
     },
-    [dispatch]
+    [items]
   );
 
-  const handleIndexerSelect = useCallback(() => {
+  const handleIndexerSelect = useCallback((indexer: Indexer) => {
+    setNewIndexer(indexer);
     setIsAddIndexerModalOpen(false);
     setIsEditIndexerModalOpen(true);
   }, []);
@@ -56,22 +53,18 @@ function Indexers() {
     setIsEditIndexerModalOpen(false);
   }, []);
 
-  useEffect(() => {
-    dispatch(fetchIndexers());
-  }, [dispatch]);
-
   return (
     <FieldSet legend={translate('Indexers')}>
       <PageSectionContent
         errorMessage={translate('IndexersLoadError')}
-        error={error}
+        error={error ?? undefined}
         isFetching={isFetching}
         isPopulated={isPopulated}
       >
         <div className={styles.indexers}>
           {items.map((item) => {
             return (
-              <Indexer
+              <IndexerComponent
                 key={item.id}
                 {...item}
                 showPriority={showPriority}
@@ -95,6 +88,7 @@ function Indexers() {
 
         <EditIndexerModal
           isOpen={isEditIndexerModalOpen}
+          defaultIndexer={newIndexer}
           onModalClose={handleEditIndexerModalClose}
         />
       </PageSectionContent>

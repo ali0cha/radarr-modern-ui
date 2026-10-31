@@ -4,12 +4,13 @@ import Icon, { IconKind, IconName } from 'Components/Icon';
 import SpinnerButton, {
   SpinnerButtonProps,
 } from 'Components/Link/SpinnerButton';
+import { ApiError } from 'Helpers/Hooks/useApiQuery';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
-import { ValidationFailure } from 'typings/pending';
+import { getFailureList } from 'Store/Selectors/selectSettings';
 import styles from './SpinnerErrorButton.module.css';
 
-function getTestResult(error: Error | string | undefined) {
+function getTestResult(error: Error | ApiError | string | null | undefined) {
   if (!error) {
     return {
       wasSuccessful: true,
@@ -18,15 +19,16 @@ function getTestResult(error: Error | string | undefined) {
     };
   }
 
-  if (typeof error === 'string' || error.status !== 400) {
+  const failures =
+    typeof error === 'string' ? undefined : getFailureList(error);
+
+  if (!failures) {
     return {
       wasSuccessful: false,
       hasWarning: false,
       hasError: true,
     };
   }
-
-  const failures = error.responseJSON as ValidationFailure[];
 
   const { hasError, hasWarning } = failures.reduce(
     (acc, failure) => {
@@ -50,7 +52,7 @@ function getTestResult(error: Error | string | undefined) {
 
 interface SpinnerErrorButtonProps extends SpinnerButtonProps {
   isSpinning: boolean;
-  error?: Error | string;
+  error?: Error | ApiError | string | null;
   children: React.ReactNode;
 }
 

@@ -4,7 +4,9 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { queryClient } from 'App/queryClient';
+import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
+import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
@@ -214,14 +216,8 @@ class SignalRConnector extends Component {
     }
   };
 
-  handleIndexer = ({ action, resource }) => {
-    const section = 'settings.indexers';
-
-    if (action === 'created' || action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...resource });
-    } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: resource.id });
-    }
+  handleIndexer = () => {
+    invalidateApiQueries(queryClient, INDEXERS_PATH);
   };
 
   handleMetadata = ({ action, resource }) => {

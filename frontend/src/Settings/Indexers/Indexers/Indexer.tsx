@@ -1,15 +1,15 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Card from 'Components/Card';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TagList from 'Components/TagList';
 import { icons, kinds } from 'Helpers/Props';
-import { deleteIndexer } from 'Store/Actions/settingsActions';
+import { useDeleteProvider } from 'Settings/useProviderSettings';
 import useTags from 'Tags/useTags';
 import IndexerModel from 'typings/Indexer';
 import translate from 'Utilities/String/translate';
+import { INDEXERS_PATH } from '../useIndexers';
 import EditIndexerModal from './EditIndexerModal';
 import styles from './Indexer.module.css';
 
@@ -31,7 +31,7 @@ function Indexer({
   showPriority,
   onCloneIndexerPress,
 }: IndexerProps) {
-  const dispatch = useDispatch();
+  const { deleteProvider } = useDeleteProvider<IndexerModel>(id, INDEXERS_PATH);
   const tagList = useTags();
 
   const [isEditIndexerModalOpen, setIsEditIndexerModalOpen] = useState(false);
@@ -56,8 +56,8 @@ function Indexer({
   }, []);
 
   const handleConfirmDeleteIndexer = useCallback(() => {
-    dispatch(deleteIndexer({ id }));
-  }, [id, dispatch]);
+    deleteProvider();
+  }, [deleteProvider]);
 
   const handleCloneIndexerPress = useCallback(() => {
     onCloneIndexerPress(id);

@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useMemo } from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Button from 'Components/Link/Button';
@@ -10,14 +8,15 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
-import { fetchIndexerSchema } from 'Store/Actions/settingsActions';
+import { useProviderSchema } from 'Settings/useProviderSettings';
 import Indexer from 'typings/Indexer';
 import translate from 'Utilities/String/translate';
+import { INDEXERS_PATH } from '../useIndexers';
 import AddIndexerItem from './AddIndexerItem';
 import styles from './AddIndexerModalContent.module.css';
 
 interface AddIndexerModalContentProps {
-  onIndexerSelect: () => void;
+  onIndexerSelect: (indexer: Indexer) => void;
   onModalClose: () => void;
 }
 
@@ -25,10 +24,12 @@ function AddIndexerModalContent({
   onIndexerSelect,
   onModalClose,
 }: AddIndexerModalContentProps) {
-  const dispatch = useDispatch();
-
-  const { isSchemaFetching, isSchemaPopulated, schemaError, schema } =
-    useSelector((state: AppState) => state.settings.indexers);
+  const {
+    data: schema,
+    isFetching: isSchemaFetching,
+    isSuccess: isSchemaPopulated,
+    error: schemaError,
+  } = useProviderSchema<Indexer>(INDEXERS_PATH);
 
   const { usenetIndexers, torrentIndexers } = useMemo(() => {
     return schema.reduce<{
@@ -50,10 +51,6 @@ function AddIndexerModalContent({
       }
     );
   }, [schema]);
-
-  useEffect(() => {
-    dispatch(fetchIndexerSchema());
-  }, [dispatch]);
 
   return (
     <ModalContent onModalClose={onModalClose}>
@@ -79,8 +76,7 @@ function AddIndexerModalContent({
                   return (
                     <AddIndexerItem
                       key={indexer.implementation}
-                      {...indexer}
-                      implementation={indexer.implementation}
+                      indexer={indexer}
                       onIndexerSelect={onIndexerSelect}
                     />
                   );
@@ -94,8 +90,7 @@ function AddIndexerModalContent({
                   return (
                     <AddIndexerItem
                       key={indexer.implementation}
-                      {...indexer}
-                      implementation={indexer.implementation}
+                      indexer={indexer}
                       onIndexerSelect={onIndexerSelect}
                     />
                   );

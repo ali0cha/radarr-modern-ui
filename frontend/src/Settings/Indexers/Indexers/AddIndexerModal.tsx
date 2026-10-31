@@ -1,10 +1,11 @@
 import React from 'react';
 import Modal from 'Components/Modal/Modal';
+import Indexer from 'typings/Indexer';
 import AddIndexerModalContent from './AddIndexerModalContent';
 
 interface AddIndexerModalProps {
   isOpen: boolean;
-  onIndexerSelect: () => void;
+  onIndexerSelect: (indexer: Indexer) => void;
   onModalClose: () => void;
 }
 

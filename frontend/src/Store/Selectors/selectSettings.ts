@@ -19,7 +19,7 @@ interface ValidationFailures {
 }
 
 // The server answers a 400 with the list of the failed validations.
-function getFailureList(saveError?: Error | ApiError | null) {
+export function getFailureList(saveError?: Error | ApiError | null) {
   if (!saveError) {
     return undefined;
   }

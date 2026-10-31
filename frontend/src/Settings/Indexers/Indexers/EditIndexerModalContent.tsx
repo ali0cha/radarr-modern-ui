@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { IndexerAppState } from 'App/State/SettingsAppState';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -18,44 +16,45 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds } from 'Helpers/Props';
 import AdvancedSettingsButton from 'Settings/AdvancedSettingsButton';
-import {
-  saveIndexer,
-  setIndexerFieldValue,
-  setIndexerValue,
-  testIndexer,
-} from 'Store/Actions/settingsActions';
-import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProviderSettingsSelector';
+import { useManageProviderSettings } from 'Settings/useProviderSettings';
 import Indexer from 'typings/Indexer';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
+import { INDEXERS_PATH, useIndexers } from '../useIndexers';
 import styles from './EditIndexerModalContent.module.css';
+
+const NO_INDEXER = { fields: [] } as unknown as Indexer;
 
 export interface EditIndexerModalContentProps {
   id?: number;
+  // The indexer to start from when it is new
+  defaultIndexer?: Indexer;
   onModalClose: () => void;
   onDeleteIndexerPress?: () => void;
 }
 
 function EditIndexerModalContent({
   id,
+  defaultIndexer = NO_INDEXER,
   onModalClose,
   onDeleteIndexerPress,
 }: EditIndexerModalContentProps) {
-  const dispatch = useDispatch();
   const showAdvancedSettings = useShowAdvancedSettings();
+  const { isFetching: isFetchingIndexers, isPopulated, error } = useIndexers();
+  const isFetching = isFetchingIndexers && !isPopulated;
 
   const {
-    isFetching,
-    error,
     isSaving,
-    isTesting = false,
+    isTesting,
     saveError,
     item,
     validationErrors,
     validationWarnings,
-  } = useSelector(
-    createProviderSettingsSelectorHook<Indexer, IndexerAppState>('indexers', id)
-  );
+    updateValue,
+    updateFieldValue,
+    saveProvider,
+    testProvider,
+  } = useManageProviderSettings<Indexer>(id, defaultIndexer, INDEXERS_PATH);
 
   const wasSaving = usePrevious(isSaving);
 
@@ -75,28 +74,18 @@ function EditIndexerModalContent({
   } = item;
 
   const handleInputChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setIndexerValue(change));
+    ({ name, value }: InputChanged) => {
+      updateValue(name as keyof Indexer, value as Indexer[keyof Indexer]);
     },
-    [dispatch]
+    [updateValue]
   );
 
   const handleFieldChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setIndexerFieldValue(change));
+    ({ name, value }: InputChanged) => {
+      updateFieldValue({ [name]: value });
     },
-    [dispatch]
+    [updateFieldValue]
   );
-
-  const handleSavePress = useCallback(() => {
-    dispatch(saveIndexer({ id }));
-  }, [id, dispatch]);
-
-  const handleTestPress = useCallback(() => {
-    dispatch(testIndexer({ id }));
-  }, [id, dispatch]);
 
   useEffect(() => {
     if (!isSaving && wasSaving && !saveError) {
@@ -277,7 +266,7 @@ function EditIndexerModalContent({
         <SpinnerErrorButton
           isSpinning={isTesting}
           error={saveError}
-          onPress={handleTestPress}
+          onPress={testProvider}
         >
           {translate('Test')}
         </SpinnerErrorButton>
@@ -287,7 +276,7 @@ function EditIndexerModalContent({
         <SpinnerErrorButton
           isSpinning={isSaving}
           error={saveError}
-          onPress={handleSavePress}
+          onPress={saveProvider}
         >
           {translate('Save')}
         </SpinnerErrorButton>

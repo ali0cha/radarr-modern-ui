@@ -1,79 +1,25 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import tagShape from 'Helpers/Props/Shapes/tagShape';
-import { fetchIndexers } from 'Store/Actions/settingsActions';
+import React, { useMemo } from 'react';
+import { useIndexers } from 'Settings/Indexers/useIndexers';
 import FilterBuilderRowValue from './FilterBuilderRowValue';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.settings.indexers,
-    (qualityProfiles) => {
-      const {
-        isFetching,
-        isPopulated,
-        error,
-        items
-      } = qualityProfiles;
+function IndexerFilterBuilderRowValueConnector(props) {
+  const { items } = useIndexers();
 
-      const tagList = items.map((item) => {
-        return {
-          id: item.id,
-          name: item.name
-        };
-      });
-
+  const tagList = useMemo(() => {
+    return items.map((item) => {
       return {
-        isFetching,
-        isPopulated,
-        error,
-        tagList
+        id: item.id,
+        name: item.name
       };
-    }
+    });
+  }, [items]);
+
+  return (
+    <FilterBuilderRowValue
+      {...props}
+      tagList={tagList}
+    />
   );
 }
 
-const mapDispatchToProps = {
-  dispatchFetchIndexers: fetchIndexers
-};
-
-class IndexerFilterBuilderRowValueConnector extends Component {
-
-  //
-  // Lifecycle
-
-  componentDidMount = () => {
-    if (!this.props.isPopulated) {
-      this.props.dispatchFetchIndexers();
-    }
-  };
-
-  //
-  // Render
-
-  render() {
-    const {
-      isFetching,
-      isPopulated,
-      error,
-      ...otherProps
-    } = this.props;
-
-    return (
-      <FilterBuilderRowValue
-        {...otherProps}
-      />
-    );
-  }
-}
-
-IndexerFilterBuilderRowValueConnector.propTypes = {
-  tagList: PropTypes.arrayOf(PropTypes.shape(tagShape)).isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  isPopulated: PropTypes.bool.isRequired,
-  error: PropTypes.object,
-  dispatchFetchIndexers: PropTypes.func.isRequired
-};
-
-export default connect(createMapStateToProps, mapDispatchToProps)(IndexerFilterBuilderRowValueConnector);
+export default IndexerFilterBuilderRowValueConnector;

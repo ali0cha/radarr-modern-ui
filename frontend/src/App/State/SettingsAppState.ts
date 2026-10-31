@@ -14,7 +14,6 @@ import DownloadClient from 'typings/DownloadClient';
 import ImportList from 'typings/ImportList';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import ImportListOptionsSettings from 'typings/ImportListOptionsSettings';
-import Indexer from 'typings/Indexer';
 import IndexerFlag from 'typings/IndexerFlag';
 import Notification from 'typings/Notification';
 import QualityProfile from 'typings/QualityProfile';
@@ -75,14 +74,6 @@ export interface ImportListAppState
   isTestingAll: boolean;
 }
 
-export interface IndexerAppState
-  extends AppSectionState<Indexer>,
-    AppSectionDeleteState,
-    AppSectionSaveState,
-    AppSectionSchemaState<Presets<Indexer>> {
-  isTestingAll: boolean;
-}
-
 export interface NotificationAppState
   extends AppSectionState<Notification>,
     AppSectionDeleteState {}
@@ -130,7 +121,6 @@ interface SettingsAppState {
   importListOptions: ImportListOptionsSettingsAppState;
   importLists: ImportListAppState;
   indexerFlags: IndexerFlagSettingsAppState;
-  indexers: IndexerAppState;
   languages: LanguageSettingsAppState;
   mediaManagement: MediaManagementAppState;
   metadata: MetadataAppState;

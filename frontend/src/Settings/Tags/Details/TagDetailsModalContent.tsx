@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import ModelBase from 'App/ModelBase';
@@ -11,6 +11,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
+import { useIndexers } from 'Settings/Indexers/useIndexers';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsDelayProfile from './TagDetailsDelayProfile';
@@ -114,11 +115,10 @@ function TagDetailsModalContent({
     )
   );
 
-  const indexers = useSelector(
-    createMatchingItemSelector(
-      indexerIds,
-      (state: AppState) => state.settings.indexers.items
-    )
+  const { items: allIndexers } = useIndexers();
+  const indexers = useMemo(
+    () => findMatchingItems(indexerIds, allIndexers),
+    [indexerIds, allIndexers]
   );
 
   const downloadClients = useSelector(

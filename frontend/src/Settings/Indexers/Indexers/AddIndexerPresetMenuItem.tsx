@@ -1,36 +1,24 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import MenuItem, { MenuItemProps } from 'Components/Menu/MenuItem';
-import { selectIndexerSchema } from 'Store/Actions/settingsActions';
+import Indexer from 'typings/Indexer';
+import { getNewIndexer } from '../useIndexers';
 
 interface AddIndexerPresetMenuItemProps
-  extends Omit<MenuItemProps, 'children'> {
+  extends Omit<MenuItemProps, 'children' | 'onPress'> {
   name: string;
-  implementation: string;
-  implementationName: string;
-  onPress: () => void;
+  indexer: Indexer;
+  onPress: (indexer: Indexer) => void;
 }
 
 function AddIndexerPresetMenuItem({
   name,
-  implementation,
-  implementationName,
+  indexer,
   onPress,
   ...otherProps
 }: AddIndexerPresetMenuItemProps) {
-  const dispatch = useDispatch();
-
   const handlePress = useCallback(() => {
-    dispatch(
-      selectIndexerSchema({
-        implementation,
-        implementationName,
-        presetName: name,
-      })
-    );
-
-    onPress();
-  }, [name, implementation, implementationName, dispatch, onPress]);
+    onPress(getNewIndexer(indexer, name));
+  }, [name, indexer, onPress]);
 
   return (
     <MenuItem {...otherProps} onPress={handlePress}>

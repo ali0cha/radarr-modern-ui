@@ -14,10 +14,9 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import { icons, kinds } from 'Helpers/Props';
-import {
-  testAllDownloadClients,
-  testAllIndexers,
-} from 'Store/Actions/settingsActions';
+import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
+import { useTestAllProviders } from 'Settings/useProviderSettings';
+import { testAllDownloadClients } from 'Store/Actions/settingsActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
@@ -52,9 +51,8 @@ function Health() {
   const isTestingAllDownloadClients = useSelector(
     (state: AppState) => state.settings.downloadClients.isTestingAll
   );
-  const isTestingAllIndexers = useSelector(
-    (state: AppState) => state.settings.indexers.isTestingAll
-  );
+  const { testAll: testAllIndexers, isTestingAll: isTestingAllIndexers } =
+    useTestAllProviders(INDEXERS_PATH);
 
   const healthIssues = !!items.length;
 
@@ -62,9 +60,7 @@ function Health() {
     dispatch(testAllDownloadClients());
   }, [dispatch]);
 
-  const handleTestAllIndexersPress = useCallback(() => {
-    dispatch(testAllIndexers());
-  }, [dispatch]);
+  const handleTestAllIndexersPress = testAllIndexers;
 
   useEffect(() => {
     dispatch(fetchHealth());
