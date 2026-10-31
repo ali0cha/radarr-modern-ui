@@ -61,10 +61,6 @@ import {
 } from 'Store/Actions/extraFileActions';
 import { toggleMovieMonitored } from 'Store/Actions/movieActions';
 import {
-  clearMovieCredits,
-  fetchMovieCredits,
-} from 'Store/Actions/movieCreditsActions';
-import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
@@ -93,6 +89,7 @@ import {
 import translate from 'Utilities/String/translate';
 import MovieCastPosters from './Credits/Cast/MovieCastPosters';
 import MovieCrewPosters from './Credits/Crew/MovieCrewPosters';
+import useMovieCredits from './Credits/useMovieCredits';
 import MovieDetailsLinks from './MovieDetailsLinks';
 import MovieReleaseDates from './MovieReleaseDates';
 import MovieStatusLabel from './MovieStatusLabel';
@@ -137,19 +134,6 @@ function createExtraFilesSelector() {
   );
 }
 
-function createMovieCreditsSelector() {
-  return createSelector(
-    (state: AppState) => state.movieCredits,
-    ({ isFetching, isPopulated, error }) => {
-      return {
-        isMovieCreditsFetching: isFetching,
-        isMovieCreditsPopulated: isPopulated,
-        movieCreditsError: error,
-      };
-    }
-  );
-}
-
 interface MovieDetailsProps {
   movieId: number;
 }
@@ -167,9 +151,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   const { isExtraFilesFetching, extraFilesError } = useSelector(
     createExtraFilesSelector()
   );
-  const { isMovieCreditsFetching, movieCreditsError } = useSelector(
-    createMovieCreditsSelector()
-  );
+  const {
+    isFetching: isMovieCreditsFetching,
+    error: movieCreditsError,
+    refetch: refetchMovieCredits,
+  } = useMovieCredits(movieId);
   const { movieRuntimeFormat } = useSelector(createUISettingsSelector());
   const isSidebarVisible = useSelector(
     (state: AppState) => state.app.isSidebarVisible
@@ -461,10 +447,10 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   const populate = useCallback(() => {
     dispatch(fetchMovieFiles({ movieId }));
     dispatch(fetchExtraFiles({ movieId }));
-    dispatch(fetchMovieCredits({ movieId }));
+    refetchMovieCredits({ cancelRefetch: false });
     dispatch(fetchQueueDetails({ movieId }));
     dispatch(fetchImportListSchema());
-  }, [movieId, dispatch]);
+  }, [movieId, dispatch, refetchMovieCredits]);
 
   useEffect(() => {
     populate();
@@ -477,7 +463,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
       unregisterPagePopulator(populate);
       dispatch(clearMovieFiles());
       dispatch(clearExtraFiles());
-      dispatch(clearMovieCredits());
       dispatch(clearQueueDetails());
       dispatch(cancelFetchReleases());
       dispatch(clearReleases());
@@ -912,11 +897,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
           </FieldSet>
 
           <FieldSet legend={translate('Cast')}>
-            <MovieCastPosters isSmallScreen={isSmallScreen} />
+            <MovieCastPosters movieId={movieId} isSmallScreen={isSmallScreen} />
           </FieldSet>
 
           <FieldSet legend={translate('Crew')}>
-            <MovieCrewPosters isSmallScreen={isSmallScreen} />
+            <MovieCrewPosters movieId={movieId} isSmallScreen={isSmallScreen} />
           </FieldSet>
 
           <FieldSet legend={translate('Titles')}>

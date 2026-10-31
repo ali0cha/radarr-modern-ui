@@ -1,17 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import createMovieCreditsSelector from 'Store/Selectors/createMovieCreditsSelector';
 import MovieCreditPosters from '../MovieCreditPosters';
+import { useMovieCreditsOfType } from '../useMovieCredits';
 import MovieCrewPoster from './MovieCrewPoster';
 
 interface MovieCrewPostersProps {
+  movieId: number;
   isSmallScreen: boolean;
 }
 
-function MovieCrewPosters({ isSmallScreen }: MovieCrewPostersProps) {
-  const { items: crewCredits } = useSelector(
-    createMovieCreditsSelector('crew')
-  );
+function MovieCrewPosters({ movieId, isSmallScreen }: MovieCrewPostersProps) {
+  const crewCredits = useMovieCreditsOfType(movieId, 'crew');
 
   return (
     <MovieCreditPosters
