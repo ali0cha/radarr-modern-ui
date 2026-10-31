@@ -8,10 +8,8 @@ import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients'
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { useNotifications } from 'Settings/Notifications/useNotifications';
-import {
-  fetchDelayProfiles,
-  fetchReleaseProfiles,
-} from 'Store/Actions/settingsActions';
+import { useDelayProfiles } from 'Settings/Profiles/Delay/useDelayProfiles';
+import { fetchReleaseProfiles } from 'Store/Actions/settingsActions';
 import { useTagDetails, useTagsQuery } from 'Tags/useTags';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
@@ -24,6 +22,7 @@ function Tags() {
   // The import lists, indexers, download clients and notifications are listed
   // in the details of a tag
   useImportLists();
+  useDelayProfiles();
   useIndexers();
   useDownloadClients();
   useNotifications();
@@ -48,7 +47,6 @@ function Tags() {
   );
 
   useEffect(() => {
-    dispatch(fetchDelayProfiles());
     dispatch(fetchReleaseProfiles());
   }, [dispatch]);
 

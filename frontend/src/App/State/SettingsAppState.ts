@@ -6,7 +6,6 @@ import AppSectionState, {
   PagedAppSectionState,
 } from 'App/State/AppSectionState';
 import Language from 'Language/Language';
-import DelayProfile from 'typings/DelayProfile';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import IndexerFlag from 'typings/IndexerFlag';
 import QualityProfile from 'typings/QualityProfile';
@@ -17,11 +16,6 @@ import NamingExample from 'typings/Settings/NamingExample';
 import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import UiSettings from 'typings/Settings/UiSettings';
 import MetadataAppState from './MetadataAppState';
-
-export interface DelayProfileAppState
-  extends AppSectionState<DelayProfile>,
-    AppSectionDeleteState,
-    AppSectionSaveState {}
 
 export interface GeneralAppState
   extends AppSectionItemState<General>,
@@ -61,7 +55,6 @@ export type UiSettingsAppState = AppSectionItemState<UiSettings>;
 
 interface SettingsAppState {
   advancedSettings: boolean;
-  delayProfiles: DelayProfileAppState;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;
   indexerFlags: IndexerFlagSettingsAppState;

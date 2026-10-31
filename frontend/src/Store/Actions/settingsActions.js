@@ -1,6 +1,5 @@
 import { handleThunks } from 'Store/thunks';
 import createHandleActions from './Creators/createHandleActions';
-import delayProfiles from './Settings/delayProfiles';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
 import indexerFlags from './Settings/indexerFlags';
@@ -16,7 +15,6 @@ import releaseProfiles from './Settings/releaseProfiles';
 import remotePathMappings from './Settings/remotePathMappings';
 import ui from './Settings/ui';
 
-export * from './Settings/delayProfiles';
 export * from './Settings/general';
 export * from './Settings/importListExclusions';
 export * from './Settings/indexerFlags';
@@ -42,7 +40,6 @@ export const section = 'settings';
 
 export const defaultState = {
   advancedSettings: false,
-  delayProfiles: delayProfiles.defaultState,
   general: general.defaultState,
   importListExclusions: importListExclusions.defaultState,
   indexerFlags: indexerFlags.defaultState,
@@ -67,7 +64,6 @@ export const persistState = [
 // Action Handlers
 
 export const actionHandlers = handleThunks({
-  ...delayProfiles.actionHandlers,
   ...general.actionHandlers,
   ...importListExclusions.actionHandlers,
   ...indexerFlags.actionHandlers,
@@ -89,7 +85,6 @@ export const actionHandlers = handleThunks({
 
 export const reducers = createHandleActions({
 
-  ...delayProfiles.reducers,
   ...general.reducers,
   ...importListExclusions.reducers,
   ...indexerFlags.reducers,

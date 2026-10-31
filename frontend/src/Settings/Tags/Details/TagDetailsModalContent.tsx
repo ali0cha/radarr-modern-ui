@@ -15,6 +15,7 @@ import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients'
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { useNotifications } from 'Settings/Notifications/useNotifications';
+import { useDelayProfiles } from 'Settings/Profiles/Delay/useDelayProfiles';
 import { useAutoTaggings } from 'Settings/Tags/AutoTagging/useAutoTaggings';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
@@ -91,11 +92,16 @@ function TagDetailsModalContent({
 }: TagDetailsModalContentProps) {
   const movies = useSelector(createMatchingMoviesSelector(movieIds));
 
-  const delayProfiles = useSelector(
-    createMatchingItemSelector(
-      delayProfileIds,
-      (state: AppState) => state.settings.delayProfiles.items
-    )
+  const { defaultProfile, items: otherDelayProfiles } = useDelayProfiles();
+  const delayProfiles = useMemo(
+    () =>
+      findMatchingItems(
+        delayProfileIds,
+        defaultProfile
+          ? [defaultProfile, ...otherDelayProfiles]
+          : otherDelayProfiles
+      ),
+    [delayProfileIds, defaultProfile, otherDelayProfiles]
   );
 
   const { items: allImportLists } = useImportLists();
