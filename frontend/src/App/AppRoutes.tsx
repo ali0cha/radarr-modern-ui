@@ -13,7 +13,7 @@ import DiscoverMovieConnector from 'DiscoverMovie/DiscoverMovieConnector';
 import MovieDetailsPage from 'Movie/Details/MovieDetailsPage';
 import MovieIndex from 'Movie/Index/MovieIndex';
 import CustomFormatSettingsPage from 'Settings/CustomFormats/CustomFormatSettingsPage';
-import DownloadClientSettingsConnector from 'Settings/DownloadClients/DownloadClientSettingsConnector';
+import DownloadClientSettings from 'Settings/DownloadClients/DownloadClientSettings';
 import GeneralSettings from 'Settings/General/GeneralSettings';
 import ImportListSettings from 'Settings/ImportLists/ImportListSettings';
 import IndexerSettings from 'Settings/Indexers/IndexerSettings';
@@ -107,7 +107,7 @@ export function appRouteElements() {
 
       <Route
         path="/settings/downloadclients"
-        element={<DownloadClientSettingsConnector />}
+        element={<DownloadClientSettings />}
       />
 
       <Route path="/settings/importlists" element={<ImportListSettings />} />

@@ -18,9 +18,8 @@ import Movie from 'Movie/Movie';
 import MovieLanguages from 'Movie/MovieLanguages';
 import MovieQuality from 'Movie/MovieQuality';
 import { QualityModel } from 'Quality/Quality';
+import { useEnabledDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
 import { grabRelease } from 'Store/Actions/releaseActions';
-import { fetchDownloadClients } from 'Store/Actions/settingsActions';
-import createEnabledDownloadClientsSelector from 'Store/Selectors/createEnabledDownloadClientsSelector';
 import { createMovieSelectorForHook } from 'Store/Selectors/createMovieSelector';
 import translate from 'Utilities/String/translate';
 import SelectDownloadClientModal from './DownloadClient/SelectDownloadClientModal';
@@ -73,9 +72,7 @@ function OverrideMatchModalContent(props: OverrideMatchModalContentProps) {
   const movie: Movie | undefined = useSelector(
     createMovieSelectorForHook(movieId)
   );
-  const { items: downloadClients } = useSelector(
-    createEnabledDownloadClientsSelector(protocol)
-  );
+  const { items: downloadClients } = useEnabledDownloadClients(protocol);
 
   const onSelectModalClose = useCallback(() => {
     setSelectModalOpen(null);
@@ -168,14 +165,6 @@ function OverrideMatchModalContent(props: OverrideMatchModalContentProps) {
       onModalClose();
     }
   }, [isGrabbing, previousIsGrabbing, onModalClose]);
-
-  useEffect(
-    () => {
-      dispatch(fetchDownloadClients());
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
 
   return (
     <ModalContent onModalClose={onModalClose}>

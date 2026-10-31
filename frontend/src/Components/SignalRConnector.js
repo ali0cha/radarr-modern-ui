@@ -6,6 +6,7 @@ import { createSelector } from 'reselect';
 import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
+import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
@@ -192,14 +193,8 @@ class SignalRConnector extends Component {
     }
   };
 
-  handleDownloadclient = ({ action, resource }) => {
-    const section = 'settings.downloadClients';
-
-    if (action === 'created' || action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...resource });
-    } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: resource.id });
-    }
+  handleDownloadclient = () => {
+    invalidateApiQueries(queryClient, DOWNLOAD_CLIENTS_PATH);
   };
 
   handleHealth = () => {

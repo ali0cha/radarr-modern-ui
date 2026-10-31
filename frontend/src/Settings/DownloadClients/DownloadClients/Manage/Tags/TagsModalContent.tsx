@@ -1,8 +1,5 @@
 import { uniq } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
-import { DownloadClientAppState } from 'App/State/SettingsAppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -18,6 +15,7 @@ import { Tag } from 'Tags/Tag';
 import useTags from 'Tags/useTags';
 import DownloadClient from 'typings/DownloadClient';
 import translate from 'Utilities/String/translate';
+import { useDownloadClients } from '../../../useDownloadClients';
 import styles from './TagsModalContent.module.css';
 
 interface TagsModalContentProps {
@@ -29,9 +27,7 @@ interface TagsModalContentProps {
 function TagsModalContent(props: TagsModalContentProps) {
   const { ids, onModalClose, onApplyTagsPress } = props;
 
-  const allDownloadClients: DownloadClientAppState = useSelector(
-    (state: AppState) => state.settings.downloadClients
-  );
+  const { items: allDownloadClients } = useDownloadClients();
   const tagList: Tag[] = useTags();
 
   const [tags, setTags] = useState<number[]>([]);
@@ -39,9 +35,7 @@ function TagsModalContent(props: TagsModalContentProps) {
 
   const downloadClientsTags = useMemo(() => {
     const tags = ids.reduce((acc: number[], id) => {
-      const s = allDownloadClients.items.find(
-        (s: DownloadClient) => s.id === id
-      );
+      const s = allDownloadClients.find((s: DownloadClient) => s.id === id);
 
       if (s) {
         acc.push(...s.tags);

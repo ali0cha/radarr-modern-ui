@@ -12,38 +12,11 @@ const newRemotePathMapping = {
   localPath: ''
 };
 
-const selectDownloadClientHosts = createSelector(
-  (state) => state.settings.downloadClients.items,
-  (downloadClients) => {
-    const hosts = downloadClients.reduce((acc, downloadClient) => {
-      const name = downloadClient.name;
-      const host = downloadClient.fields.find((field) => {
-        return field.name === 'host';
-      });
-
-      if (host) {
-        const group = acc[host.value] = acc[host.value] || [];
-        group.push(name);
-      }
-
-      return acc;
-    }, {});
-
-    return Object.keys(hosts).map((host) => {
-      return {
-        key: host,
-        value: host,
-        hint: `${hosts[host].join(', ')}`
-      };
-    });
-  }
-);
-
 function createRemotePathMappingSelector() {
   return createSelector(
     (state, { id }) => id,
     (state) => state.settings.remotePathMappings,
-    selectDownloadClientHosts,
+    (state, { downloadClientHosts }) => downloadClientHosts,
     (id, remotePathMappings, downloadClientHosts) => {
       const {
         isFetching,

@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Icon, { IconKind } from 'Components/Icon';
@@ -14,9 +13,9 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import { icons, kinds } from 'Helpers/Props';
+import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { useTestAllProviders } from 'Settings/useProviderSettings';
-import { testAllDownloadClients } from 'Store/Actions/settingsActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
@@ -48,17 +47,16 @@ function Health() {
   const { isFetching, isPopulated, items } = useSelector(
     createHealthSelector()
   );
-  const isTestingAllDownloadClients = useSelector(
-    (state: AppState) => state.settings.downloadClients.isTestingAll
-  );
+  const {
+    testAll: testAllDownloadClients,
+    isTestingAll: isTestingAllDownloadClients,
+  } = useTestAllProviders(DOWNLOAD_CLIENTS_PATH);
   const { testAll: testAllIndexers, isTestingAll: isTestingAllIndexers } =
     useTestAllProviders(INDEXERS_PATH);
 
   const healthIssues = !!items.length;
 
-  const handleTestAllDownloadClientsPress = useCallback(() => {
-    dispatch(testAllDownloadClients());
-  }, [dispatch]);
+  const handleTestAllDownloadClientsPress = testAllDownloadClients;
 
   const handleTestAllIndexersPress = testAllIndexers;
 

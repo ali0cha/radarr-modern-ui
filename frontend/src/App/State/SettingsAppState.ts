@@ -10,7 +10,6 @@ import Language from 'Language/Language';
 import AutoTagging, { AutoTaggingSpecification } from 'typings/AutoTagging';
 import CustomFormat from 'typings/CustomFormat';
 import DelayProfile from 'typings/DelayProfile';
-import DownloadClient from 'typings/DownloadClient';
 import ImportList from 'typings/ImportList';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import ImportListOptionsSettings from 'typings/ImportListOptionsSettings';
@@ -44,13 +43,6 @@ export interface DelayProfileAppState
   extends AppSectionState<DelayProfile>,
     AppSectionDeleteState,
     AppSectionSaveState {}
-
-export interface DownloadClientAppState
-  extends AppSectionState<DownloadClient>,
-    AppSectionDeleteState,
-    AppSectionSaveState {
-  isTestingAll: boolean;
-}
 
 export interface GeneralAppState
   extends AppSectionItemState<General>,
@@ -115,7 +107,6 @@ interface SettingsAppState {
   autoTaggingSpecifications: AutoTaggingSpecificationAppState;
   customFormats: CustomFormatAppState;
   delayProfiles: DelayProfileAppState;
-  downloadClients: DownloadClientAppState;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;
   importListOptions: ImportListOptionsSettingsAppState;

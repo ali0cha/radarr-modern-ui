@@ -5,8 +5,6 @@ import autoTaggingSpecifications from './Settings/autoTaggingSpecifications';
 import customFormats from './Settings/customFormats';
 import customFormatSpecifications from './Settings/customFormatSpecifications';
 import delayProfiles from './Settings/delayProfiles';
-import downloadClientOptions from './Settings/downloadClientOptions';
-import downloadClients from './Settings/downloadClients';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
 import importListOptions from './Settings/importListOptions';
@@ -30,8 +28,6 @@ export * from './Settings/autoTaggings';
 export * from './Settings/customFormatSpecifications.js';
 export * from './Settings/customFormats';
 export * from './Settings/delayProfiles';
-export * from './Settings/downloadClients';
-export * from './Settings/downloadClientOptions';
 export * from './Settings/general';
 export * from './Settings/importListOptions';
 export * from './Settings/importLists';
@@ -65,8 +61,6 @@ export const defaultState = {
   customFormatSpecifications: customFormatSpecifications.defaultState,
   customFormats: customFormats.defaultState,
   delayProfiles: delayProfiles.defaultState,
-  downloadClients: downloadClients.defaultState,
-  downloadClientOptions: downloadClientOptions.defaultState,
   general: general.defaultState,
   importLists: importLists.defaultState,
   importListExclusions: importListExclusions.defaultState,
@@ -99,8 +93,6 @@ export const actionHandlers = handleThunks({
   ...customFormatSpecifications.actionHandlers,
   ...customFormats.actionHandlers,
   ...delayProfiles.actionHandlers,
-  ...downloadClients.actionHandlers,
-  ...downloadClientOptions.actionHandlers,
   ...general.actionHandlers,
   ...importLists.actionHandlers,
   ...importListExclusions.actionHandlers,
@@ -130,8 +122,6 @@ export const reducers = createHandleActions({
   ...customFormatSpecifications.reducers,
   ...customFormats.reducers,
   ...delayProfiles.reducers,
-  ...downloadClients.reducers,
-  ...downloadClientOptions.reducers,
   ...general.reducers,
   ...importLists.reducers,
   ...importListExclusions.reducers,

@@ -11,6 +11,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
+import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
@@ -121,11 +122,10 @@ function TagDetailsModalContent({
     [indexerIds, allIndexers]
   );
 
-  const downloadClients = useSelector(
-    createMatchingItemSelector(
-      downloadClientIds,
-      (state: AppState) => state.settings.downloadClients.items
-    )
+  const { items: allDownloadClients } = useDownloadClients();
+  const downloadClients = useMemo(
+    () => findMatchingItems(downloadClientIds, allDownloadClients),
+    [downloadClientIds, allDownloadClients]
   );
 
   const autoTags = useSelector(
