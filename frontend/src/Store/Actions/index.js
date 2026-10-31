@@ -6,14 +6,12 @@ import * as captcha from './captchaActions';
 import * as commands from './commandActions';
 import * as customFilters from './customFilterActions';
 import * as discoverMovie from './discoverMovieActions';
-import * as extraFiles from './extraFileActions';
 import * as history from './historyActions';
 import * as importMovie from './importMovieActions';
 import * as interactiveImportActions from './interactiveImportActions';
 import * as movies from './movieActions';
 import * as movieCollections from './movieCollectionActions';
 import * as movieFiles from './movieFileActions';
-import * as movieHistory from './movieHistoryActions';
 import * as movieIndex from './movieIndexActions';
 import * as oAuth from './oAuthActions';
 import * as organizePreview from './organizePreviewActions';
@@ -36,7 +34,6 @@ export default [
   customFilters,
   discoverMovie,
   movieFiles,
-  extraFiles,
   history,
   importMovie,
   interactiveImportActions,
@@ -49,7 +46,6 @@ export default [
   releases,
   movies,
   movieCollections,
-  movieHistory,
   movieIndex,
   settings,
   system,

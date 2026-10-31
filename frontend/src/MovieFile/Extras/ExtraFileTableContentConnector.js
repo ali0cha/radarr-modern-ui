@@ -1,49 +1,27 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import createMovieSelector from 'Store/Selectors/createMovieSelector';
+import React, { useMemo } from 'react';
 import ExtraFileTableContent from './ExtraFileTableContent';
+import useExtraFiles from './useExtraFiles';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { movieId }) => movieId,
-    (state) => state.extraFiles,
-    createMovieSelector(),
-    (
-      movieId,
-      extraFiles
-    ) => {
-      const filesForMovie = extraFiles.items.filter((file) => file.movieId === movieId);
+function ExtraFileTableContentConnector({ movieId, ...otherProps }) {
+  const { data } = useExtraFiles(movieId);
 
-      return {
-        items: filesForMovie,
-        error: null
-      };
-    }
+  const items = useMemo(() => {
+    return (data ?? []).filter((file) => file.movieId === movieId);
+  }, [data, movieId]);
+
+  return (
+    <ExtraFileTableContent
+      movieId={movieId}
+      {...otherProps}
+      items={items}
+      error={null}
+    />
   );
-}
-
-class ExtraFileTableContentConnector extends Component {
-
-  //
-  // Render
-
-  render() {
-    const {
-      ...otherProps
-    } = this.props;
-
-    return (
-      <ExtraFileTableContent
-        {...otherProps}
-      />
-    );
-  }
 }
 
 ExtraFileTableContentConnector.propTypes = {
   movieId: PropTypes.number.isRequired
 };
 
-export default connect(createMapStateToProps, null)(ExtraFileTableContentConnector);
+export default ExtraFileTableContentConnector;

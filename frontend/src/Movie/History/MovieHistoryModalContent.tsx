@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback } from 'react';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -13,13 +11,12 @@ import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { icons, kinds } from 'Helpers/Props';
-import {
-  clearMovieHistory,
-  fetchMovieHistory,
-  movieHistoryMarkAsFailed,
-} from 'Store/Actions/movieHistoryActions';
 import translate from 'Utilities/String/translate';
 import MovieHistoryRow from './MovieHistoryRow';
+import {
+  useMarkMovieHistoryAsFailed,
+  useMovieHistory,
+} from './useMovieHistory';
 
 const columns: Column[] = [
   {
@@ -78,33 +75,23 @@ function MovieHistoryModalContent({
   movieId,
   onModalClose,
 }: MovieHistoryModalContentProps) {
-  const dispatch = useDispatch();
+  const {
+    data: items = [],
+    isFetching,
+    isSuccess: isPopulated,
+    error,
+  } = useMovieHistory(movieId);
 
-  const { isFetching, isPopulated, error, items } = useSelector(
-    (state: AppState) => state.movieHistory
-  );
+  const { mutate: markAsFailed } = useMarkMovieHistoryAsFailed();
 
   const hasItems = !!items.length;
 
   const handleMarkAsFailedPress = useCallback(
     (historyId: number) => {
-      dispatch(
-        movieHistoryMarkAsFailed({
-          historyId,
-          movieId,
-        })
-      );
+      markAsFailed({ historyId });
     },
-    [movieId, dispatch]
+    [markAsFailed]
   );
-
-  useEffect(() => {
-    dispatch(fetchMovieHistory({ movieId }));
-
-    return () => {
-      dispatch(clearMovieHistory());
-    };
-  }, [movieId, dispatch]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

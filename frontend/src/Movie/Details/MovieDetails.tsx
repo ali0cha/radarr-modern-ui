@@ -52,13 +52,10 @@ import MovieInteractiveSearchModal from 'Movie/Search/MovieInteractiveSearchModa
 import useMovie from 'Movie/useMovie';
 import MovieFileEditorTable from 'MovieFile/Editor/MovieFileEditorTable';
 import ExtraFileTable from 'MovieFile/Extras/ExtraFileTable';
+import useExtraFiles from 'MovieFile/Extras/useExtraFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import { executeCommand } from 'Store/Actions/commandActions';
-import {
-  clearExtraFiles,
-  fetchExtraFiles,
-} from 'Store/Actions/extraFileActions';
 import { toggleMovieMonitored } from 'Store/Actions/movieActions';
 import {
   clearMovieFiles,
@@ -121,19 +118,6 @@ function createMovieFilesSelector() {
   );
 }
 
-function createExtraFilesSelector() {
-  return createSelector(
-    (state: AppState) => state.extraFiles,
-    ({ isFetching, isPopulated, error }) => {
-      return {
-        isExtraFilesFetching: isFetching,
-        isExtraFilesPopulated: isPopulated,
-        extraFilesError: error,
-      };
-    }
-  );
-}
-
 interface MovieDetailsProps {
   movieId: number;
 }
@@ -148,9 +132,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   const { isMovieFilesFetching, movieFilesError, hasMovieFiles } = useSelector(
     createMovieFilesSelector()
   );
-  const { isExtraFilesFetching, extraFilesError } = useSelector(
-    createExtraFilesSelector()
-  );
+  const {
+    isFetching: isExtraFilesFetching,
+    error: extraFilesError,
+    refetch: refetchExtraFiles,
+  } = useExtraFiles(movieId);
   const {
     isFetching: isMovieCreditsFetching,
     error: movieCreditsError,
@@ -446,11 +432,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
 
   const populate = useCallback(() => {
     dispatch(fetchMovieFiles({ movieId }));
-    dispatch(fetchExtraFiles({ movieId }));
+    refetchExtraFiles({ cancelRefetch: false });
     refetchMovieCredits({ cancelRefetch: false });
     dispatch(fetchQueueDetails({ movieId }));
     dispatch(fetchImportListSchema());
-  }, [movieId, dispatch, refetchMovieCredits]);
+  }, [movieId, dispatch, refetchMovieCredits, refetchExtraFiles]);
 
   useEffect(() => {
     populate();
@@ -462,7 +448,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     return () => {
       unregisterPagePopulator(populate);
       dispatch(clearMovieFiles());
-      dispatch(clearExtraFiles());
       dispatch(clearQueueDetails());
       dispatch(cancelFetchReleases());
       dispatch(clearReleases());

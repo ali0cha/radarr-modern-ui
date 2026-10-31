@@ -1,4 +1,8 @@
-import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  UndefinedInitialDataOptions,
+  useQuery,
+} from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 interface ApiErrorResponse {
@@ -45,6 +49,17 @@ export function getApiPath(path: string) {
 // Use it to invalidate or update them.
 export function getApiQueryKey(path: string) {
   return [getApiPath(path)];
+}
+
+// Invalidates every query whose path starts with the given one, including
+// those with a query string, e.g. '/history/movie' for '/history/movie?movieId=1'.
+export function invalidateApiQueries(queryClient: QueryClient, path: string) {
+  const prefix = getApiPath(path);
+
+  return queryClient.invalidateQueries({
+    predicate: ({ queryKey }) =>
+      typeof queryKey[0] === 'string' && queryKey[0].startsWith(prefix),
+  });
 }
 
 export async function fetchApi<T>(

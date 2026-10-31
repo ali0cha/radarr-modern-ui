@@ -2,8 +2,8 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import useApiMutation from 'Helpers/Hooks/useApiMutation';
 import useApiQuery, {
-  getApiPath,
   getApiQueryKey,
+  invalidateApiQueries,
 } from 'Helpers/Hooks/useApiQuery';
 import RootFolder from 'typings/RootFolder';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -90,10 +90,5 @@ export function useDeleteRootFolder() {
 
 // For code outside of React. Also reaches the queries of a single root folder.
 export function invalidateRootFolders(queryClient: QueryClient) {
-  const prefix = getApiPath(ROOT_FOLDERS_PATH);
-
-  return queryClient.invalidateQueries({
-    predicate: ({ queryKey }) =>
-      typeof queryKey[0] === 'string' && queryKey[0].startsWith(prefix),
-  });
+  return invalidateApiQueries(queryClient, ROOT_FOLDERS_PATH);
 }
