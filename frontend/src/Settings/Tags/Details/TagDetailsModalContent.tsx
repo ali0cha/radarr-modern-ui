@@ -15,6 +15,7 @@ import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients'
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { useNotifications } from 'Settings/Notifications/useNotifications';
+import { useAutoTaggings } from 'Settings/Tags/AutoTagging/useAutoTaggings';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsDelayProfile from './TagDetailsDelayProfile';
@@ -128,11 +129,10 @@ function TagDetailsModalContent({
     [downloadClientIds, allDownloadClients]
   );
 
-  const autoTags = useSelector(
-    createMatchingItemSelector(
-      autoTagIds,
-      (state: AppState) => state.settings.autoTaggings.items
-    )
+  const { items: allAutoTags } = useAutoTaggings();
+  const autoTags = useMemo(
+    () => findMatchingItems(autoTagIds, allAutoTags),
+    [autoTagIds, allAutoTags]
   );
 
   return (

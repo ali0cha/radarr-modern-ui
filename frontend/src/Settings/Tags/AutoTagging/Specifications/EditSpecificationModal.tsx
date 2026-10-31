@@ -1,8 +1,6 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Modal from 'Components/Modal/Modal';
 import { sizes } from 'Helpers/Props';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
 import EditSpecificationModalContent, {
   EditSpecificationModalContentProps,
 } from './EditSpecificationModalContent';
@@ -10,7 +8,6 @@ import EditSpecificationModalContent, {
 interface EditSpecificationModalProps
   extends EditSpecificationModalContentProps {
   isOpen: boolean;
-  onModalClose: () => void;
 }
 
 function EditSpecificationModal({
@@ -18,20 +15,11 @@ function EditSpecificationModal({
   onModalClose,
   ...otherProps
 }: EditSpecificationModalProps) {
-  const dispatch = useDispatch();
-
-  const onWrappedModalClose = useCallback(() => {
-    dispatch(
-      clearPendingChanges({ section: 'settings.autoTaggingSpecifications' })
-    );
-    onModalClose();
-  }, [onModalClose, dispatch]);
-
   return (
     <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={onModalClose}>
       <EditSpecificationModalContent
         {...otherProps}
-        onModalClose={onWrappedModalClose}
+        onModalClose={onModalClose}
       />
     </Modal>
   );

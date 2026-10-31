@@ -3,11 +3,9 @@ import AppSectionState, {
   AppSectionItemSchemaState,
   AppSectionItemState,
   AppSectionSaveState,
-  AppSectionSchemaState,
   PagedAppSectionState,
 } from 'App/State/AppSectionState';
 import Language from 'Language/Language';
-import AutoTagging, { AutoTaggingSpecification } from 'typings/AutoTagging';
 import DelayProfile from 'typings/DelayProfile';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import IndexerFlag from 'typings/IndexerFlag';
@@ -19,17 +17,6 @@ import NamingExample from 'typings/Settings/NamingExample';
 import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import UiSettings from 'typings/Settings/UiSettings';
 import MetadataAppState from './MetadataAppState';
-
-export interface AutoTaggingAppState
-  extends AppSectionState<AutoTagging>,
-    AppSectionDeleteState,
-    AppSectionSaveState {}
-
-export interface AutoTaggingSpecificationAppState
-  extends AppSectionState<AutoTaggingSpecification>,
-    AppSectionDeleteState,
-    AppSectionSaveState,
-    AppSectionSchemaState<AutoTaggingSpecification> {}
 
 export interface DelayProfileAppState
   extends AppSectionState<DelayProfile>,
@@ -74,8 +61,6 @@ export type UiSettingsAppState = AppSectionItemState<UiSettings>;
 
 interface SettingsAppState {
   advancedSettings: boolean;
-  autoTaggings: AutoTaggingAppState;
-  autoTaggingSpecifications: AutoTaggingSpecificationAppState;
   delayProfiles: DelayProfileAppState;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;

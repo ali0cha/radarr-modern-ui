@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useState } from 'react';
 import Alert from 'Components/Alert';
 import Card from 'Components/Card';
 import FieldSet from 'Components/FieldSet';
@@ -17,48 +15,52 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, inputTypes, kinds } from 'Helpers/Props';
-import {
-  cloneAutoTaggingSpecification,
-  deleteAutoTaggingSpecification,
-  fetchAutoTaggingSpecifications,
-  saveAutoTagging,
-  setAutoTaggingValue,
-} from 'Store/Actions/settingsActions';
-import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProviderSettingsSelector';
+import AutoTagging, { AutoTaggingSpecification } from 'typings/AutoTagging';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import AddSpecificationModal from './Specifications/AddSpecificationModal';
 import EditSpecificationModal from './Specifications/EditSpecificationModal';
 import Specification from './Specifications/Specification';
+import { useAutoTaggings, useManageAutoTagging } from './useAutoTaggings';
 import styles from './EditAutoTaggingModalContent.module.css';
+
+const NO_AUTO_TAGGING = { specifications: [] } as unknown as AutoTagging;
 
 export interface EditAutoTaggingModalContentProps {
   id?: number;
-  tagsFromId?: number;
+  // The auto tag to start from when it is new
+  defaultAutoTagging?: AutoTagging;
   onModalClose: () => void;
   onDeleteAutoTaggingPress?: () => void;
 }
 
 export default function EditAutoTaggingModalContent({
   id,
-  tagsFromId,
+  defaultAutoTagging = NO_AUTO_TAGGING,
   onModalClose,
   onDeleteAutoTaggingPress,
 }: EditAutoTaggingModalContentProps) {
   const {
+    isFetching: isFetchingAutoTaggings,
+    isPopulated,
     error,
+  } = useAutoTaggings();
+  const isFetching = isFetchingAutoTaggings && !isPopulated;
+
+  const {
     item,
-    isFetching,
+    specifications,
     isSaving,
     saveError,
     validationErrors,
     validationWarnings,
-  } = useSelector(createProviderSettingsSelectorHook('autoTaggings', id));
+    updateValue,
+    saveAutoTagging,
+    saveSpecification,
+    cloneSpecification,
+    deleteSpecification,
+  } = useManageAutoTagging(id, defaultAutoTagging, onModalClose);
 
-  const { isPopulated: specificationsPopulated, items: specifications } =
-    useSelector((state: AppState) => state.settings.autoTaggingSpecifications);
-
-  const dispatch = useDispatch();
   const [isAddSpecificationModalOpen, setIsAddSpecificationModalOpen] =
     useState(false);
   const [isEditSpecificationModalOpen, setIsEditSpecificationModalOpen] =
@@ -68,12 +70,22 @@ export default function EditAutoTaggingModalContent({
     setIsAddSpecificationModalOpen(true);
   }, [setIsAddSpecificationModalOpen]);
 
-  const handleAddSpecificationModalClose = useCallback(
-    ({ specificationSelected = false } = {}) => {
+  // The condition that is edited when it is new: a chosen implementation
+  const [newSpecification, setNewSpecification] = useState<
+    AutoTaggingSpecification | undefined
+  >();
+
+  const handleAddSpecificationModalClose = useCallback(() => {
+    setIsAddSpecificationModalOpen(false);
+  }, [setIsAddSpecificationModalOpen]);
+
+  const handleSpecificationSelect = useCallback(
+    (specification: AutoTaggingSpecification) => {
+      setNewSpecification(specification);
       setIsAddSpecificationModalOpen(false);
-      setIsEditSpecificationModalOpen(specificationSelected);
+      setIsEditSpecificationModalOpen(true);
     },
-    [setIsAddSpecificationModalOpen]
+    []
   );
 
   const handleEditSpecificationModalClose = useCallback(() => {
@@ -82,43 +94,13 @@ export default function EditAutoTaggingModalContent({
 
   const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setAutoTaggingValue({ name, value }));
+      updateValue(
+        name as keyof AutoTagging,
+        value as AutoTagging[keyof AutoTagging]
+      );
     },
-    [dispatch]
+    [updateValue]
   );
-
-  const handleSavePress = useCallback(() => {
-    dispatch(saveAutoTagging({ id }));
-  }, [dispatch, id]);
-
-  const handleCloneSpecificationPress = useCallback(
-    (specId: number) => {
-      dispatch(cloneAutoTaggingSpecification({ id: specId }));
-    },
-    [dispatch]
-  );
-
-  const handleConfirmDeleteSpecification = useCallback(
-    (specId: number) => {
-      dispatch(deleteAutoTaggingSpecification({ id: specId }));
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    dispatch(fetchAutoTaggingSpecifications({ id: tagsFromId || id }));
-  }, [id, tagsFromId, dispatch]);
-
-  const isSavingRef = useRef(false);
-
-  useEffect(() => {
-    if (isSavingRef.current && !isSaving && !saveError) {
-      onModalClose();
-    }
-
-    isSavingRef.current = isSaving;
-  }, [isSaving, saveError, onModalClose]);
 
   const { name, removeTagsAutomatically, tags } = item;
 
@@ -136,7 +118,7 @@ export default function EditAutoTaggingModalContent({
             <Alert kind={kinds.DANGER}>{translate('AddAutoTagError')}</Alert>
           ) : null}
 
-          {!isFetching && !error && specificationsPopulated ? (
+          {!isFetching && !error ? (
             <div>
               <Form
                 validationErrors={validationErrors}
@@ -183,13 +165,10 @@ export default function EditAutoTaggingModalContent({
                     return (
                       <Specification
                         key={specification.id}
-                        {...specification}
-                        onCloneSpecificationPress={
-                          handleCloneSpecificationPress
-                        }
-                        onConfirmDeleteSpecification={
-                          handleConfirmDeleteSpecification
-                        }
+                        specification={specification}
+                        onSave={saveSpecification}
+                        onCloneSpecificationPress={cloneSpecification}
+                        onConfirmDeleteSpecification={deleteSpecification}
                       />
                     );
                   })}
@@ -207,11 +186,14 @@ export default function EditAutoTaggingModalContent({
 
               <AddSpecificationModal
                 isOpen={isAddSpecificationModalOpen}
+                onSpecificationSelect={handleSpecificationSelect}
                 onModalClose={handleAddSpecificationModalClose}
               />
 
               <EditSpecificationModal
                 isOpen={isEditSpecificationModalOpen}
+                specification={newSpecification}
+                onSave={saveSpecification}
                 onModalClose={handleEditSpecificationModalClose}
               />
 
@@ -248,7 +230,7 @@ export default function EditAutoTaggingModalContent({
         <SpinnerErrorButton
           isSpinning={isSaving}
           error={saveError}
-          onPress={handleSavePress}
+          onPress={saveAutoTagging}
         >
           {translate('Save')}
         </SpinnerErrorButton>

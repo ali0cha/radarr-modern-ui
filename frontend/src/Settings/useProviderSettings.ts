@@ -44,7 +44,7 @@ export const useProviderSettings = <T extends ModelBase>(path: string) => {
 };
 
 // The kinds of provider that can be added, with their presets.
-export const useProviderSchema = <T extends Provider>(path: string) => {
+export const useProviderSchema = <T extends ModelBase>(path: string) => {
   const result = useApiQuery<T[]>({
     path: `${path}/schema`,
     queryOptions: providerQueryOptions,

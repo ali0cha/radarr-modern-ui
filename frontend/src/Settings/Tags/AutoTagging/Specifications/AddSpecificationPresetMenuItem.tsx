@@ -1,30 +1,24 @@
 import React, { useCallback } from 'react';
-import MenuItem from 'Components/Menu/MenuItem';
+import MenuItem, { MenuItemProps } from 'Components/Menu/MenuItem';
+import { getNewSpecification } from 'Settings/useSpecifications';
+import { AutoTaggingSpecification } from 'typings/AutoTagging';
 
-interface AddSpecificationPresetMenuItemProps {
+interface AddSpecificationPresetMenuItemProps
+  extends Omit<MenuItemProps, 'children' | 'onPress'> {
   name: string;
-  implementation: string;
-  onPress: ({
-    name,
-    implementation,
-  }: {
-    name: string;
-    implementation: string;
-  }) => void;
+  specification: AutoTaggingSpecification;
+  onPress: (specification: AutoTaggingSpecification) => void;
 }
 
-export default function AddSpecificationPresetMenuItem({
+function AddSpecificationPresetMenuItem({
   name,
-  implementation,
+  specification,
   onPress,
   ...otherProps
 }: AddSpecificationPresetMenuItemProps) {
   const handlePress = useCallback(() => {
-    onPress({
-      name,
-      implementation,
-    });
-  }, [name, implementation, onPress]);
+    onPress(getNewSpecification(specification, name));
+  }, [name, specification, onPress]);
 
   return (
     <MenuItem {...otherProps} onPress={handlePress}>
@@ -32,3 +26,5 @@ export default function AddSpecificationPresetMenuItem({
     </MenuItem>
   );
 }
+
+export default AddSpecificationPresetMenuItem;

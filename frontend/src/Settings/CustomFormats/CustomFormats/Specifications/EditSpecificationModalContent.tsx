@@ -14,10 +14,10 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds } from 'Helpers/Props';
+import { useEditSpecification } from 'Settings/useSpecifications';
 import { CustomFormatSpecification } from 'typings/CustomFormat';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
-import { useEditSpecification } from '../../useCustomFormats';
 import styles from './EditSpecificationModalContent.module.css';
 
 const NO_SPECIFICATION = { fields: [] } as unknown as CustomFormatSpecification;

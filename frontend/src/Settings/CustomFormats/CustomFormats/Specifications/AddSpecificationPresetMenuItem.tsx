@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import MenuItem, { MenuItemProps } from 'Components/Menu/MenuItem';
+import { getNewSpecification } from 'Settings/useSpecifications';
 import { CustomFormatSpecification } from 'typings/CustomFormat';
-import { getNewSpecification } from '../../useCustomFormats';
 
 interface AddSpecificationPresetMenuItemProps
   extends Omit<MenuItemProps, 'children' | 'onPress'> {

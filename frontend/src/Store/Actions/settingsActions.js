@@ -1,7 +1,5 @@
 import { handleThunks } from 'Store/thunks';
 import createHandleActions from './Creators/createHandleActions';
-import autoTaggings from './Settings/autoTaggings';
-import autoTaggingSpecifications from './Settings/autoTaggingSpecifications';
 import delayProfiles from './Settings/delayProfiles';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
@@ -18,8 +16,6 @@ import releaseProfiles from './Settings/releaseProfiles';
 import remotePathMappings from './Settings/remotePathMappings';
 import ui from './Settings/ui';
 
-export * from './Settings/autoTaggingSpecifications';
-export * from './Settings/autoTaggings';
 export * from './Settings/delayProfiles';
 export * from './Settings/general';
 export * from './Settings/importListExclusions';
@@ -46,8 +42,6 @@ export const section = 'settings';
 
 export const defaultState = {
   advancedSettings: false,
-  autoTaggingSpecifications: autoTaggingSpecifications.defaultState,
-  autoTaggings: autoTaggings.defaultState,
   delayProfiles: delayProfiles.defaultState,
   general: general.defaultState,
   importListExclusions: importListExclusions.defaultState,
@@ -73,8 +67,6 @@ export const persistState = [
 // Action Handlers
 
 export const actionHandlers = handleThunks({
-  ...autoTaggingSpecifications.actionHandlers,
-  ...autoTaggings.actionHandlers,
   ...delayProfiles.actionHandlers,
   ...general.actionHandlers,
   ...importListExclusions.actionHandlers,
@@ -97,8 +89,6 @@ export const actionHandlers = handleThunks({
 
 export const reducers = createHandleActions({
 
-  ...autoTaggingSpecifications.reducers,
-  ...autoTaggings.reducers,
   ...delayProfiles.reducers,
   ...general.reducers,
   ...importListExclusions.reducers,

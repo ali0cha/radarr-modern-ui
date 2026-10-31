@@ -4,9 +4,9 @@ import Link from 'Components/Link/Link';
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
+import { getNewSpecification } from 'Settings/useSpecifications';
 import { CustomFormatSpecification } from 'typings/CustomFormat';
 import translate from 'Utilities/String/translate';
-import { getNewSpecification } from '../../useCustomFormats';
 import AddSpecificationPresetMenuItem from './AddSpecificationPresetMenuItem';
 import styles from './AddSpecificationItem.module.css';
 

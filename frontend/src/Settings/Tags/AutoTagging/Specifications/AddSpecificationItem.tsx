@@ -4,35 +4,29 @@ import Link from 'Components/Link/Link';
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
 import { sizes } from 'Helpers/Props';
+import { getNewSpecification } from 'Settings/useSpecifications';
 import { AutoTaggingSpecification } from 'typings/AutoTagging';
 import translate from 'Utilities/String/translate';
 import AddSpecificationPresetMenuItem from './AddSpecificationPresetMenuItem';
 import styles from './AddSpecificationItem.module.css';
 
 interface AddSpecificationItemProps {
-  implementation: string;
-  implementationName: string;
-  infoLink?: string;
-  presets?: AutoTaggingSpecification[];
-  onSpecificationSelect: ({
-    implementation,
-  }: {
-    implementation: string;
-  }) => void;
+  specification: AutoTaggingSpecification & {
+    presets?: AutoTaggingSpecification[];
+  };
+  onSpecificationSelect: (specification: AutoTaggingSpecification) => void;
 }
 
-export default function AddSpecificationItem({
-  implementation,
-  implementationName,
-  infoLink,
-  presets,
+function AddSpecificationItem({
+  specification,
   onSpecificationSelect,
 }: AddSpecificationItemProps) {
-  const handleSpecificationSelect = useCallback(() => {
-    onSpecificationSelect({ implementation });
-  }, [implementation, onSpecificationSelect]);
-
+  const { implementationName, infoLink, presets } = specification;
   const hasPresets = !!presets && !!presets.length;
+
+  const handleSpecificationSelect = useCallback(() => {
+    onSpecificationSelect(getNewSpecification(specification));
+  }, [specification, onSpecificationSelect]);
 
   return (
     <div className={styles.specification}>
@@ -42,7 +36,7 @@ export default function AddSpecificationItem({
         <div className={styles.name}>{implementationName}</div>
 
         <div className={styles.actions}>
-          {hasPresets ? (
+          {hasPresets && (
             <span>
               <Button size={sizes.SMALL} onPress={handleSpecificationSelect}>
                 {translate('Custom')}
@@ -54,20 +48,20 @@ export default function AddSpecificationItem({
                 </Button>
 
                 <MenuContent>
-                  {presets.map((preset, index) => {
+                  {presets.map((preset) => {
                     return (
                       <AddSpecificationPresetMenuItem
-                        key={index}
+                        key={preset.name}
                         name={preset.name}
-                        implementation={implementation}
-                        onPress={handleSpecificationSelect}
+                        specification={specification}
+                        onPress={onSpecificationSelect}
                       />
                     );
                   })}
                 </MenuContent>
               </Menu>
             </span>
-          ) : null}
+          )}
 
           {infoLink ? (
             <Button to={infoLink} size={sizes.SMALL}>
@@ -79,3 +73,5 @@ export default function AddSpecificationItem({
     </div>
   );
 }
+
+export default AddSpecificationItem;

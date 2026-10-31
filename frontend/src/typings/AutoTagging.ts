@@ -6,6 +6,7 @@ export interface AutoTaggingSpecification {
   name: string;
   implementation: string;
   implementationName: string;
+  infoLink?: string;
   negate: boolean;
   required: boolean;
   fields: Field[];

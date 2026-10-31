@@ -6,10 +6,14 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TagList from 'Components/TagList';
 import { icons, kinds } from 'Helpers/Props';
 import { Kind } from 'Helpers/Props/kinds';
+import { useDeleteProvider } from 'Settings/useProviderSettings';
 import { Tag } from 'Tags/Tag';
-import { AutoTaggingSpecification } from 'typings/AutoTagging';
+import AutoTaggingModel, {
+  AutoTaggingSpecification,
+} from 'typings/AutoTagging';
 import translate from 'Utilities/String/translate';
 import EditAutoTaggingModal from './EditAutoTaggingModal';
+import { AUTO_TAGGINGS_PATH } from './useAutoTaggings';
 import styles from './AutoTagging.module.css';
 
 interface AutoTaggingProps {
@@ -18,8 +22,6 @@ interface AutoTaggingProps {
   specifications: AutoTaggingSpecification[];
   tags: number[];
   tagList: Tag[];
-  isDeleting: boolean;
-  onConfirmDeleteAutoTagging: (id: number) => void;
   onCloneAutoTaggingPress: (id: number) => void;
 }
 
@@ -29,10 +31,13 @@ export default function AutoTagging({
   tags,
   tagList,
   specifications,
-  isDeleting,
-  onConfirmDeleteAutoTagging,
   onCloneAutoTaggingPress,
 }: AutoTaggingProps) {
+  const { deleteProvider, isDeleting } = useDeleteProvider<AutoTaggingModel>(
+    id,
+    AUTO_TAGGINGS_PATH
+  );
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -54,8 +59,8 @@ export default function AutoTagging({
   }, [setIsDeleteModalOpen]);
 
   const onConfirmDelete = useCallback(() => {
-    onConfirmDeleteAutoTagging(id);
-  }, [id, onConfirmDeleteAutoTagging]);
+    deleteProvider();
+  }, [deleteProvider]);
 
   const onClonePress = useCallback(() => {
     onCloneAutoTaggingPress(id);

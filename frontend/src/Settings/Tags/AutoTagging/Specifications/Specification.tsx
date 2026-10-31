@@ -4,32 +4,26 @@ import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { icons, kinds } from 'Helpers/Props';
-import Field from 'typings/Field';
+import { AutoTaggingSpecification } from 'typings/AutoTagging';
 import translate from 'Utilities/String/translate';
 import EditSpecificationModal from './EditSpecificationModal';
 import styles from './Specification.module.css';
 
 interface SpecificationProps {
-  id: number;
-  implementation: string;
-  implementationName: string;
-  name: string;
-  negate: boolean;
-  required: boolean;
-  fields: Field[];
+  specification: AutoTaggingSpecification;
+  onSave: (specification: AutoTaggingSpecification) => void;
   onConfirmDeleteSpecification: (specId: number) => void;
   onCloneSpecificationPress: (specId: number) => void;
 }
 
 export default function Specification({
-  id,
-  implementationName,
-  name,
-  required,
-  negate,
+  specification,
+  onSave,
   onConfirmDeleteSpecification,
   onCloneSpecificationPress,
 }: SpecificationProps) {
+  const { id, implementationName, name, required, negate } = specification;
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -88,8 +82,9 @@ export default function Specification({
       </div>
 
       <EditSpecificationModal
-        id={id}
         isOpen={isEditModalOpen}
+        specification={specification}
+        onSave={onSave}
         onModalClose={onEditModalClose}
         onDeleteSpecificationPress={onDeletePress}
       />

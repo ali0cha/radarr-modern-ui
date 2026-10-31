@@ -1,7 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
-import { AutoTaggingSpecificationAppState } from 'App/State/SettingsAppState';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -15,88 +12,77 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
+import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds } from 'Helpers/Props';
-import {
-  clearAutoTaggingSpecificationPending,
-  saveAutoTaggingSpecification,
-  setAutoTaggingSpecificationFieldValue,
-  setAutoTaggingSpecificationValue,
-} from 'Store/Actions/settingsActions';
-import { createProviderSettingsSelectorHook } from 'Store/Selectors/createProviderSettingsSelector';
+import { useEditSpecification } from 'Settings/useSpecifications';
 import { AutoTaggingSpecification } from 'typings/AutoTagging';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import styles from './EditSpecificationModalContent.module.css';
 
+const NO_SPECIFICATION = { fields: [] } as unknown as AutoTaggingSpecification;
+
 export interface EditSpecificationModalContentProps {
-  id?: number;
-  onDeleteSpecificationPress?: () => void;
+  // The condition to edit, or the one to start from when it is new
+  specification?: AutoTaggingSpecification;
+  onSave: (specification: AutoTaggingSpecification) => void;
   onModalClose: () => void;
+  onDeleteSpecificationPress?: () => void;
 }
 
 function EditSpecificationModalContent({
-  id,
-  onDeleteSpecificationPress,
+  specification = NO_SPECIFICATION,
+  onSave,
   onModalClose,
+  onDeleteSpecificationPress,
 }: EditSpecificationModalContentProps) {
-  const advancedSettings = useSelector(
-    (state: AppState) => state.settings.advancedSettings
-  );
+  const showAdvancedSettings = useShowAdvancedSettings();
 
-  const { item, ...otherFormProps } = useSelector(
-    createProviderSettingsSelectorHook<
-      AutoTaggingSpecification,
-      AutoTaggingSpecificationAppState
-    >('autoTaggingSpecifications', id)
-  );
+  const { item, updateValue, updateFieldValue, getSpecification } =
+    useEditSpecification(specification);
 
-  const dispatch = useDispatch();
+  const { id, implementationName = '', name, negate, required, fields } = item;
 
-  const onInputChange = useCallback(
+  const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setAutoTaggingSpecificationValue({ name, value }));
+      updateValue(
+        name as keyof AutoTaggingSpecification,
+        value as AutoTaggingSpecification[keyof AutoTaggingSpecification]
+      );
     },
-    [dispatch]
+    [updateValue]
   );
 
-  const onFieldChange = useCallback(
+  const handleFieldChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setAutoTaggingSpecificationFieldValue({ name, value }));
+      updateFieldValue({ [name]: value });
     },
-    [dispatch]
+    [updateFieldValue]
   );
 
-  const onCancelPress = useCallback(() => {
-    dispatch(clearAutoTaggingSpecificationPending());
+  const handleSavePress = useCallback(() => {
+    onSave(getSpecification());
     onModalClose();
-  }, [dispatch, onModalClose]);
-
-  const onSavePress = useCallback(() => {
-    dispatch(saveAutoTaggingSpecification({ id }));
-    onModalClose();
-  }, [dispatch, id, onModalClose]);
-
-  const { implementationName, name, negate, required, fields } = item;
+  }, [getSpecification, onSave, onModalClose]);
 
   return (
-    <ModalContent onModalClose={onCancelPress}>
+    <ModalContent onModalClose={onModalClose}>
       <ModalHeader>
-        {id
+        {id?.value
           ? translate('EditConditionImplementation', { implementationName })
           : translate('AddConditionImplementation', { implementationName })}
       </ModalHeader>
 
       <ModalBody>
-        <Form {...otherFormProps}>
-          {fields && fields.some((x) => x.label === 'Regular Expression') && (
+        <Form>
+          {fields?.some((x) => x.label === 'Regular Expression') ? (
             <Alert kind={kinds.INFO}>
               <div>
                 <InlineMarkdown
                   data={translate('ConditionUsingRegularExpressions')}
                 />
               </div>
+
               <div>
                 <InlineMarkdown
                   data={translate('RegularExpressionsTutorialLink', {
@@ -104,6 +90,7 @@ function EditSpecificationModalContent({
                   })}
                 />
               </div>
+
               <div>
                 <InlineMarkdown
                   data={translate('RegularExpressionsCanBeTested', {
@@ -112,7 +99,7 @@ function EditSpecificationModalContent({
                 />
               </div>
             </Alert>
-          )}
+          ) : null}
 
           <FormGroup>
             <FormLabel>{translate('Name')}</FormLabel>
@@ -121,23 +108,22 @@ function EditSpecificationModalContent({
               type={inputTypes.TEXT}
               name="name"
               {...name}
-              onChange={onInputChange}
+              onChange={handleInputChange}
             />
           </FormGroup>
 
-          {fields &&
-            fields.map((field) => {
-              return (
-                <ProviderFieldFormGroup
-                  key={field.name}
-                  advancedSettings={advancedSettings}
-                  provider="specifications"
-                  providerData={item}
-                  {...field}
-                  onChange={onFieldChange}
-                />
-              );
-            })}
+          {fields?.map((field) => {
+            return (
+              <ProviderFieldFormGroup
+                key={field.name}
+                advancedSettings={showAdvancedSettings}
+                provider="specifications"
+                providerData={item}
+                {...field}
+                onChange={handleFieldChange}
+              />
+            );
+          })}
 
           <FormGroup>
             <FormLabel>{translate('Negate')}</FormLabel>
@@ -149,7 +135,7 @@ function EditSpecificationModalContent({
               helpText={translate('AutoTaggingNegateHelpText', {
                 implementationName,
               })}
-              onChange={onInputChange}
+              onChange={handleInputChange}
             />
           </FormGroup>
 
@@ -163,13 +149,14 @@ function EditSpecificationModalContent({
               helpText={translate('AutoTaggingRequiredHelpText', {
                 implementationName,
               })}
-              onChange={onInputChange}
+              onChange={handleInputChange}
             />
           </FormGroup>
         </Form>
       </ModalBody>
+
       <ModalFooter>
-        {id ? (
+        {id?.value ? (
           <Button
             className={styles.deleteButton}
             kind={kinds.DANGER}
@@ -179,9 +166,9 @@ function EditSpecificationModalContent({
           </Button>
         ) : null}
 
-        <Button onPress={onCancelPress}>{translate('Cancel')}</Button>
+        <Button onPress={onModalClose}>{translate('Cancel')}</Button>
 
-        <SpinnerErrorButton isSpinning={false} onPress={onSavePress}>
+        <SpinnerErrorButton isSpinning={false} onPress={handleSavePress}>
           {translate('Save')}
         </SpinnerErrorButton>
       </ModalFooter>
