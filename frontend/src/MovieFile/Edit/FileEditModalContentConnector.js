@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withLanguages from 'Language/withLanguages';
 import { updateMovieFiles } from 'Store/Actions/movieFileActions';
 import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
 import createMovieFileSelector from 'Store/Selectors/createMovieFileSelector';
@@ -12,7 +13,7 @@ function createMapStateToProps() {
   return createSelector(
     createMovieFileSelector(),
     (state) => state.settings.qualityProfiles,
-    (state) => state.settings.languages,
+    (state, { languagesState }) => languagesState,
     (movieFile, qualityProfiles, languages) => {
 
       const filterItems = ['Any', 'Original'];
@@ -136,4 +137,4 @@ FileEditModalContentConnector.propTypes = {
   onModalClose: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(FileEditModalContentConnector);
+export default withLanguages(connect(createMapStateToProps, mapDispatchToProps)(FileEditModalContentConnector));

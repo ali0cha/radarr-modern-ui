@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withLanguages from 'Language/withLanguages';
 import { clearPendingChanges } from 'Store/Actions/baseActions';
 import { fetchUISettings, saveUISettings, setUISettingsValue } from 'Store/Actions/settingsActions';
-import createLanguagesSelector from 'Store/Selectors/createLanguagesSelector';
 import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
 import UISettings from './UISettings';
 
@@ -13,7 +13,7 @@ const FILTER_LANGUAGES = ['Any', 'Unknown', 'Original'];
 
 function createFilteredLanguagesSelector() {
   return createSelector(
-    createLanguagesSelector(),
+    (state, { languagesState }) => languagesState,
     (languages) => {
       if (!languages || !languages.items) {
         return [];
@@ -106,4 +106,4 @@ UISettingsConnector.propTypes = {
   clearPendingChanges: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(UISettingsConnector);
+export default withLanguages(connect(createMapStateToProps, mapDispatchToProps)(UISettingsConnector));

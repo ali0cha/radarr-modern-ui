@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
 import { useInitializeLanguage } from 'Language/useLanguageName';
+import { useLanguages } from 'Language/useLanguages';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
+import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { fetchTranslations } from 'Store/Actions/appActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
 import {
-  fetchIndexerFlags,
-  fetchLanguages,
   fetchQualityProfiles,
   fetchUISettings,
 } from 'Store/Actions/settingsActions';
@@ -24,8 +24,6 @@ const createErrorsSelector = () =>
     (state: AppState) => state.customFilters.error,
     (state: AppState) => state.settings.ui.error,
     (state: AppState) => state.settings.qualityProfiles.error,
-    (state: AppState) => state.settings.languages.error,
-    (state: AppState) => state.settings.indexerFlags.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
     (
@@ -34,8 +32,6 @@ const createErrorsSelector = () =>
       customFiltersError,
       uiSettingsError,
       qualityProfilesError,
-      languagesError,
-      indexerFlagsError,
       systemStatusError,
       translationsError
     ) => {
@@ -45,8 +41,6 @@ const createErrorsSelector = () =>
         customFiltersError ||
         uiSettingsError ||
         qualityProfilesError ||
-        languagesError ||
-        indexerFlagsError ||
         systemStatusError ||
         translationsError
       );
@@ -59,8 +53,6 @@ const createErrorsSelector = () =>
           customFiltersError,
           uiSettingsError,
           qualityProfilesError,
-          languagesError,
-          indexerFlagsError,
           systemStatusError,
           translationsError,
         },
@@ -76,6 +68,10 @@ const useAppPage = () => {
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
   const { isPopulated: isImportListsPopulated, error: importListsError } =
     useImportLists();
+  const { isPopulated: isLanguagesPopulated, error: languagesError } =
+    useLanguages();
+  const { isPopulated: isIndexerFlagsPopulated, error: indexerFlagsError } =
+    useIndexerFlags();
 
   const isStatePopulated = useSelector(
     (state: AppState) =>
@@ -84,28 +80,43 @@ const useAppPage = () => {
       state.customFilters.isPopulated &&
       state.settings.ui.isPopulated &&
       state.settings.qualityProfiles.isPopulated &&
-      state.settings.languages.isPopulated &&
-      state.settings.indexerFlags.isPopulated &&
       state.system.status.isPopulated &&
       state.app.translations.isPopulated
   );
 
   const isPopulated =
-    isStatePopulated && isTagsPopulated && isImportListsPopulated;
+    isStatePopulated &&
+    isTagsPopulated &&
+    isImportListsPopulated &&
+    isLanguagesPopulated &&
+    isIndexerFlagsPopulated;
 
   const { hasError: hasStateError, errors: stateErrors } = useSelector(
     createErrorsSelector()
   );
 
-  const hasError = hasStateError || !!tagsError || !!importListsError;
+  const hasError =
+    hasStateError ||
+    !!tagsError ||
+    !!importListsError ||
+    !!languagesError ||
+    !!indexerFlagsError;
 
   const errors = useMemo(
     () => ({
       ...stateErrors,
       tagsError: tagsError ?? undefined,
       importListsError: importListsError ?? undefined,
+      languagesError: languagesError ?? undefined,
+      indexerFlagsError: indexerFlagsError ?? undefined,
     }),
-    [stateErrors, tagsError, importListsError]
+    [
+      stateErrors,
+      tagsError,
+      importListsError,
+      languagesError,
+      indexerFlagsError,
+    ]
   );
 
   const isLocalStorageSupported = useMemo(() => {
@@ -126,8 +137,6 @@ const useAppPage = () => {
     dispatch(fetchMovieCollections());
     dispatch(fetchCustomFilters());
     dispatch(fetchQualityProfiles());
-    dispatch(fetchLanguages());
-    dispatch(fetchIndexerFlags());
     dispatch(fetchUISettings());
     dispatch(fetchStatus());
     dispatch(fetchTranslations());

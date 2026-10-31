@@ -1,13 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import createIndexerFlagsSelector from 'Store/Selectors/createIndexerFlagsSelector';
+import useIndexerFlags from 'Settings/Indexers/useIndexerFlags';
 
 interface IndexerFlagsProps {
   indexerFlags: number;
 }
 
 function IndexerFlags({ indexerFlags = 0 }: IndexerFlagsProps) {
-  const allIndexerFlags = useSelector(createIndexerFlagsSelector);
+  const allIndexerFlags = useIndexerFlags();
 
   const flags = allIndexerFlags.items.filter(
     // eslint-disable-next-line no-bitwise

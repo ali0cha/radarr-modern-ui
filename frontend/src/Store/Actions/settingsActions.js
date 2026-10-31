@@ -2,8 +2,6 @@ import { handleThunks } from 'Store/thunks';
 import createHandleActions from './Creators/createHandleActions';
 import general from './Settings/general';
 import importListExclusions from './Settings/importListExclusions';
-import indexerFlags from './Settings/indexerFlags';
-import languages from './Settings/languages';
 import mediaManagement from './Settings/mediaManagement';
 import metadata from './Settings/metadata';
 import metadataOptions from './Settings/metadataOptions';
@@ -16,8 +14,6 @@ import ui from './Settings/ui';
 
 export * from './Settings/general';
 export * from './Settings/importListExclusions';
-export * from './Settings/indexerFlags';
-export * from './Settings/languages';
 export * from './Settings/mediaManagement';
 export * from './Settings/metadata';
 export * from './Settings/metadataOptions';
@@ -40,8 +36,6 @@ export const defaultState = {
   advancedSettings: false,
   general: general.defaultState,
   importListExclusions: importListExclusions.defaultState,
-  indexerFlags: indexerFlags.defaultState,
-  languages: languages.defaultState,
   mediaManagement: mediaManagement.defaultState,
   metadata: metadata.defaultState,
   metadataOptions: metadataOptions.defaultState,
@@ -63,8 +57,6 @@ export const persistState = [
 export const actionHandlers = handleThunks({
   ...general.actionHandlers,
   ...importListExclusions.actionHandlers,
-  ...indexerFlags.actionHandlers,
-  ...languages.actionHandlers,
   ...mediaManagement.actionHandlers,
   ...metadata.actionHandlers,
   ...metadataOptions.actionHandlers,
@@ -83,8 +75,6 @@ export const reducers = createHandleActions({
 
   ...general.reducers,
   ...importListExclusions.reducers,
-  ...indexerFlags.reducers,
-  ...languages.reducers,
   ...mediaManagement.reducers,
   ...metadata.reducers,
   ...metadataOptions.reducers,

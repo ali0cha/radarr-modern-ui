@@ -5,9 +5,7 @@ import AppSectionState, {
   AppSectionSaveState,
   PagedAppSectionState,
 } from 'App/State/AppSectionState';
-import Language from 'Language/Language';
 import ImportListExclusion from 'typings/ImportListExclusion';
-import IndexerFlag from 'typings/IndexerFlag';
 import QualityProfile from 'typings/QualityProfile';
 import General from 'typings/Settings/General';
 import MediaManagement from 'typings/Settings/MediaManagement';
@@ -42,16 +40,12 @@ export interface ImportListExclusionsSettingsAppState
   pendingChanges: Partial<ImportListExclusion>;
 }
 
-export type IndexerFlagSettingsAppState = AppSectionState<IndexerFlag>;
-export type LanguageSettingsAppState = AppSectionState<Language>;
 export type UiSettingsAppState = AppSectionItemState<UiSettings>;
 
 interface SettingsAppState {
   advancedSettings: boolean;
   general: GeneralAppState;
   importListExclusions: ImportListExclusionsSettingsAppState;
-  indexerFlags: IndexerFlagSettingsAppState;
-  languages: LanguageSettingsAppState;
   mediaManagement: MediaManagementAppState;
   metadata: MetadataAppState;
   naming: NamingAppState;

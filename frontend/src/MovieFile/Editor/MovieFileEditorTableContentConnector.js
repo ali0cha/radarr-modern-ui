@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withLanguages from 'Language/withLanguages';
 import { deleteMovieFile, setMovieFilesSort, setMovieFilesTableOption } from 'Store/Actions/movieFileActions';
-import { fetchLanguages, fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
+import { fetchQualityProfileSchema } from 'Store/Actions/settingsActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import createMovieSelector from 'Store/Selectors/createMovieSelector';
 import getQualities from 'Utilities/Quality/getQualities';
@@ -13,7 +14,7 @@ function createMapStateToProps() {
   return createSelector(
     (state, { movieId }) => movieId,
     createClientSideCollectionSelector('movieFiles'),
-    (state) => state.settings.languages,
+    (state, { languagesState }) => languagesState,
     (state) => state.settings.qualityProfiles,
     createMovieSelector(),
     (
@@ -43,7 +44,6 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   fetchQualityProfileSchema,
-  fetchLanguages,
   deleteMovieFile,
   setMovieFilesTableOption,
   setMovieFilesSort
@@ -55,7 +55,6 @@ class MovieFileEditorTableContentConnector extends Component {
   // Lifecycle
 
   componentDidMount() {
-    this.props.fetchLanguages();
     this.props.fetchQualityProfileSchema();
   }
 
@@ -98,11 +97,10 @@ MovieFileEditorTableContentConnector.propTypes = {
   movieId: PropTypes.number.isRequired,
   languages: PropTypes.arrayOf(PropTypes.object).isRequired,
   qualities: PropTypes.arrayOf(PropTypes.object).isRequired,
-  fetchLanguages: PropTypes.func.isRequired,
   fetchQualityProfileSchema: PropTypes.func.isRequired,
   deleteMovieFile: PropTypes.func.isRequired,
   setMovieFilesTableOption: PropTypes.func.isRequired,
   setMovieFilesSort: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(MovieFileEditorTableContentConnector);
+export default withLanguages(connect(createMapStateToProps, mapDispatchToProps)(MovieFileEditorTableContentConnector));

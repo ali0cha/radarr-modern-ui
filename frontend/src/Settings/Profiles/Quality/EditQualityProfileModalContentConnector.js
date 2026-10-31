@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withLanguages from 'Language/withLanguages';
 import { fetchQualityProfileSchema, saveQualityProfile, setQualityProfileValue } from 'Store/Actions/settingsActions';
 import createProviderSettingsSelector from 'Store/Selectors/createProviderSettingsSelector';
 import useProfileInUse from '../useProfileInUse';
@@ -93,7 +94,7 @@ function createFormatsSelector() {
 
 function createLanguagesSelector() {
   return createSelector(
-    (state) => state.settings.languages,
+    (state, { languagesState }) => languagesState,
     (languages) => {
       const items = languages.items;
       const filterItems = ['Unknown'];
@@ -519,7 +520,7 @@ EditQualityProfileModalContentConnectorBase.propTypes = {
   onModalClose: PropTypes.func.isRequired
 };
 
-const ConnectedEditQualityProfileModalContent = connect(createMapStateToProps, mapDispatchToProps)(EditQualityProfileModalContentConnectorBase);
+const ConnectedEditQualityProfileModalContent = withLanguages(connect(createMapStateToProps, mapDispatchToProps)(EditQualityProfileModalContentConnectorBase));
 
 function EditQualityProfileModalContentConnector(props) {
   const isInUse = useProfileInUse('qualityProfileId', props.id);

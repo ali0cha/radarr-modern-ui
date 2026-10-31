@@ -1,34 +1,7 @@
-import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useMemo } from 'react';
+import useIndexerFlags from 'Settings/Indexers/useIndexerFlags';
 import { EnhancedSelectInputChanged } from 'typings/inputs';
 import EnhancedSelectInput from './EnhancedSelectInput';
-
-const selectIndexerFlagsValues = (selectedFlags: number) =>
-  createSelector(
-    (state: AppState) => state.settings.indexerFlags,
-    (indexerFlags) => {
-      const value = indexerFlags.items.reduce((acc: number[], { id }) => {
-        // eslint-disable-next-line no-bitwise
-        if ((selectedFlags & id) === id) {
-          acc.push(id);
-        }
-
-        return acc;
-      }, []);
-
-      const values = indexerFlags.items.map(({ id, name }) => ({
-        key: id,
-        value: name,
-      }));
-
-      return {
-        value,
-        values,
-      };
-    }
-  );
 
 export interface IndexerFlagsSelectInputProps {
   name: string;
@@ -42,7 +15,21 @@ function IndexerFlagsSelectInput({
   onChange,
   ...otherProps
 }: IndexerFlagsSelectInputProps) {
-  const { value, values } = useSelector(selectIndexerFlagsValues(indexerFlags));
+  const { items } = useIndexerFlags();
+
+  const { value, values } = useMemo(() => {
+    return {
+      value: items.reduce((acc: number[], { id }) => {
+        // eslint-disable-next-line no-bitwise
+        if ((indexerFlags & id) === id) {
+          acc.push(id);
+        }
+
+        return acc;
+      }, []),
+      values: items.map(({ id, name }) => ({ key: id, value: name })),
+    };
+  }, [items, indexerFlags]);
 
   const handleChange = useCallback(
     (change: EnhancedSelectInputChanged<number[]>) => {

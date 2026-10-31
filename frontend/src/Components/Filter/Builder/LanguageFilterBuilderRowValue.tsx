@@ -1,11 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import createLanguagesSelector from 'Store/Selectors/createLanguagesSelector';
+import { useLanguages } from 'Language/useLanguages';
 import FilterBuilderRowValue from './FilterBuilderRowValue';
 import FilterBuilderRowValueProps from './FilterBuilderRowValueProps';
 
+const EXCLUDED_LANGUAGES = ['Any'];
+
 function LanguageFilterBuilderRowValue(props: FilterBuilderRowValueProps) {
-  const { items } = useSelector(createLanguagesSelector());
+  const { items } = useLanguages(EXCLUDED_LANGUAGES);
 
   return <FilterBuilderRowValue {...props} tagList={items} />;
 }
