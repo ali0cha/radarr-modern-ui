@@ -14,7 +14,7 @@ import translate from 'Utilities/String/translate';
 import DownloadClients from './DownloadClients/DownloadClients';
 import ManageDownloadClientsModal from './DownloadClients/Manage/ManageDownloadClientsModal';
 import DownloadClientOptions from './Options/DownloadClientOptions';
-import RemotePathMappingsConnector from './RemotePathMappings/RemotePathMappingsConnector';
+import RemotePathMappings from './RemotePathMappings/RemotePathMappings';
 import { DOWNLOAD_CLIENTS_PATH } from './useDownloadClients';
 
 function DownloadClientSettings() {
@@ -85,7 +85,7 @@ function DownloadClientSettings() {
           onChildStateChange={handleChildStateChange}
         />
 
-        <RemotePathMappingsConnector />
+        <RemotePathMappings />
 
         <ManageDownloadClientsModal
           isOpen={isManageDownloadClientsOpen}

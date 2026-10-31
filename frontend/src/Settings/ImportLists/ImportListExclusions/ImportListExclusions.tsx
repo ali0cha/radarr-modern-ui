@@ -1,7 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useMemo, useState } from 'react';
 import FieldSet from 'Components/FieldSet';
 import IconButton from 'Components/Link/IconButton';
 import SpinnerButton from 'Components/Link/SpinnerButton';
@@ -13,32 +10,28 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TablePager from 'Components/Table/TablePager';
 import TableRow from 'Components/Table/TableRow';
-import usePaging from 'Components/Table/usePaging';
-import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
+import {
+  usePagerHandlers,
+  usePageState,
+} from 'Components/Table/usePageNavigation';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { icons, kinds } from 'Helpers/Props';
-import { SortDirection } from 'Helpers/Props/sortDirections';
-import {
-  bulkDeleteImportListExclusions,
-  clearImportListExclusions,
-  fetchImportListExclusions,
-  gotoImportListExclusionPage,
-  setImportListExclusionSort,
-  setImportListExclusionTableOption,
-} from 'Store/Actions/Settings/importListExclusions';
+import { useBulkDeleteProviders } from 'Settings/useProviderSettings';
+import ImportListExclusion from 'typings/ImportListExclusion';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import { TableOptionsChangePayload } from 'typings/Table';
-import {
-  registerPagePopulator,
-  unregisterPagePopulator,
-} from 'Utilities/pagePopulator';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import EditImportListExclusionModal from './EditImportListExclusionModal';
 import ImportListExclusionRow from './ImportListExclusionRow';
+import {
+  IMPORT_LIST_EXCLUSIONS_PATH,
+  setImportListExclusionsPageSize,
+  useImportListExclusions,
+  useInvalidateImportListExclusions,
+} from './useImportListExclusions';
 import styles from './ImportListExclusions.module.css';
 
 const COLUMNS: Column[] = [
@@ -69,40 +62,37 @@ const COLUMNS: Column[] = [
   },
 ];
 
-function createImportListExclusionsSelector() {
-  return createSelector(
-    (state: AppState) => state.settings.importListExclusions,
-    (importListExclusions) => {
-      return {
-        ...importListExclusions,
-      };
-    }
-  );
-}
-
 function ImportListExclusions() {
-  const requestCurrentPage = useCurrentPage();
+  const { page, setPage } = usePageState();
 
   const {
-    isFetching,
-    isPopulated,
     items,
     pageSize,
     sortKey,
-    error,
     sortDirection,
-    page,
     totalPages,
     totalRecords,
-    isDeleting,
-    deleteError,
-  } = useSelector(createImportListExclusionsSelector());
+    isFetching,
+    isPopulated,
+    error,
+    handleSortPress,
+  } = useImportListExclusions(page);
 
-  const dispatch = useDispatch();
+  const {
+    handleFirstPagePress,
+    handlePreviousPagePress,
+    handleNextPagePress,
+    handleLastPagePress,
+    handlePageSelect,
+  } = usePagerHandlers({ page, totalPages, setPage });
+
+  const invalidateExclusions = useInvalidateImportListExclusions();
+
+  const { bulkDelete, isBulkDeleting: isDeleting } =
+    useBulkDeleteProviders<ImportListExclusion>(IMPORT_LIST_EXCLUSIONS_PATH);
 
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] =
     useState(false);
-  const previousIsDeleting = usePrevious(isDeleting);
 
   const [selectState, setSelectState] = useSelectState();
   const { allSelected, allUnselected, selectedState } = selectState;
@@ -133,85 +123,35 @@ function ImportListExclusions() {
 
   const handleDeleteSelectedPress = useCallback(() => {
     setIsConfirmDeleteModalOpen(true);
-  }, [setIsConfirmDeleteModalOpen]);
+  }, []);
 
   const handleDeleteSelectedConfirmed = useCallback(() => {
-    dispatch(bulkDeleteImportListExclusions({ ids: selectedIds }));
+    bulkDelete(
+      { ids: selectedIds },
+      {
+        onSuccess: () => {
+          setSelectState({ type: 'unselectAll', items });
+          invalidateExclusions();
+        },
+      }
+    );
+
     setIsConfirmDeleteModalOpen(false);
-  }, [selectedIds, setIsConfirmDeleteModalOpen, dispatch]);
+  }, [selectedIds, items, bulkDelete, setSelectState, invalidateExclusions]);
 
   const handleConfirmDeleteModalClose = useCallback(() => {
     setIsConfirmDeleteModalOpen(false);
-  }, [setIsConfirmDeleteModalOpen]);
-
-  const {
-    handleFirstPagePress,
-    handlePreviousPagePress,
-    handleNextPagePress,
-    handleLastPagePress,
-    handlePageSelect,
-  } = usePaging({
-    page,
-    totalPages,
-    gotoPage: gotoImportListExclusionPage,
-  });
-
-  const handleSortPress = useCallback(
-    (sortKey: string, sortDirection?: SortDirection) => {
-      dispatch(setImportListExclusionSort({ sortKey, sortDirection }));
-    },
-    [dispatch]
-  );
+  }, []);
 
   const handleTableOptionChange = useCallback(
     (payload: TableOptionsChangePayload) => {
-      dispatch(setImportListExclusionTableOption(payload));
-
       if (payload.pageSize) {
-        dispatch(gotoImportListExclusionPage({ page: 1 }));
+        setImportListExclusionsPageSize(payload.pageSize);
+        setPage(1);
       }
     },
-    [dispatch]
+    [setPage]
   );
-
-  useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchImportListExclusions());
-    } else {
-      dispatch(gotoImportListExclusionPage({ page: 1 }));
-    }
-
-    return () => {
-      dispatch(clearImportListExclusions());
-    };
-  }, [requestCurrentPage, dispatch]);
-
-  useEffect(() => {
-    const repopulate = () => {
-      dispatch(fetchImportListExclusions());
-    };
-
-    registerPagePopulator(repopulate);
-
-    return () => {
-      unregisterPagePopulator(repopulate);
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (previousIsDeleting && !isDeleting && !deleteError) {
-      setSelectState({ type: 'unselectAll', items });
-
-      dispatch(fetchImportListExclusions());
-    }
-  }, [
-    previousIsDeleting,
-    isDeleting,
-    deleteError,
-    items,
-    dispatch,
-    setSelectState,
-  ]);
 
   const [
     isAddImportListExclusionModalOpen,
@@ -227,7 +167,7 @@ function ImportListExclusions() {
         errorMessage={translate('ImportListExclusionsLoadError')}
         isFetching={isFetchingForFirstTime}
         isPopulated={isPopulated}
-        error={error}
+        error={error ?? undefined}
       >
         <Table
           selectAll={true}

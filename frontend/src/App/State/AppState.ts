@@ -14,7 +14,6 @@ import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import QueueAppState from './QueueAppState';
 import ReleasesAppState from './ReleasesAppState';
-import SettingsAppState from './SettingsAppState';
 import SystemAppState from './SystemAppState';
 import WantedAppState from './WantedAppState';
 
@@ -88,7 +87,6 @@ interface AppState {
   providerOptions: ProviderOptionsAppState;
   queue: QueueAppState;
   releases: ReleasesAppState;
-  settings: SettingsAppState;
   system: SystemAppState;
   wanted: WantedAppState;
 }

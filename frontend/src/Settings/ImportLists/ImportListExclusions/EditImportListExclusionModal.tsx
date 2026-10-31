@@ -1,8 +1,6 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Modal from 'Components/Modal/Modal';
 import { sizes } from 'Helpers/Props';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
 import EditImportListExclusionModalContent from './EditImportListExclusionModalContent';
 
 interface EditImportListExclusionModalProps {
@@ -12,27 +10,16 @@ interface EditImportListExclusionModalProps {
   onDeleteImportListExclusionPress?: () => void;
 }
 
-function EditImportListExclusionModal(
-  props: EditImportListExclusionModalProps
-) {
-  const { isOpen, onModalClose, ...otherProps } = props;
-
-  const dispatch = useDispatch();
-
-  const handleModalClose = useCallback(() => {
-    dispatch(
-      clearPendingChanges({
-        section: 'settings.importListExclusions',
-      })
-    );
-    onModalClose();
-  }, [dispatch, onModalClose]);
-
+function EditImportListExclusionModal({
+  isOpen,
+  onModalClose,
+  ...otherProps
+}: EditImportListExclusionModalProps) {
   return (
-    <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={handleModalClose}>
+    <Modal size={sizes.MEDIUM} isOpen={isOpen} onModalClose={onModalClose}>
       <EditImportListExclusionModalContent
         {...otherProps}
-        onModalClose={handleModalClose}
+        onModalClose={onModalClose}
       />
     </Modal>
   );

@@ -17,7 +17,6 @@ import * as oAuth from './oAuthActions';
 import * as providerOptions from './providerOptionActions';
 import * as queue from './queueActions';
 import * as releases from './releaseActions';
-import * as settings from './settingsActions';
 import * as system from './systemActions';
 import * as wanted from './wantedActions';
 
@@ -41,7 +40,6 @@ export default [
   movies,
   movieCollections,
   movieIndex,
-  settings,
   system,
   wanted
 ];

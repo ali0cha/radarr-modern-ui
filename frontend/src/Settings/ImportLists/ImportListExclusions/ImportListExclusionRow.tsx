@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -7,11 +6,15 @@ import TableSelectCell from 'Components/Table/Cells/TableSelectCell';
 import TableRow from 'Components/Table/TableRow';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
 import { icons, kinds } from 'Helpers/Props';
-import { deleteImportListExclusion } from 'Store/Actions/Settings/importListExclusions';
+import { useDeleteProvider } from 'Settings/useProviderSettings';
 import ImportListExclusion from 'typings/ImportListExclusion';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
 import EditImportListExclusionModal from './EditImportListExclusionModal';
+import {
+  IMPORT_LIST_EXCLUSIONS_PATH,
+  useInvalidateImportListExclusions,
+} from './useImportListExclusions';
 import styles from './ImportListExclusionRow.module.css';
 
 interface ImportListExclusionRowProps extends ImportListExclusion {
@@ -23,7 +26,13 @@ function ImportListExclusionRow(props: ImportListExclusionRowProps) {
   const { id, tmdbId, movieTitle, movieYear, isSelected, onSelectedChange } =
     props;
 
-  const dispatch = useDispatch();
+  const invalidateExclusions = useInvalidateImportListExclusions();
+
+  const { deleteProvider } = useDeleteProvider<ImportListExclusion>(
+    id,
+    IMPORT_LIST_EXCLUSIONS_PATH,
+    invalidateExclusions
+  );
 
   const [
     isEditImportListExclusionModalOpen,
@@ -38,8 +47,8 @@ function ImportListExclusionRow(props: ImportListExclusionRowProps) {
   ] = useModalOpenState(false);
 
   const handleDeletePress = useCallback(() => {
-    dispatch(deleteImportListExclusion({ id }));
-  }, [id, dispatch]);
+    deleteProvider();
+  }, [deleteProvider]);
 
   return (
     <TableRow>

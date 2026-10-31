@@ -2,7 +2,10 @@ import _ from 'lodash';
 import moment from 'moment/moment';
 import { createAction } from 'redux-actions';
 import { batchActions } from 'redux-batched-actions';
+import { queryClient } from 'App/queryClient';
+import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { filterBuilderTypes, filterBuilderValueTypes, filterTypes, sortDirections } from 'Helpers/Props';
+import { IMPORT_LIST_EXCLUSIONS_PATH } from 'Settings/ImportLists/ImportListExclusions/useImportListExclusions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import sortByProp from 'Utilities/Array/sortByProp';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
@@ -803,8 +806,6 @@ export const actionHandlers = handleThunks({
 
     promise.done((data) => {
       dispatch(batchActions([
-        ...data.map((item) => updateItem({ section: 'settings.importListExclusions', ...item })),
-
         ...data.map((item) => updateItem({ section, id: item.tmdbId, isExcluded: true })),
 
         set({
@@ -813,6 +814,8 @@ export const actionHandlers = handleThunks({
           saveError: null
         })
       ]));
+
+      invalidateApiQueries(queryClient, IMPORT_LIST_EXCLUSIONS_PATH);
     });
 
     promise.fail((xhr) => {

@@ -29,16 +29,3 @@ export const toggleShowAdvancedSettings = () => {
     showAdvancedSettings: !state.showAdvancedSettings,
   }));
 };
-
-// For code outside of React.
-export const getShowAdvancedSettings = () =>
-  advancedSettingsStore.getState().showAdvancedSettings;
-
-export const subscribeToShowAdvancedSettings = (
-  listener: (showAdvancedSettings: boolean) => void
-) =>
-  advancedSettingsStore.subscribe((state, previousState) => {
-    if (state.showAdvancedSettings !== previousState.showAdvancedSettings) {
-      listener(state.showAdvancedSettings);
-    }
-  });

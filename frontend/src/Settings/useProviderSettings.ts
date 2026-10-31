@@ -174,7 +174,8 @@ export const useTestAllProviders = (path: string) => {
 
 export const useDeleteProvider = <T extends ModelBase>(
   id: number,
-  path: string
+  path: string,
+  onDeleted?: () => void
 ) => {
   const queryClient = useQueryClient();
 
@@ -187,6 +188,8 @@ export const useDeleteProvider = <T extends ModelBase>(
           { queryKey: getApiQueryKey(path) },
           (providers) => providers?.filter((provider) => provider.id !== id)
         );
+
+        onDeleted?.();
       },
     },
   });
