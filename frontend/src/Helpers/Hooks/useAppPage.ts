@@ -15,14 +15,13 @@ import {
   fetchUISettings,
 } from 'Store/Actions/settingsActions';
 import { fetchStatus } from 'Store/Actions/systemActions';
-import { fetchTags } from 'Store/Actions/tagActions';
+import { useTagsQuery } from 'Tags/useTags';
 
 const createErrorsSelector = () =>
   createSelector(
     (state: AppState) => state.movies.error,
     (state: AppState) => state.movieCollections.error,
     (state: AppState) => state.customFilters.error,
-    (state: AppState) => state.tags.error,
     (state: AppState) => state.settings.ui.error,
     (state: AppState) => state.settings.qualityProfiles.error,
     (state: AppState) => state.settings.languages.error,
@@ -34,7 +33,6 @@ const createErrorsSelector = () =>
       moviesError,
       movieCollectionsError,
       customFiltersError,
-      tagsError,
       uiSettingsError,
       qualityProfilesError,
       languagesError,
@@ -47,7 +45,6 @@ const createErrorsSelector = () =>
         moviesError ||
         movieCollectionsError ||
         customFiltersError ||
-        tagsError ||
         uiSettingsError ||
         qualityProfilesError ||
         languagesError ||
@@ -63,7 +60,6 @@ const createErrorsSelector = () =>
           moviesError,
           movieCollectionsError,
           customFiltersError,
-          tagsError,
           uiSettingsError,
           qualityProfilesError,
           languagesError,
@@ -81,12 +77,13 @@ const useAppPage = () => {
 
   useInitializeLanguage();
 
-  const isPopulated = useSelector(
+  const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
+
+  const isStatePopulated = useSelector(
     (state: AppState) =>
       state.movies.isPopulated &&
       state.movieCollections.isPopulated &&
       state.customFilters.isPopulated &&
-      state.tags.isPopulated &&
       state.settings.ui.isPopulated &&
       state.settings.qualityProfiles.isPopulated &&
       state.settings.languages.isPopulated &&
@@ -96,7 +93,18 @@ const useAppPage = () => {
       state.app.translations.isPopulated
   );
 
-  const { hasError, errors } = useSelector(createErrorsSelector());
+  const isPopulated = isStatePopulated && isTagsPopulated;
+
+  const { hasError: hasStateError, errors: stateErrors } = useSelector(
+    createErrorsSelector()
+  );
+
+  const hasError = hasStateError || !!tagsError;
+
+  const errors = useMemo(
+    () => ({ ...stateErrors, tagsError: tagsError ?? undefined }),
+    [stateErrors, tagsError]
+  );
 
   const isLocalStorageSupported = useMemo(() => {
     const key = 'radarrTest';
@@ -115,7 +123,6 @@ const useAppPage = () => {
     dispatch(fetchMovies());
     dispatch(fetchMovieCollections());
     dispatch(fetchCustomFilters());
-    dispatch(fetchTags());
     dispatch(fetchQualityProfiles());
     dispatch(fetchLanguages());
     dispatch(fetchImportLists());

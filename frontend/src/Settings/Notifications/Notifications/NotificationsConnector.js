@@ -4,18 +4,16 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { deleteNotification, fetchNotifications } from 'Store/Actions/settingsActions';
 import createSortedSectionSelector from 'Store/Selectors/createSortedSectionSelector';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+import withTags from 'Tags/withTags';
 import sortByProp from 'Utilities/Array/sortByProp';
 import Notifications from './Notifications';
 
 function createMapStateToProps() {
   return createSelector(
     createSortedSectionSelector('settings.notifications', sortByProp('name')),
-    createTagsSelector(),
-    (notifications, tagList) => {
+    (notifications) => {
       return {
-        ...notifications,
-        tagList
+        ...notifications
       };
     }
   );
@@ -60,4 +58,4 @@ NotificationsConnector.propTypes = {
   deleteNotification: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(NotificationsConnector);
+export default withTags(connect(createMapStateToProps, mapDispatchToProps)(NotificationsConnector));

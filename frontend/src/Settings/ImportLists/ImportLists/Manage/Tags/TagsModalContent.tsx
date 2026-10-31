@@ -3,7 +3,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import { ImportListAppState } from 'App/State/SettingsAppState';
-import { Tag } from 'App/State/TagsAppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -15,7 +14,8 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
-import createTagsSelector from 'Store/Selectors/createTagsSelector';
+import { Tag } from 'Tags/Tag';
+import useTags from 'Tags/useTags';
 import ImportList from 'typings/ImportList';
 import translate from 'Utilities/String/translate';
 import styles from './TagsModalContent.module.css';
@@ -32,7 +32,7 @@ function TagsModalContent(props: TagsModalContentProps) {
   const allImportLists: ImportListAppState = useSelector(
     (state: AppState) => state.settings.importLists
   );
-  const tagList: Tag[] = useSelector(createTagsSelector());
+  const tagList: Tag[] = useTags();
 
   const [tags, setTags] = useState<number[]>([]);
   const [applyTags, setApplyTags] = useState('add');

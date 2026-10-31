@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { queryClient } from 'App/queryClient';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
@@ -11,7 +12,7 @@ import { fetchQueue, fetchQueueDetails } from 'Store/Actions/queueActions';
 import { fetchRootFolders } from 'Store/Actions/rootFolderActions';
 import { fetchQualityDefinitions } from 'Store/Actions/settingsActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
-import { fetchTagDetails, fetchTags } from 'Store/Actions/tagActions';
+import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
 import titleCase from 'Utilities/String/titleCase';
 
@@ -51,9 +52,7 @@ const mapDispatchToProps = {
   dispatchFetchQueue: fetchQueue,
   dispatchFetchQueueDetails: fetchQueueDetails,
   dispatchFetchRootFolders: fetchRootFolders,
-  dispatchFetchMovies: fetchMovies,
-  dispatchFetchTags: fetchTags,
-  dispatchFetchTagDetails: fetchTagDetails
+  dispatchFetchMovies: fetchMovies
 };
 
 function Logger(minimumLogLevel) {
@@ -324,8 +323,7 @@ class SignalRConnector extends Component {
 
   handleTag = (body) => {
     if (body.action === 'sync') {
-      this.props.dispatchFetchTags();
-      this.props.dispatchFetchTagDetails();
+      invalidateTags(queryClient);
       return;
     }
   };
@@ -417,9 +415,7 @@ SignalRConnector.propTypes = {
   dispatchFetchQueue: PropTypes.func.isRequired,
   dispatchFetchQueueDetails: PropTypes.func.isRequired,
   dispatchFetchRootFolders: PropTypes.func.isRequired,
-  dispatchFetchMovies: PropTypes.func.isRequired,
-  dispatchFetchTags: PropTypes.func.isRequired,
-  dispatchFetchTagDetails: PropTypes.func.isRequired
+  dispatchFetchMovies: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(SignalRConnector);

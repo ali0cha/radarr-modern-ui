@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import DocumentTitle from 'react-document-title';
 import { Provider } from 'react-redux';
@@ -13,12 +13,11 @@ import { Store } from 'redux';
 import Page from 'Components/Page/Page';
 import ApplyTheme from './ApplyTheme';
 import { appRouteElements } from './AppRoutes';
+import { queryClient } from './queryClient';
 
 interface AppProps {
   store: Store;
 }
-
-const queryClient = new QueryClient();
 
 function PageLayout() {
   return (
