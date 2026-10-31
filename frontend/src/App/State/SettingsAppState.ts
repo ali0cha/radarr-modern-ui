@@ -13,7 +13,6 @@ import General from 'typings/Settings/General';
 import MediaManagement from 'typings/Settings/MediaManagement';
 import NamingConfig from 'typings/Settings/NamingConfig';
 import NamingExample from 'typings/Settings/NamingExample';
-import ReleaseProfile from 'typings/Settings/ReleaseProfile';
 import UiSettings from 'typings/Settings/UiSettings';
 import MetadataAppState from './MetadataAppState';
 
@@ -34,12 +33,6 @@ export type NamingExamplesAppState = AppSectionItemState<NamingExample>;
 export interface QualityProfilesAppState
   extends AppSectionState<QualityProfile>,
     AppSectionItemSchemaState<QualityProfile> {}
-
-export interface ReleaseProfilesAppState
-  extends AppSectionState<ReleaseProfile>,
-    AppSectionSaveState {
-  pendingChanges: Partial<ReleaseProfile>;
-}
 
 export interface ImportListExclusionsSettingsAppState
   extends AppSectionState<ImportListExclusion>,
@@ -64,7 +57,6 @@ interface SettingsAppState {
   naming: NamingAppState;
   namingExamples: NamingExamplesAppState;
   qualityProfiles: QualityProfilesAppState;
-  releaseProfiles: ReleaseProfilesAppState;
   ui: UiSettingsAppState;
 }
 

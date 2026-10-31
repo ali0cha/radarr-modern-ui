@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import ModelBase from 'App/ModelBase';
-import AppState from 'App/State/AppState';
 import FieldSet from 'Components/FieldSet';
 import Label from 'Components/Label';
 import Button from 'Components/Link/Button';
@@ -16,6 +15,7 @@ import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { useNotifications } from 'Settings/Notifications/useNotifications';
 import { useDelayProfiles } from 'Settings/Profiles/Delay/useDelayProfiles';
+import { useReleaseProfiles } from 'Settings/Profiles/Release/useReleaseProfiles';
 import { useAutoTaggings } from 'Settings/Tags/AutoTagging/useAutoTaggings';
 import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
@@ -52,13 +52,6 @@ function createMatchingMoviesSelector(movieIds: number[]) {
       });
     }
   );
-}
-
-function createMatchingItemSelector<T extends ModelBase>(
-  ids: number[],
-  selector: (state: AppState) => T[]
-) {
-  return createSelector(selector, (items) => findMatchingItems<T>(ids, items));
 }
 
 export interface TagDetailsModalContentProps {
@@ -116,11 +109,10 @@ function TagDetailsModalContent({
     [notificationIds, allNotifications]
   );
 
-  const releaseProfiles = useSelector(
-    createMatchingItemSelector(
-      releaseProfileIds,
-      (state: AppState) => state.settings.releaseProfiles.items
-    )
+  const { items: allReleaseProfiles } = useReleaseProfiles();
+  const releaseProfiles = useMemo(
+    () => findMatchingItems(releaseProfileIds, allReleaseProfiles),
+    [releaseProfileIds, allReleaseProfiles]
   );
 
   const { items: allIndexers } = useIndexers();

@@ -9,7 +9,7 @@ import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
 import { useNotifications } from 'Settings/Notifications/useNotifications';
 import { useDelayProfiles } from 'Settings/Profiles/Delay/useDelayProfiles';
-import { fetchReleaseProfiles } from 'Store/Actions/settingsActions';
+import { useReleaseProfiles } from 'Settings/Profiles/Release/useReleaseProfiles';
 import { useTagDetails, useTagsQuery } from 'Tags/useTags';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
@@ -23,6 +23,7 @@ function Tags() {
   // in the details of a tag
   useImportLists();
   useDelayProfiles();
+  useReleaseProfiles();
   useIndexers();
   useDownloadClients();
   useNotifications();
@@ -46,9 +47,7 @@ function Tags() {
     [tags]
   );
 
-  useEffect(() => {
-    dispatch(fetchReleaseProfiles());
-  }, [dispatch]);
+  useEffect(() => {}, [dispatch]);
 
   if (!items.length) {
     return (
