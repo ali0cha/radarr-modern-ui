@@ -1,7 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Form from 'Components/Form/Form';
@@ -11,37 +8,21 @@ import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
+import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
-import {
-  fetchNamingExamples,
-  fetchNamingSettings,
-  setNamingSettingsValue,
-} from 'Store/Actions/settingsActions';
-import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
+import { useManageSettings } from 'Settings/useSettings';
 import { InputChanged } from 'typings/inputs';
 import NamingConfig from 'typings/Settings/NamingConfig';
+import {
+  OnChildStateChange,
+  SetChildSave,
+} from 'typings/Settings/SettingsState';
 import translate from 'Utilities/String/translate';
 import NamingModal from './NamingModal';
+import { useNamingExamples } from './useNamingExamples';
 import styles from './Naming.module.css';
 
-const SECTION = 'naming';
-
-function createNamingSelector() {
-  return createSelector(
-    (state: AppState) => state.settings.advancedSettings,
-    (state: AppState) => state.settings.namingExamples,
-    createSettingsSectionSelector(SECTION),
-    (advancedSettings, namingExamples, sectionSettings) => {
-      return {
-        advancedSettings,
-        examples: namingExamples.item,
-        examplesPopulated: namingExamples.isPopulated,
-        ...sectionSettings,
-      };
-    }
-  );
-}
+const PATH = '/config/naming';
 
 interface NamingModalOptions {
   name: keyof Pick<NamingConfig, 'standardMovieFormat' | 'movieFolderFormat'>;
@@ -49,48 +30,63 @@ interface NamingModalOptions {
   additional?: boolean;
 }
 
-function Naming() {
+interface NamingProps {
+  setChildSave: SetChildSave;
+  onChildStateChange: OnChildStateChange;
+}
+
+function Naming({ setChildSave, onChildStateChange }: NamingProps) {
+  const advancedSettings = useShowAdvancedSettings();
+
   const {
-    advancedSettings,
     isFetching,
+    isSaving,
     error,
     settings,
     hasSettings,
-    examples,
-    examplesPopulated,
-  } = useSelector(createNamingSelector());
+    hasPendingChanges,
+    updateSetting,
+    saveSettings,
+  } = useManageSettings<NamingConfig>(PATH);
 
-  const dispatch = useDispatch();
+  // The values, with the changes not saved yet: what the examples are for
+  const namingValues = useMemo(() => {
+    if (!hasSettings) {
+      return undefined;
+    }
+
+    return Object.fromEntries(
+      Object.entries(settings).map(([key, setting]) => [
+        key,
+        (setting as { value: unknown }).value,
+      ])
+    ) as unknown as NamingConfig;
+  }, [hasSettings, settings]);
+
+  const { examples, isPopulated: examplesPopulated } =
+    useNamingExamples(namingValues);
 
   const [isNamingModalOpen, setNamingModalOpen, setNamingModalClosed] =
     useModalOpenState(false);
   const [namingModalOptions, setNamingModalOptions] =
     useState<NamingModalOptions | null>(null);
-  const namingExampleTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    dispatch(fetchNamingSettings());
-    dispatch(fetchNamingExamples());
+    setChildSave(saveSettings);
+  }, [saveSettings, setChildSave]);
 
-    return () => {
-      dispatch(clearPendingChanges({ section: 'settings.naming' }));
-    };
-  }, [dispatch]);
+  useEffect(() => {
+    onChildStateChange({ isSaving, hasPendingChanges });
+  }, [isSaving, hasPendingChanges, onChildStateChange]);
 
   const handleInputChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error 'setNamingSettingsValue' isn't typed yet
-      dispatch(setNamingSettingsValue(change));
-
-      if (namingExampleTimeout.current) {
-        clearTimeout(namingExampleTimeout.current);
-      }
-
-      namingExampleTimeout.current = setTimeout(() => {
-        dispatch(fetchNamingExamples());
-      }, 1000);
+    ({ name, value }: InputChanged) => {
+      updateSetting(
+        name as keyof NamingConfig,
+        value as NamingConfig[keyof NamingConfig]
+      );
     },
-    [dispatch]
+    [updateSetting]
   );
 
   const onStandardNamingModalOpenClick = useCallback(() => {

@@ -9,6 +9,7 @@ import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
+import { METADATA_PATH } from 'Settings/Metadata/Metadata/useMetadata';
 import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
 import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQualityDefinitions';
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
@@ -210,12 +211,8 @@ class SignalRConnector extends Component {
     invalidateApiQueries(queryClient, INDEXERS_PATH);
   };
 
-  handleMetadata = ({ action, resource }) => {
-    const section = 'settings.metadata';
-
-    if (action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...resource });
-    }
+  handleMetadata = () => {
+    invalidateApiQueries(queryClient, METADATA_PATH);
   };
 
   handleNotification = () => {

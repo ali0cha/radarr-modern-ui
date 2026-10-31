@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useEffect } from 'react';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -14,63 +12,59 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import usePrevious from 'Helpers/Hooks/usePrevious';
+import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes } from 'Helpers/Props';
-import {
-  saveMetadata,
-  setMetadataFieldValue,
-  setMetadataValue,
-} from 'Store/Actions/settingsActions';
-import selectSettings from 'Store/Selectors/selectSettings';
+import { useManageProviderSettings } from 'Settings/useProviderSettings';
 import { InputChanged } from 'typings/inputs';
+import MetadataModel from 'typings/Metadata';
 import translate from 'Utilities/String/translate';
+import { METADATA_PATH } from './useMetadata';
 import styles from './EditMetadataModalContent.module.css';
+
+const NO_METADATA = { fields: [] } as unknown as MetadataModel;
 
 export interface EditMetadataModalContentProps {
   id: number;
-  advancedSettings: boolean;
   onModalClose: () => void;
 }
 
 function EditMetadataModalContent({
   id,
-  advancedSettings,
   onModalClose,
 }: EditMetadataModalContentProps) {
-  const dispatch = useDispatch();
+  const advancedSettings = useShowAdvancedSettings();
 
-  const { isSaving, saveError, pendingChanges, items } = useSelector(
-    (state: AppState) => state.settings.metadata
-  );
+  const {
+    isSaving,
+    saveError,
+    item,
+    validationErrors,
+    validationWarnings,
+    updateValue,
+    updateFieldValue,
+    saveProvider,
+  } = useManageProviderSettings<MetadataModel>(id, NO_METADATA, METADATA_PATH);
 
   const wasSaving = usePrevious(isSaving);
 
-  const { settings, ...otherSettings } = useMemo(() => {
-    const item = items.find((item) => item.id === id)!;
-
-    return selectSettings(item, pendingChanges, saveError);
-  }, [id, items, pendingChanges, saveError]);
-
-  const { name, enable, fields, message } = settings;
+  const { name, enable, fields, message } = item;
 
   const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error not typed
-      dispatch(setMetadataValue({ name, value }));
+      updateValue(
+        name as keyof MetadataModel,
+        value as MetadataModel[keyof MetadataModel]
+      );
     },
-    [dispatch]
+    [updateValue]
   );
 
   const handleFieldChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error not typed
-      dispatch(setMetadataFieldValue({ name, value }));
+      updateFieldValue({ [name]: value });
     },
-    [dispatch]
+    [updateFieldValue]
   );
-
-  const handleSavePress = useCallback(() => {
-    dispatch(saveMetadata({ id }));
-  }, [id, dispatch]);
 
   useEffect(() => {
     if (wasSaving && !isSaving && !saveError) {
@@ -85,7 +79,10 @@ function EditMetadataModalContent({
       </ModalHeader>
 
       <ModalBody>
-        <Form {...otherSettings}>
+        <Form
+          validationErrors={validationErrors}
+          validationWarnings={validationWarnings}
+        >
           {message ? (
             <Alert className={styles.message} kind={message.value.type}>
               {message.value.message}
@@ -125,7 +122,7 @@ function EditMetadataModalContent({
         <SpinnerErrorButton
           isSpinning={isSaving}
           error={saveError}
-          onPress={handleSavePress}
+          onPress={saveProvider}
         >
           {translate('Save')}
         </SpinnerErrorButton>

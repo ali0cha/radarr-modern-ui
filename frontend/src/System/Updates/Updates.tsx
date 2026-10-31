@@ -13,13 +13,13 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import { icons, kinds } from 'Helpers/Props';
+import { useSettings } from 'Settings/useSettings';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { fetchGeneralSettings } from 'Store/Actions/settingsActions';
 import { fetchUpdates } from 'Store/Actions/systemActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
-import { UpdateMechanism } from 'typings/Settings/General';
+import General, { UpdateMechanism } from 'typings/Settings/General';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import translate from 'Utilities/String/translate';
@@ -31,21 +31,10 @@ const VERSION_REGEX = /\d+\.\d+\.\d+\.\d+/i;
 function createUpdatesSelector() {
   return createSelector(
     (state: AppState) => state.system.updates,
-    (state: AppState) => state.settings.general,
-    (updates, generalSettings) => {
-      const { error: updatesError, items } = updates;
+    (updates) => {
+      const { error: updatesError, items, isFetching, isPopulated } = updates;
 
-      const isFetching = updates.isFetching || generalSettings.isFetching;
-      const isPopulated = updates.isPopulated && generalSettings.isPopulated;
-
-      return {
-        isFetching,
-        isPopulated,
-        updatesError,
-        generalSettingsError: generalSettings.error,
-        items,
-        updateMechanism: generalSettings.item.updateMechanism,
-      };
+      return { isFetching, isPopulated, updatesError, items };
     }
   );
 }
@@ -63,13 +52,22 @@ function Updates() {
   );
 
   const {
-    isFetching,
-    isPopulated,
+    isFetching: isFetchingUpdates,
+    isPopulated: isUpdatesPopulated,
     updatesError,
-    generalSettingsError,
     items,
-    updateMechanism,
   } = useSelector(createUpdatesSelector());
+
+  const {
+    data: generalSettings,
+    isFetching: isFetchingGeneralSettings,
+    isSuccess: isGeneralSettingsPopulated,
+    error: generalSettingsError,
+  } = useSettings<General>('/config/host');
+
+  const isFetching = isFetchingUpdates || isFetchingGeneralSettings;
+  const isPopulated = isUpdatesPopulated && isGeneralSettingsPopulated;
+  const { updateMechanism } = generalSettings;
 
   const dispatch = useDispatch();
   const [isMajorUpdateModalOpen, setIsMajorUpdateModalOpen] = useState(false);
@@ -129,7 +127,6 @@ function Updates() {
 
   useEffect(() => {
     dispatch(fetchUpdates());
-    dispatch(fetchGeneralSettings());
   }, [dispatch]);
 
   return (

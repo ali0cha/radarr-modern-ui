@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Alert from 'Components/Alert';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -17,29 +17,29 @@ import {
   authenticationMethodOptions,
   authenticationRequiredOptions,
 } from 'Settings/General/SecuritySettings';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
-import {
-  fetchGeneralSettings,
-  saveGeneralSettings,
-  setGeneralSettingsValue,
-} from 'Store/Actions/settingsActions';
+import { useManageSettings } from 'Settings/useSettings';
 import { fetchStatus } from 'Store/Actions/systemActions';
-import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
 import { InputChanged } from 'typings/inputs';
+import General from 'typings/Settings/General';
 import translate from 'Utilities/String/translate';
 import styles from './AuthenticationRequiredModalContent.module.css';
 
-const SECTION = 'general';
-
-const selector = createSettingsSectionSelector(SECTION);
+const PATH = '/config/host';
 
 function onModalClose() {
   // No-op
 }
 
 export default function AuthenticationRequiredModalContent() {
-  const { isPopulated, error, isSaving, saveError, settings } =
-    useSelector(selector);
+  const {
+    isPopulated,
+    error,
+    isSaving,
+    saveError,
+    settings,
+    updateSetting,
+    saveSettings,
+  } = useManageSettings<General>(PATH);
   const dispatch = useDispatch();
 
   const {
@@ -58,20 +58,11 @@ export default function AuthenticationRequiredModalContent() {
 
   const wasSaving = usePrevious(isSaving);
 
-  useEffect(() => {
-    dispatch(fetchGeneralSettings());
-
-    return () => {
-      dispatch(clearPendingChanges({ section: `settings.${SECTION}` }));
-    };
-  }, [dispatch]);
-
   const onInputChange = useCallback(
-    (args: InputChanged) => {
-      // @ts-expect-error Actions aren't typed
-      dispatch(setGeneralSettingsValue(args));
+    ({ name, value }: InputChanged) => {
+      updateSetting(name as keyof General, value as General[keyof General]);
     },
-    [dispatch]
+    [updateSetting]
   );
 
   const authenticationEnabled =
@@ -86,8 +77,8 @@ export default function AuthenticationRequiredModalContent() {
   }, [isSaving, wasSaving, saveError, dispatch]);
 
   const onPress = useCallback(() => {
-    dispatch(saveGeneralSettings());
-  }, [dispatch]);
+    saveSettings();
+  }, [saveSettings]);
 
   return (
     <ModalContent showCloseButton={false} onModalClose={onModalClose}>

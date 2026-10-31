@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
-import { AppSectionItemState } from 'App/State/AppSectionState';
+import { AppSectionItemState, Error } from 'App/State/AppSectionState';
 import AppState from 'App/State/AppState';
 import SettingsAppState from 'App/State/SettingsAppState';
+import { ApiError } from 'Helpers/Hooks/useApiQuery';
 import selectSettings from 'Store/Selectors/selectSettings';
 import { PendingSection } from 'typings/pending';
 
@@ -25,8 +26,9 @@ function createSettingsSectionSelector<
     (sectionSettings) => {
       const { item, pendingChanges, ...other } = sectionSettings;
 
-      const saveError =
-        'saveError' in sectionSettings ? sectionSettings.saveError : undefined;
+      const saveError = (
+        sectionSettings as { saveError?: Error | ApiError | null }
+      ).saveError;
 
       const isSaving =
         'isSaving' in sectionSettings ? sectionSettings.isSaving : false;

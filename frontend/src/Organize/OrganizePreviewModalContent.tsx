@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import CheckInput from 'Components/Form/CheckInput';
@@ -14,10 +13,11 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds } from 'Helpers/Props';
 import useMovie from 'Movie/useMovie';
+import { useSettings } from 'Settings/useSettings';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { fetchNamingSettings } from 'Store/Actions/settingsActions';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
+import NamingConfig from 'typings/Settings/NamingConfig';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import OrganizePreviewRow from './OrganizePreviewRow';
@@ -52,11 +52,11 @@ function OrganizePreviewModalContent({
   } = useOrganizePreview(movieId);
 
   const {
+    data: naming,
     isFetching: isNamingFetching,
-    isPopulated: isNamingPopulated,
+    isSuccess: isNamingPopulated,
     error: namingError,
-    item: naming,
-  } = useSelector((state: AppState) => state.settings.naming);
+  } = useSettings<NamingConfig>('/config/naming');
 
   const movie = useMovie(movieId)!;
   const [selectState, setSelectState] = useSelectState();
@@ -102,10 +102,6 @@ function OrganizePreviewModalContent({
 
     onModalClose();
   }, [movieId, selectedState, dispatch, onModalClose]);
-
-  useEffect(() => {
-    dispatch(fetchNamingSettings());
-  }, [dispatch]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

@@ -1,6 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback, useRef, useState } from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Form from 'Components/Form/Form';
@@ -15,22 +13,19 @@ import useShowAdvancedSettings from 'Helpers/Hooks/useShowAdvancedSettings';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
 import RootFolders from 'RootFolder/RootFolders';
 import SettingsToolbar from 'Settings/SettingsToolbar';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
-import {
-  fetchMediaManagementSettings,
-  saveMediaManagementSettings,
-  saveNamingSettings,
-  setMediaManagementSettingsValue,
-} from 'Store/Actions/settingsActions';
-import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
+import { useManageSettings } from 'Settings/useSettings';
 import useIsWindows from 'System/useIsWindows';
 import { InputChanged } from 'typings/inputs';
-import isEmpty from 'Utilities/Object/isEmpty';
+import MediaManagementSettings from 'typings/Settings/MediaManagement';
+import {
+  SaveCallback,
+  SettingsStateChange,
+} from 'typings/Settings/SettingsState';
 import translate from 'Utilities/String/translate';
 import Naming from './Naming/Naming';
 import AddRootFolder from './RootFolder/AddRootFolder';
 
-const SECTION = 'mediaManagement';
+const PATH = '/config/mediamanagement';
 
 const rescanAfterRefreshOptions: EnhancedSelectInputValue<string>[] = [
   {
@@ -96,11 +91,7 @@ const fileDateOptions: EnhancedSelectInputValue<string>[] = [
 ];
 
 function MediaManagement() {
-  const dispatch = useDispatch();
   const showAdvancedSettings = useShowAdvancedSettings();
-  const hasNamingPendingChanges = !isEmpty(
-    useSelector((state: AppState) => state.settings.naming.pendingChanges)
-  );
   const isWindows = useIsWindows();
   const {
     isFetching,
@@ -112,28 +103,39 @@ function MediaManagement() {
     hasPendingChanges,
     validationErrors,
     validationWarnings,
-  } = useSelector(createSettingsSectionSelector(SECTION));
+    updateSetting,
+    saveSettings,
+  } = useManageSettings<MediaManagementSettings>(PATH);
 
-  const handleSavePress = useCallback(() => {
-    dispatch(saveMediaManagementSettings());
-    dispatch(saveNamingSettings());
-  }, [dispatch]);
+  // The naming settings are on this page and are saved with the others
+  const saveNaming = useRef<SaveCallback>();
+  const [hasNamingPendingChanges, setHasNamingPendingChanges] = useState(false);
 
-  const handleInputChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions are not typed
-      dispatch(setMediaManagementSettingsValue(change));
+  const handleSetNamingSave = useCallback((saveCallback: SaveCallback) => {
+    saveNaming.current = saveCallback;
+  }, []);
+
+  const handleNamingStateChange = useCallback(
+    ({ hasPendingChanges }: SettingsStateChange) => {
+      setHasNamingPendingChanges(hasPendingChanges);
     },
-    [dispatch]
+    []
   );
 
-  useEffect(() => {
-    dispatch(fetchMediaManagementSettings());
+  const handleSavePress = useCallback(() => {
+    saveSettings();
+    saveNaming.current?.();
+  }, [saveSettings]);
 
-    return () => {
-      dispatch(clearPendingChanges({ section: `settings.${SECTION}` }));
-    };
-  }, [dispatch]);
+  const handleInputChange = useCallback(
+    ({ name, value }: InputChanged) => {
+      updateSetting(
+        name as keyof MediaManagementSettings,
+        value as MediaManagementSettings[keyof MediaManagementSettings]
+      );
+    },
+    [updateSetting]
+  );
 
   return (
     <PageContent title={translate('MediaManagementSettings')}>
@@ -144,7 +146,10 @@ function MediaManagement() {
       />
 
       <PageContentBody>
-        <Naming />
+        <Naming
+          setChildSave={handleSetNamingSave}
+          onChildStateChange={handleNamingStateChange}
+        />
 
         {isFetching ? (
           <FieldSet legend={translate('NamingSettings')}>

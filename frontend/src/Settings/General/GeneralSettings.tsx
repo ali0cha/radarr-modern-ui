@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
@@ -7,20 +8,16 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 import SettingsToolbar from 'Settings/SettingsToolbar';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
-import {
-  fetchGeneralSettings,
-  saveGeneralSettings,
-  setGeneralSettingsValue,
-} from 'Store/Actions/settingsActions';
+import { useManageSettings } from 'Settings/useSettings';
 import { restart } from 'Store/Actions/systemActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
-import createSettingsSectionSelector from 'Store/Selectors/createSettingsSectionSelector';
 import useIsWindowsService from 'System/useIsWindowsService';
 import { InputChanged } from 'typings/inputs';
+import General from 'typings/Settings/General';
 import translate from 'Utilities/String/translate';
 import AnalyticSettings from './AnalyticSettings';
 import BackupSettings from './BackupSettings';
@@ -30,7 +27,7 @@ import ProxySettings from './ProxySettings';
 import SecuritySettings from './SecuritySettings';
 import UpdateSettings from './UpdateSettings';
 
-const SECTION = 'general';
+const PATH = '/config/host';
 
 const requiresRestartKeys = [
   'bindAddress',
@@ -47,6 +44,7 @@ const requiresRestartKeys = [
 
 function GeneralSettings() {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const isWindowsService = useIsWindowsService();
   const isResettingApiKey = useSelector(
     createCommandExecutingSelector(commandNames.RESET_API_KEY)
@@ -64,7 +62,9 @@ function GeneralSettings() {
     pendingChanges,
     validationErrors,
     validationWarnings,
-  } = useSelector(createSettingsSectionSelector(SECTION));
+    updateSetting,
+    saveSettings,
+  } = useManageSettings<General>(PATH);
 
   const wasResettingApiKey = usePrevious(isResettingApiKey);
   const wasSaving = usePrevious(isSaving);
@@ -75,11 +75,10 @@ function GeneralSettings() {
   const [isReloadRequired, setIsReloadRequired] = useState(false);
 
   const handleInputChange = useCallback(
-    (change: InputChanged) => {
-      // @ts-expect-error - actions aren't typed
-      dispatch(setGeneralSettingsValue(change));
+    ({ name, value }: InputChanged) => {
+      updateSetting(name as keyof General, value as General[keyof General]);
     },
-    [dispatch]
+    [updateSetting]
   );
 
   const handleSavePress = useCallback(() => {
@@ -89,8 +88,8 @@ function GeneralSettings() {
       }
     );
 
-    dispatch(saveGeneralSettings());
-  }, [pendingChanges, dispatch]);
+    saveSettings();
+  }, [pendingChanges, saveSettings]);
 
   const handleConfirmRestart = useCallback(() => {
     setIsRestartRequiredModalOpen(false);
@@ -102,18 +101,10 @@ function GeneralSettings() {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchGeneralSettings());
-
-    return () => {
-      dispatch(clearPendingChanges({ section: `settings.${SECTION}` }));
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
     if (!isResettingApiKey && wasResettingApiKey) {
-      dispatch(fetchGeneralSettings());
+      invalidateApiQueries(queryClient, PATH);
     }
-  }, [isResettingApiKey, wasResettingApiKey, dispatch]);
+  }, [isResettingApiKey, wasResettingApiKey, queryClient]);
 
   useEffect(() => {
     if (!isSaving && wasSaving && !saveError && isRestartRequired.current) {
