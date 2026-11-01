@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import AppUpdatedModal from 'App/AppUpdatedModal';
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
-import { saveDimensions, useAppStore, useDimensions } from 'App/useAppStore';
+import { saveDimensions, useAppStore } from 'App/useAppStore';
 import SignalRConnector from 'Components/SignalRConnector';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import useAppPage from 'Helpers/Hooks/useAppPage';
@@ -26,11 +26,9 @@ function Page({ children }: PageProps) {
     useState(false);
 
   const { enableColorImpairedMode } = useUISettings();
-  const { isSmallScreen } = useDimensions();
   const { authentication } = useSystemStatus();
   const authenticationEnabled = authentication !== 'none';
-  const { isSidebarVisible, isUpdated, isDisconnected, version } =
-    useAppStore();
+  const { isUpdated, isDisconnected, version } = useAppStore();
 
   const handleUpdatedModalClose = useCallback(() => {
     setIsUpdatedModalOpen(false);
@@ -82,13 +80,10 @@ function Page({ children }: PageProps) {
       <div className={styles.page}>
         <SignalRConnector />
 
-        <PageHeader isSmallScreen={isSmallScreen} />
+        <PageHeader />
 
         <div className={styles.main}>
-          <PageSidebar
-            isSmallScreen={isSmallScreen}
-            isSidebarVisible={isSidebarVisible}
-          />
+          <PageSidebar />
 
           {children}
         </div>

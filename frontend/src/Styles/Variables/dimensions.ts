@@ -10,6 +10,7 @@ export default {
 
   // Sidebar
   sidebarWidth: 220,
+  sidebarOverlayMaxHeight: 500,
 
   // Toolbar
   toolbarButtonWidth: 100,

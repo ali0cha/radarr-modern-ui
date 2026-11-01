@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { setIsSidebarVisible, useIsSidebarVisible } from 'App/useAppStore';
+import { toggleIsSidebarVisible } from 'App/useAppStore';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import useKeyboardShortcuts from 'Helpers/Hooks/useKeyboardShortcuts';
@@ -10,21 +10,15 @@ import MovieSearchInput from './MovieSearchInput';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 import styles from './PageHeader.module.css';
 
-interface PageHeaderProps {
-  isSmallScreen: boolean;
-}
-
-function PageHeader({ isSmallScreen }: PageHeaderProps) {
-  const isSidebarVisible = useIsSidebarVisible();
-
+function PageHeader() {
   const [isKeyboardShortcutsModalOpen, setIsKeyboardShortcutsModalOpen] =
     useState(false);
 
   const { bindShortcut, unbindShortcut } = useKeyboardShortcuts();
 
   const handleSidebarToggle = useCallback(() => {
-    setIsSidebarVisible({ isSidebarVisible: !isSidebarVisible });
-  }, [isSidebarVisible]);
+    toggleIsSidebarVisible();
+  }, []);
 
   const handleOpenKeyboardShortcutsModal = useCallback(() => {
     setIsKeyboardShortcutsModalOpen(true);
@@ -48,23 +42,22 @@ function PageHeader({ isSmallScreen }: PageHeaderProps) {
   return (
     <div className={styles.header}>
       <div className={styles.logoContainer}>
-        <Link className={styles.logoLink} to="/">
+        <Link className={styles.logoLink} to="/" aria-label={translate('Home')}>
           <img
-            className={isSmallScreen ? styles.logo : styles.logoFull}
-            src={
-              isSmallScreen
-                ? `${window.Radarr.urlBase}/Content/Images/logo.png`
-                : `${window.Radarr.urlBase}/Content/Images/logo-full.png`
-            }
-            alt="Radarr Logo"
+            className={styles.logo}
+            src={`${window.Radarr.urlBase}/Content/Images/logo.svg`}
+            alt=""
           />
+          <span className={styles.brandName}>Radarr</span>
         </Link>
       </div>
 
       <div className={styles.sidebarToggleContainer}>
         <IconButton
           id="sidebar-toggle-button"
+          className={styles.sidebarToggle}
           name={icons.NAVBAR_COLLAPSE}
+          aria-label={translate('Menu')}
           onPress={handleSidebarToggle}
         />
       </div>
@@ -74,10 +67,10 @@ function PageHeader({ isSmallScreen }: PageHeaderProps) {
       <div className={styles.right}>
         <IconButton
           className={styles.donate}
+          iconClassName={styles.donateIcon}
           name={icons.HEART}
           aria-label={translate('Donate')}
           to="https://radarr.video/donate"
-          size={14}
           title={translate('Donate')}
         />
 
