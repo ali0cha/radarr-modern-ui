@@ -1,84 +1,39 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useEffect } from 'react';
 import * as commandNames from 'Commands/commandNames';
-import { executeCommand } from 'Commands/useCommands';
-import withCommandExecuting from 'Commands/withCommandExecuting';
-import { deleteBackup, fetchBackups } from 'Store/Actions/systemActions';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
+import usePrevious from 'Helpers/Hooks/usePrevious';
 import Backups from './Backups';
+import { useBackups, useDeleteBackup } from './useBackups';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.system.backups,
-    (state, { isCommandExecuting }) => isCommandExecuting,
-    (backups, backupExecuting) => {
-      const {
-        isFetching,
-        isPopulated,
-        error,
-        items
-      } = backups;
+function BackupsConnector() {
+  const { items, isFetching, isPopulated, error, refetch } = useBackups();
+  const { deleteBackup } = useDeleteBackup();
+  const backupExecuting = useCommandExecuting(commandNames.BACKUP);
+  const wasBackupExecuting = usePrevious(backupExecuting);
 
-      return {
-        isFetching,
-        isPopulated,
-        error,
-        items,
-        backupExecuting
-      };
+  useEffect(() => {
+    if (wasBackupExecuting && !backupExecuting) {
+      refetch();
     }
+  }, [wasBackupExecuting, backupExecuting, refetch]);
+
+  const handleBackupPress = useCallback(() => {
+    executeCommand({
+      name: commandNames.BACKUP
+    });
+  }, []);
+
+  return (
+    <Backups
+      isFetching={isFetching}
+      isPopulated={isPopulated}
+      error={error}
+      items={items}
+      backupExecuting={backupExecuting}
+      onDeleteBackupPress={deleteBackup}
+      onBackupPress={handleBackupPress}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    dispatchFetchBackups() {
-      dispatch(fetchBackups());
-    },
-
-    onDeleteBackupPress(id) {
-      dispatch(deleteBackup({ id }));
-    },
-
-    onBackupPress() {
-      executeCommand({
-        name: commandNames.BACKUP
-      });
-    }
-  };
-}
-
-class BackupsConnector extends Component {
-
-  //
-  // Lifecycle
-
-  componentDidMount() {
-    this.props.dispatchFetchBackups();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.backupExecuting && !this.props.backupExecuting) {
-      this.props.dispatchFetchBackups();
-    }
-  }
-
-  //
-  // Render
-
-  render() {
-    return (
-      <Backups
-        {...this.props}
-      />
-    );
-  }
-}
-
-BackupsConnector.propTypes = {
-  backupExecuting: PropTypes.bool.isRequired,
-  dispatchFetchBackups: PropTypes.func.isRequired
-};
-
-export default withCommandExecuting(commandNames.BACKUP)(connect(createMapStateToProps, createMapDispatchToProps)(BackupsConnector));
+export default BackupsConnector;

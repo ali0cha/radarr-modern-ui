@@ -12,7 +12,7 @@ import TableBody from 'Components/Table/TableBody';
 import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import BackupRow from './BackupRow';
-import RestoreBackupModalConnector from './RestoreBackupModalConnector';
+import RestoreBackupModal from './RestoreBackupModal';
 
 const columns = [
   {
@@ -156,7 +156,7 @@ class Backups extends Component {
           }
         </PageContentBody>
 
-        <RestoreBackupModalConnector
+        <RestoreBackupModal
           isOpen={this.state.isRestoreModalOpen}
           onModalClose={this.onRestoreModalClose}
         />

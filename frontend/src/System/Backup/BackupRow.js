@@ -10,7 +10,7 @@ import TableRow from 'Components/Table/TableRow';
 import { icons, kinds } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import RestoreBackupModalConnector from './RestoreBackupModalConnector';
+import RestoreBackupModal from './RestoreBackupModal';
 import styles from './BackupRow.module.css';
 
 class BackupRow extends Component {
@@ -128,7 +128,7 @@ class BackupRow extends Component {
           />
         </TableRowCell>
 
-        <RestoreBackupModalConnector
+        <RestoreBackupModal
           isOpen={isRestoreModalOpen}
           id={id}
           name={name}

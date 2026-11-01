@@ -1,37 +1,24 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { restart, restoreBackup } from 'Store/Actions/systemActions';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useRestart } from 'System/useSystem';
 import RestoreBackupModalContent from './RestoreBackupModalContent';
+import { useRestoreBackup } from './useBackups';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.system.backups,
-    (state) => state.app.isRestarting,
-    (backups, isRestarting) => {
-      const {
-        isRestoring,
-        restoreError
-      } = backups;
+function RestoreBackupModalContentConnector(props) {
+  const isRestarting = useSelector((state) => state.app.isRestarting);
+  const { restoreBackup, isRestoring, restoreError } = useRestoreBackup();
+  const restart = useRestart();
 
-      return {
-        isRestoring,
-        restoreError,
-        isRestarting
-      };
-    }
+  return (
+    <RestoreBackupModalContent
+      {...props}
+      isRestoring={isRestoring}
+      restoreError={restoreError}
+      isRestarting={isRestarting}
+      onRestorePress={restoreBackup}
+      dispatchRestart={restart}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onRestorePress(payload) {
-      dispatch(restoreBackup(payload));
-    },
-
-    dispatchRestart() {
-      dispatch(restart());
-    }
-  };
-}
-
-export default connect(createMapStateToProps, createMapDispatchToProps)(RestoreBackupModalContent);
+export default RestoreBackupModalContentConnector;

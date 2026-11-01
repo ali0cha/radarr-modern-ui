@@ -1,6 +1,5 @@
 import { Error } from './AppSectionState';
 import MessagesAppState from './MessagesAppState';
-import SystemAppState from './SystemAppState';
 
 interface FilterBuilderPropOption {
   id: string;
@@ -57,7 +56,6 @@ export interface AppSectionState {
 
 interface AppState {
   app: AppSectionState;
-  system: SystemAppState;
 }
 
 export default AppState;
