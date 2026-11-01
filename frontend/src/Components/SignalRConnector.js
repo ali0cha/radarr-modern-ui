@@ -10,6 +10,7 @@ import {
   setQueueStatus
 } from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
+import { updateCalendarItem } from 'Calendar/useCalendar';
 import { invalidateMovieCollections, removeMovieCollection, setMovieCollection } from 'Collection/useMovieCollections';
 import { handleCommandFinished, handleCommandUpdated } from 'Commands/commandEvents';
 import { invalidateCommands } from 'Commands/useCommands';
@@ -157,11 +158,7 @@ class SignalRConnector extends Component {
 
   handleCalendar = (body) => {
     if (body.action === 'updated') {
-      this.props.dispatchUpdateItem({
-        section: 'calendar',
-        updateOnly: true,
-        ...body.resource
-      });
+      updateCalendarItem(queryClient, body.resource);
     }
   };
 

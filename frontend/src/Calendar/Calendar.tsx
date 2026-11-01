@@ -1,8 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
-import AppState from 'App/State/AppState';
+import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
 import * as commandNames from 'Commands/commandNames';
 import { useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
@@ -12,12 +11,6 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
 import { useMovieFilesByIds } from 'MovieFile/useMovieFiles';
-import useUISettings from 'Settings/UI/useUISettings';
-import {
-  clearCalendar,
-  fetchCalendar,
-  gotoCalendarToday,
-} from 'Store/Actions/calendarActions';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import {
   registerPagePopulator,
@@ -33,53 +26,49 @@ import styles from './Calendar.module.css';
 const UPDATE_DELAY = 3600000; // 1 hour
 
 function Calendar() {
-  const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const requestCurrentPage = useCurrentPage();
   const updateTimeout = useRef<ReturnType<typeof setTimeout>>();
 
-  const { isFetching, isPopulated, error, items, time, view } = useSelector(
-    (state: AppState) => state.calendar
-  );
+  const { isFetching, isPopulated, error, items, time, view, refetch } =
+    useCalendar();
+  const gotoToday = useCalendarStore((state) => state.gotoToday);
 
   const isRefreshingMovie = useCommandExecuting(commandNames.REFRESH_MOVIE);
 
-  const { firstDayOfWeek } = useUISettings();
-
   const wasRefreshingMovie = usePrevious(isRefreshingMovie);
-  const previousFirstDayOfWeek = usePrevious(firstDayOfWeek);
+
+  // The calendar goes to the next day when the day is over
   const handleScheduleUpdate = useCallback(() => {
     clearTimeout(updateTimeout.current);
 
     function updateCalendar() {
-      dispatch(gotoCalendarToday());
+      gotoToday();
       updateTimeout.current = setTimeout(updateCalendar, UPDATE_DELAY);
     }
 
     updateTimeout.current = setTimeout(updateCalendar, UPDATE_DELAY);
-  }, [dispatch]);
+  }, [gotoToday]);
 
   useEffect(() => {
     handleScheduleUpdate();
 
     return () => {
-      dispatch(clearCalendar());
       clearTimeout(updateTimeout.current);
     };
-  }, [dispatch, handleScheduleUpdate]);
+  }, [handleScheduleUpdate]);
 
+  // The calendar shows today when it is opened, but not when going back to it
   useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchCalendar());
-    } else {
-      dispatch(gotoCalendarToday());
+    if (!requestCurrentPage) {
+      gotoToday();
     }
-  }, [requestCurrentPage, dispatch]);
+  }, [requestCurrentPage, gotoToday]);
 
   useEffect(() => {
     const repopulate = () => {
       invalidateQueueDetails(queryClient);
-      dispatch(fetchCalendar({ time, view }));
+      refetch();
     };
 
     registerPagePopulator(repopulate, ['movieFileUpdated', 'movieFileDeleted']);
@@ -87,26 +76,17 @@ function Calendar() {
     return () => {
       unregisterPagePopulator(repopulate);
     };
-  }, [time, view, queryClient, dispatch]);
+  }, [queryClient, refetch]);
 
   useEffect(() => {
     handleScheduleUpdate();
   }, [time, handleScheduleUpdate]);
 
   useEffect(() => {
-    if (
-      previousFirstDayOfWeek != null &&
-      firstDayOfWeek !== previousFirstDayOfWeek
-    ) {
-      dispatch(fetchCalendar({ time, view }));
-    }
-  }, [time, view, firstDayOfWeek, previousFirstDayOfWeek, dispatch]);
-
-  useEffect(() => {
     if (wasRefreshingMovie && !isRefreshingMovie) {
-      dispatch(fetchCalendar({ time, view }));
+      refetch();
     }
-  }, [time, view, isRefreshingMovie, wasRefreshingMovie, dispatch]);
+  }, [isRefreshingMovie, wasRefreshingMovie, refetch]);
 
   const movieFileIds = useMemo(
     () => selectUniqueIds<Movie, number>(items, 'movieFileId'),

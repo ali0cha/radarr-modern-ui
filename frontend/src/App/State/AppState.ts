@@ -1,5 +1,4 @@
 import { Error } from './AppSectionState';
-import CalendarAppState from './CalendarAppState';
 import CaptchaAppState from './CaptchaAppState';
 import CustomFiltersAppState from './CustomFiltersAppState';
 import InteractiveImportAppState from './InteractiveImportAppState';
@@ -24,7 +23,7 @@ export interface FilterBuilderProp<T> {
 
 export interface PropertyFilter {
   key: string;
-  value: boolean | string | number | string[] | number[];
+  value: boolean | string | number | string[] | number[] | boolean[];
   type: string;
 }
 
@@ -64,7 +63,6 @@ export interface AppSectionState {
 
 interface AppState {
   app: AppSectionState;
-  calendar: CalendarAppState;
   captcha: CaptchaAppState;
   customFilters: CustomFiltersAppState;
   interactiveImport: InteractiveImportAppState;

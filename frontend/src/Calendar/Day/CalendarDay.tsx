@@ -1,11 +1,9 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useMemo } from 'react';
 import * as calendarViews from 'Calendar/calendarViews';
 import CalendarEvent from 'Calendar/Events/CalendarEvent';
+import { useCalendar } from 'Calendar/useCalendar';
 import { CalendarEvent as CalendarEventModel } from 'typings/Calendar';
 import styles from './CalendarDay.module.css';
 
@@ -18,34 +16,36 @@ function sort(items: CalendarEventModel[]) {
   });
 }
 
-function createCalendarEventsConnector(date: string) {
-  return createSelector(
-    (state: AppState) => state.calendar.items,
-    (state: AppState) => state.calendar.options,
-    (items, options) => {
-      const { showCinemaRelease, showDigitalRelease, showPhysicalRelease } =
-        options;
-      const momentDate = moment(date);
+function getCalendarEvents(
+  items: CalendarEventModel[],
+  options: {
+    showCinemaRelease: boolean;
+    showDigitalRelease: boolean;
+    showPhysicalRelease: boolean;
+  },
+  date: string
+) {
+  const { showCinemaRelease, showDigitalRelease, showPhysicalRelease } =
+    options;
+  const momentDate = moment(date);
 
-      const filtered = items.filter(
-        ({ inCinemas, digitalRelease, physicalRelease }) => {
-          return (
-            (showCinemaRelease &&
-              inCinemas &&
-              momentDate.isSame(moment(inCinemas), 'day')) ||
-            (showDigitalRelease &&
-              digitalRelease &&
-              momentDate.isSame(moment(digitalRelease), 'day')) ||
-            (showPhysicalRelease &&
-              physicalRelease &&
-              momentDate.isSame(moment(physicalRelease), 'day'))
-          );
-        }
+  const filtered = items.filter(
+    ({ inCinemas, digitalRelease, physicalRelease }) => {
+      return (
+        (showCinemaRelease &&
+          inCinemas &&
+          momentDate.isSame(moment(inCinemas), 'day')) ||
+        (showDigitalRelease &&
+          digitalRelease &&
+          momentDate.isSame(moment(digitalRelease), 'day')) ||
+        (showPhysicalRelease &&
+          physicalRelease &&
+          momentDate.isSame(moment(physicalRelease), 'day'))
       );
-
-      return sort(filtered);
     }
   );
+
+  return sort(filtered);
 }
 
 interface CalendarDayProps {
@@ -54,8 +54,11 @@ interface CalendarDayProps {
 }
 
 function CalendarDay({ date, isTodaysDate }: CalendarDayProps) {
-  const { time, view } = useSelector((state: AppState) => state.calendar);
-  const events = useSelector(createCalendarEventsConnector(date));
+  const { time, view, items, options } = useCalendar();
+  const events = useMemo(
+    () => getCalendarEvents(items, options, date),
+    [items, options, date]
+  );
 
   const ref = React.useRef<HTMLDivElement>(null);
 

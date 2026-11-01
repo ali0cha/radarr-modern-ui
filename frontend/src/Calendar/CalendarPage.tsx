@@ -1,9 +1,7 @@
 import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import { useQueueDetails } from 'Activity/Queue/useQueue';
-import AppState from 'App/State/AppState';
+import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
 import * as commandNames from 'Commands/commandNames';
 import {
   executeCommand,
@@ -21,12 +19,6 @@ import useMeasure from 'Helpers/Hooks/useMeasure';
 import { align, icons } from 'Helpers/Props';
 import NoMovie from 'Movie/NoMovie';
 import { useMovieCount } from 'Movie/useMovies';
-import {
-  searchMissing,
-  setCalendarDaysCount,
-  setCalendarFilter,
-} from 'Store/Actions/calendarActions';
-import { createCustomFiltersSelector } from 'Store/Selectors/createClientSideCollectionSelector';
 import { isCommandExecuting } from 'Utilities/Command';
 import isBefore from 'Utilities/Date/isBefore';
 import translate from 'Utilities/String/translate';
@@ -39,22 +31,21 @@ import styles from './CalendarPage.module.css';
 
 const MINIMUM_DAY_WIDTH = 120;
 
-function createCalendarSelector() {
-  return createSelector(
-    (state: AppState) => state.calendar.start,
-    (state: AppState) => state.calendar.end,
-    (state: AppState) => state.calendar.items,
-    (start, end, movies) => ({ start, end, movies })
-  );
-}
-
 function CalendarPage() {
-  const dispatch = useDispatch();
-
-  const { selectedFilterKey, filters } = useSelector(
-    (state: AppState) => state.calendar
+  const {
+    selectedFilterKey,
+    filters,
+    customFilters,
+    start,
+    end,
+    items: movies,
+    searchMissingCommandId,
+  } = useCalendar();
+  const setFilter = useCalendarStore((state) => state.setFilter);
+  const setDayCount = useCalendarStore((state) => state.setDayCount);
+  const setSearchMissingCommandId = useCalendarStore(
+    (state) => state.setSearchMissingCommandId
   );
-  const { start, end, movies } = useSelector(createCalendarSelector());
   const queueDetails = useQueueDetails();
 
   const missingMovieIds = useMemo(() => {
@@ -77,9 +68,6 @@ function CalendarPage() {
       return acc;
     }, []);
   }, [start, end, movies, queueDetails]);
-  const searchMissingCommandId = useSelector(
-    (state: AppState) => state.calendar.searchMissingCommandId
-  );
   const { commands } = useCommands();
   const isSearchingForMissing =
     searchMissingCommandId != null &&
@@ -87,7 +75,6 @@ function CalendarPage() {
       commands.find((command) => command.id === searchMissingCommandId)
     );
   const isRssSyncExecuting = useCommandExecuting(commandNames.RSS_SYNC);
-  const customFilters = useSelector(createCustomFiltersSelector('calendar'));
   const hasMovies = !!useMovieCount().count;
 
   const [pageContentRef, { width }] = useMeasure();
@@ -120,14 +107,19 @@ function CalendarPage() {
   }, []);
 
   const handleSearchMissingPress = useCallback(() => {
-    dispatch(searchMissing({ movieIds: missingMovieIds }));
-  }, [missingMovieIds, dispatch]);
+    executeCommand({
+      name: commandNames.MOVIE_SEARCH,
+      movieIds: missingMovieIds,
+    }).then((command) => {
+      setSearchMissingCommandId(command.id);
+    });
+  }, [missingMovieIds, setSearchMissingCommandId]);
 
   const handleFilterSelect = useCallback(
     (key: string | number) => {
-      dispatch(setCalendarFilter({ selectedFilterKey: key }));
+      setFilter(key);
     },
-    [dispatch]
+    [setFilter]
   );
 
   useEffect(() => {
@@ -140,8 +132,8 @@ function CalendarPage() {
       Math.min(7, Math.floor(width / MINIMUM_DAY_WIDTH))
     );
 
-    dispatch(setCalendarDaysCount({ dayCount }));
-  }, [width, dispatch]);
+    setDayCount(dayCount);
+  }, [width, setDayCount]);
 
   return (
     <PageContent title={translate('Calendar')}>

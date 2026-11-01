@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useCalendarStore } from 'Calendar/useCalendar';
 import { icons, kinds } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
 import translate from 'Utilities/String/translate';
@@ -9,9 +8,9 @@ import LegendItem from './LegendItem';
 import styles from './Legend.module.css';
 
 function Legend() {
-  const view = useSelector((state: AppState) => state.calendar.view);
-  const { showCutoffUnmetIcon, fullColorEvents } = useSelector(
-    (state: AppState) => state.calendar.options
+  const view = useCalendarStore((state) => state.view);
+  const { showCutoffUnmetIcon, fullColorEvents } = useCalendarStore(
+    (state) => state.options
   );
   const { enableColorImpairedMode } = useUISettings();
 

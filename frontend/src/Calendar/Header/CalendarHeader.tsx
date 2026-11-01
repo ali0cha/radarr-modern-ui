@@ -1,7 +1,8 @@
 import moment from 'moment';
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useSelector } from 'react-redux';
+import { CalendarView } from 'Calendar/calendarViews';
+import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -11,23 +12,19 @@ import MenuContent from 'Components/Menu/MenuContent';
 import ViewMenuItem from 'Components/Menu/ViewMenuItem';
 import { align, icons } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
-import {
-  gotoCalendarNextRange,
-  gotoCalendarPreviousRange,
-  gotoCalendarToday,
-  setCalendarView,
-} from 'Store/Actions/calendarActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import translate from 'Utilities/String/translate';
 import CalendarHeaderViewButton from './CalendarHeaderViewButton';
 import styles from './CalendarHeader.module.css';
 
 function CalendarHeader() {
-  const dispatch = useDispatch();
-
-  const { isFetching, view, time, start, end } = useSelector(
-    (state: AppState) => state.calendar
+  const { isFetching, view, time, start, end } = useCalendar();
+  const setView = useCalendarStore((state) => state.setView);
+  const gotoToday = useCalendarStore((state) => state.gotoToday);
+  const gotoPreviousRange = useCalendarStore(
+    (state) => state.gotoPreviousRange
   );
+  const gotoNextRange = useCalendarStore((state) => state.gotoNextRange);
 
   const { isSmallScreen, isLargeScreen } = useSelector(
     createDimensionsSelector()
@@ -37,22 +34,22 @@ function CalendarHeader() {
 
   const handleViewChange = useCallback(
     (newView: string) => {
-      dispatch(setCalendarView({ view: newView }));
+      setView(newView as CalendarView);
     },
-    [dispatch]
+    [setView]
   );
 
   const handleTodayPress = useCallback(() => {
-    dispatch(gotoCalendarToday());
-  }, [dispatch]);
+    gotoToday();
+  }, [gotoToday]);
 
   const handlePreviousPress = useCallback(() => {
-    dispatch(gotoCalendarPreviousRange());
-  }, [dispatch]);
+    gotoPreviousRange();
+  }, [gotoPreviousRange]);
 
   const handleNextPress = useCallback(() => {
-    dispatch(gotoCalendarNextRange());
-  }, [dispatch]);
+    gotoNextRange();
+  }, [gotoNextRange]);
 
   const title = useMemo(() => {
     const timeMoment = moment(time);
