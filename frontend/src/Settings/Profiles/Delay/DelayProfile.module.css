@@ -21,7 +21,7 @@
   justify-content: center;
   flex-shrink: 0;
   margin-left: auto;
-  width: $dragHandleWidth;
+  width: var(--dragHandleWidth);
   text-align: center;
   cursor: grab;
 }
@@ -35,6 +35,6 @@
 }
 
 .editButton {
-  width: $dragHandleWidth;
+  width: var(--dragHandleWidth);
   text-align: center;
 }

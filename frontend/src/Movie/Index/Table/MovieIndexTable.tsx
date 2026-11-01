@@ -13,10 +13,8 @@ import MovieIndexRow from './MovieIndexRow';
 import MovieIndexTableHeader from './MovieIndexTableHeader';
 import styles from './MovieIndexTable.module.css';
 
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(
-  dimensions.pageContentBodyPaddingSmallScreen
-);
+const bodyPadding = dimensions.pageContentBodyPadding;
+const bodyPaddingSmallScreen = dimensions.pageContentBodyPaddingSmallScreen;
 
 interface RowItemData {
   items: Movie[];

@@ -1,20 +1,22 @@
-import { useCallback, useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import useTheme from 'Helpers/Hooks/useTheme';
-import themes from 'Styles/Themes';
+import useUISettings from 'Settings/UI/useUISettings';
 
 function ApplyTheme() {
   const theme = useTheme();
+  const { enableColorImpairedMode } = useUISettings();
 
-  const updateCSSVariables = useCallback(() => {
-    Object.entries(themes[theme]).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(`--${key}`, value);
-    });
+  useLayoutEffect(() => {
+    document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  // On Component Mount and Component Update
-  useEffect(() => {
-    updateCSSVariables();
-  }, [updateCSSVariables, theme]);
+  useLayoutEffect(() => {
+    if (enableColorImpairedMode) {
+      document.documentElement.dataset.colorImpaired = '';
+    } else {
+      delete document.documentElement.dataset.colorImpaired;
+    }
+  }, [enableColorImpairedMode]);
 
   return null;
 }

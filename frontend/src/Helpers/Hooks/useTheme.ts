@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import useUISettings from 'Settings/UI/useUISettings';
-import themes from 'Styles/Themes';
 
 const useTheme = (): 'dark' | 'light' => {
   const { theme } = useUISettings();
@@ -46,11 +45,3 @@ const useTheme = (): 'dark' | 'light' => {
 };
 
 export default useTheme;
-
-export const useThemeColor = (color: string) => {
-  const theme = useTheme();
-  const themeVariables = themes[theme];
-
-  // @ts-expect-error - themeVariables is a string indexable type
-  return themeVariables[color];
-};

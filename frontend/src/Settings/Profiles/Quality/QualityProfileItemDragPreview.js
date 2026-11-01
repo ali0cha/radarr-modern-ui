@@ -3,14 +3,14 @@ import React, { Component } from 'react';
 import { DragLayer } from 'react-dnd';
 import DragPreviewLayer from 'Components/DragPreviewLayer';
 import { QUALITY_PROFILE_ITEM } from 'Helpers/dragTypes';
-import dimensions from 'Styles/Variables/dimensions.js';
+import dimensions from 'Styles/Variables/dimensions';
 import QualityProfileItem from './QualityProfileItem';
 import styles from './QualityProfileItemDragPreview.module.css';
 
-const formGroupExtraSmallWidth = parseInt(dimensions.formGroupExtraSmallWidth);
-const formLabelSmallWidth = parseInt(dimensions.formLabelSmallWidth);
-const formLabelRightMarginWidth = parseInt(dimensions.formLabelRightMarginWidth);
-const dragHandleWidth = parseInt(dimensions.dragHandleWidth);
+const formGroupExtraSmallWidth = dimensions.formGroupExtraSmallWidth;
+const formLabelSmallWidth = dimensions.formLabelSmallWidth;
+const formLabelRightMarginWidth = dimensions.formLabelRightMarginWidth;
+const dragHandleWidth = dimensions.dragHandleWidth;
 
 function collectDragLayer(monitor) {
   return {

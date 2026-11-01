@@ -20,7 +20,7 @@ import QualityProfileFormatItems from './QualityProfileFormatItems';
 import QualityProfileItems from './QualityProfileItems';
 import styles from './EditQualityProfileModalContent.module.css';
 
-const MODAL_BODY_PADDING = parseInt(dimensions.modalBodyPadding);
+const MODAL_BODY_PADDING = dimensions.modalBodyPadding;
 
 function getCustomFormatRender(formatItems, otherProps) {
   return (

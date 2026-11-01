@@ -12,10 +12,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 // Poster container dimensions
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(
-  dimensions.movieIndexColumnPaddingSmallScreen
-);
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
 
 interface MovieCreditPostersProps {
   items: MovieCredit[];

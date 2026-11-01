@@ -10,7 +10,7 @@
   }
 
   &:hover {
-    color: var(--toobarButtonHoverColor);
+    color: var(--toolbarButtonHoverColor);
   }
 }
 

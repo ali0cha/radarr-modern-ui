@@ -29,6 +29,6 @@
   width: 0%;
   height: 31px;
   border: none;
-  background-color: var(--inputBackground);
+  background-color: var(--inputBackgroundColor);
   color: var(--textColor);
 }

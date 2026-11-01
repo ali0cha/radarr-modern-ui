@@ -78,8 +78,8 @@ import MovieTags from './MovieTags';
 import MovieTitlesTable from './Titles/MovieTitlesTable';
 import styles from './MovieDetails.module.css';
 
-const defaultFontSize = parseInt(fonts.defaultFontSize);
-const lineHeight = parseFloat(fonts.lineHeight);
+const defaultFontSize = fonts.defaultFontSize;
+const lineHeight = fonts.lineHeight;
 
 function getFanartUrl(images: Image[]) {
   const image = images.find((image) => image.coverType === 'fanart');

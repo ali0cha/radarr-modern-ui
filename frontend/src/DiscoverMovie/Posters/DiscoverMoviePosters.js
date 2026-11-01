@@ -10,10 +10,10 @@ import DiscoverMoviePosterConnector from './DiscoverMoviePosterConnector';
 import styles from './DiscoverMoviePosters.module.css';
 
 // Poster container dimensions
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.movieIndexColumnPaddingSmallScreen);
-const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
-const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
+const progressBarHeight = dimensions.progressBarSmallHeight;
+const detailedProgressBarHeight = dimensions.progressBarMediumHeight;
 
 const additionalColumnCount = {
   small: 3,

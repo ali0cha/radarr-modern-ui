@@ -9,16 +9,12 @@ import { useOverviewOptions } from '../useMovieIndex';
 import MovieIndexOverview from './MovieIndexOverview';
 
 // Poster container dimensions
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(
-  dimensions.movieIndexColumnPaddingSmallScreen
-);
-const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
-const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(
-  dimensions.pageContentBodyPaddingSmallScreen
-);
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
+const progressBarHeight = dimensions.progressBarSmallHeight;
+const detailedProgressBarHeight = dimensions.progressBarMediumHeight;
+const bodyPadding = dimensions.pageContentBodyPadding;
+const bodyPaddingSmallScreen = dimensions.pageContentBodyPaddingSmallScreen;
 
 interface RowItemData {
   items: Movie[];

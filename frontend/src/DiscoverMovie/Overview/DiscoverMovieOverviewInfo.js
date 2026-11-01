@@ -8,7 +8,7 @@ import translate from 'Utilities/String/translate';
 import DiscoverMovieOverviewInfoRow from './DiscoverMovieOverviewInfoRow';
 import styles from './DiscoverMovieOverviewInfo.module.css';
 
-const infoRowHeight = parseInt(dimensions.movieIndexOverviewInfoRowHeight);
+const infoRowHeight = dimensions.movieIndexOverviewInfoRowHeight;
 
 const rows = [
   {

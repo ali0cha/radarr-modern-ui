@@ -10,8 +10,8 @@ import DiscoverMovieOverviewConnector from './DiscoverMovieOverviewConnector';
 import styles from './DiscoverMovieOverviews.module.css';
 
 // Poster container dimensions
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.movieIndexColumnPaddingSmallScreen);
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
 
 function calculatePosterWidth(posterSize, isSmallScreen) {
   const maximumPosterWidth = isSmallScreen ? 152 : 162;

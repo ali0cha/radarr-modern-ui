@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { DragLayer } from 'react-dnd';
 import DragPreviewLayer from 'Components/DragPreviewLayer';
 import { DELAY_PROFILE } from 'Helpers/dragTypes';
-import dimensions from 'Styles/Variables/dimensions.js';
+import dimensions from 'Styles/Variables/dimensions';
 import DelayProfile from './DelayProfile';
 import styles from './DelayProfileDragPreview.module.css';
 
-const dragHandleWidth = parseInt(dimensions.dragHandleWidth);
+const dragHandleWidth = dimensions.dragHandleWidth;
 
 function collectDragLayer(monitor) {
   return {

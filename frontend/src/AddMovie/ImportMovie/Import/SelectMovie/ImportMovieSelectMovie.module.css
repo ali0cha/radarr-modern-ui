@@ -30,7 +30,7 @@
 }
 
 .contentContainer {
-  z-index: $popperZIndex;
+  z-index: var(--popperZIndex);
   margin-top: 4px;
   /* 400px container width with 8px padding on each side */
   width: 384px;

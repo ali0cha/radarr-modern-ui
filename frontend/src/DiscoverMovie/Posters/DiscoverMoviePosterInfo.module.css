@@ -1,5 +1,5 @@
 .info {
   background-color: var(--movieBackgroundColor);
   text-align: center;
-  font-size: $smallFontSize;
+  font-size: var(--smallFontSize);
 }

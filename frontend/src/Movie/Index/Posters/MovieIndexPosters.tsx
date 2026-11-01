@@ -9,16 +9,12 @@ import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 import { usePosterOptions } from '../useMovieIndex';
 
-const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
-const bodyPaddingSmallScreen = parseInt(
-  dimensions.pageContentBodyPaddingSmallScreen
-);
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(
-  dimensions.movieIndexColumnPaddingSmallScreen
-);
-const progressBarHeight = parseInt(dimensions.progressBarSmallHeight);
-const detailedProgressBarHeight = parseInt(dimensions.progressBarMediumHeight);
+const bodyPadding = dimensions.pageContentBodyPadding;
+const bodyPaddingSmallScreen = dimensions.pageContentBodyPaddingSmallScreen;
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
+const progressBarHeight = dimensions.progressBarSmallHeight;
+const detailedProgressBarHeight = dimensions.progressBarMediumHeight;
 
 const ADDITIONAL_COLUMN_COUNT: Record<string, number> = {
   small: 3,

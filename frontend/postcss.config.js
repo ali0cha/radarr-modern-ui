@@ -1,32 +1,25 @@
-const reload = require('require-nocache')(module);
-
-const cssVarsFiles = [
-  './src/Styles/Variables/dimensions',
-  './src/Styles/Variables/fonts',
-  './src/Styles/Variables/animations',
-  './src/Styles/Variables/zIndexes'
-].map(require.resolve);
+const path = require('path');
 
 const mixinsFiles = [
-  'frontend/src/Styles/Mixins/cover.css',
-  'frontend/src/Styles/Mixins/linkOverlay.css',
-  'frontend/src/Styles/Mixins/scroller.css',
-  'frontend/src/Styles/Mixins/truncate.css'
-];
+  'cover.css',
+  'linkOverlay.css',
+  'scroller.css',
+  'truncate.css',
+  'visuallyHidden.css'
+].map((file) => path.join(__dirname, 'src/Styles/Mixins', file));
 
 module.exports = {
   plugins: {
-    autoprefixer: {},
+    // Gives @custom-media (breakpoints) to every stylesheet, so that they do
+    // not need to import it.
+    '@csstools/postcss-global-data': {
+      files: [path.join(__dirname, 'src/Styles/Variables/breakpoints.css')]
+    },
+    'postcss-custom-media': {},
     'postcss-mixins': {
       mixinsFiles
     },
-    'postcss-simple-vars': {
-      variables: () =>
-        cssVarsFiles.reduce((acc, vars) => {
-          return Object.assign(acc, reload(vars));
-        }, {})
-    },
-    'postcss-color-function': {},
-    'postcss-nested': {}
+    'postcss-nested': {},
+    autoprefixer: {}
   }
 };

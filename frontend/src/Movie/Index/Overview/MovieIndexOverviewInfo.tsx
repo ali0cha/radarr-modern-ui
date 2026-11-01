@@ -40,7 +40,7 @@ interface MovieIndexOverviewInfoProps {
   sortKey: string;
 }
 
-const infoRowHeight = parseInt(dimensions.movieIndexOverviewInfoRowHeight);
+const infoRowHeight = dimensions.movieIndexOverviewInfoRowHeight;
 
 const rows = [
   {

@@ -19,10 +19,10 @@ import translate from 'Utilities/String/translate';
 import DiscoverMovieOverviewInfo from './DiscoverMovieOverviewInfo';
 import styles from './DiscoverMovieOverview.module.css';
 
-const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
-const columnPaddingSmallScreen = parseInt(dimensions.movieIndexColumnPaddingSmallScreen);
-const defaultFontSize = parseInt(fonts.defaultFontSize);
-const lineHeight = parseFloat(fonts.lineHeight);
+const columnPadding = dimensions.movieIndexColumnPadding;
+const columnPaddingSmallScreen = dimensions.movieIndexColumnPaddingSmallScreen;
+const defaultFontSize = fonts.defaultFontSize;
+const lineHeight = fonts.lineHeight;
 
 // Hardcoded height beased on line-height of 32 + bottom margin of 10. 19 + 5 for List Row
 // Less side-effecty than using react-measure.

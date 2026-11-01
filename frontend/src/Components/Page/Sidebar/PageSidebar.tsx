@@ -22,8 +22,8 @@ import Messages from './Messages/Messages';
 import PageSidebarItem from './PageSidebarItem';
 import styles from './PageSidebar.module.css';
 
-const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
-const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
+const HEADER_HEIGHT = dimensions.headerHeight;
+const SIDEBAR_WIDTH = dimensions.sidebarWidth;
 
 interface SidebarItem {
   iconName?: IconName;
@@ -233,7 +233,7 @@ function PageSidebar({ isSidebarVisible, isSmallScreen }: PageSidebarProps) {
     transform: isSidebarVisible ? 0 : SIDEBAR_WIDTH * -1,
   });
   const [sidebarStyle, setSidebarStyle] = useState({
-    top: dimensions.headerHeight,
+    top: `${HEADER_HEIGHT}px`,
     height: `${window.innerHeight - HEADER_HEIGHT}px`,
   });
 
