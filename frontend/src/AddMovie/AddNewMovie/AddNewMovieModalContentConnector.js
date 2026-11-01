@@ -1,105 +1,61 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { addMovie, setAddMovieDefault } from 'Store/Actions/addMovieActions';
+import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
+import useIsWindows from 'System/useIsWindows';
+import { setAddDefaults, useAddDefaults, useAddMovie } from '../useAddMovie';
 import AddNewMovieModalContent from './AddNewMovieModalContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.addMovie,
-    createDimensionsSelector(),
-    createSystemStatusSelector(),
-    (addMovieState, dimensions, systemStatus) => {
-      const {
-        isAdding,
-        addError,
-        defaults
-      } = addMovieState;
+function AddNewMovieModalContentConnector(props) {
+  const { tmdbId } = props;
 
-      const {
-        settings,
-        validationErrors,
-        validationWarnings
-      } = selectSettings(defaults, {}, addError);
+  const defaults = useAddDefaults();
+  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const isWindows = useIsWindows();
+  const { addMovie, isAdding, addError } = useAddMovie();
 
-      return {
-        isAdding,
-        addError,
-        isSmallScreen: dimensions.isSmallScreen,
-        validationErrors,
-        validationWarnings,
-        isWindows: systemStatus.isWindows,
-        ...settings
-      };
-    }
-  );
-}
+  const {
+    settings,
+    validationErrors,
+    validationWarnings
+  } = useMemo(() => selectSettings(defaults, {}, addError), [defaults, addError]);
 
-const mapDispatchToProps = {
-  setAddMovieDefault,
-  addMovie
-};
+  const handleInputChange = useCallback(({ name, value }) => {
+    setAddDefaults({ [name]: value });
+  }, []);
 
-class AddNewMovieModalContentConnector extends Component {
-
-  //
-  // Listeners
-
-  onInputChange = ({ name, value }) => {
-    this.props.setAddMovieDefault({ [name]: value });
-  };
-
-  onAddMoviePress = () => {
-    const {
+  const handleAddMoviePress = useCallback(() => {
+    addMovie({
       tmdbId,
-      rootFolderPath,
-      monitor,
-      qualityProfileId,
-      minimumAvailability,
-      searchForMovie,
-      tags
-    } = this.props;
-
-    this.props.addMovie({
-      tmdbId,
-      rootFolderPath: rootFolderPath.value,
-      monitor: monitor.value,
-      qualityProfileId: qualityProfileId.value,
-      minimumAvailability: minimumAvailability.value,
-      searchForMovie: searchForMovie.value,
-      tags: tags.value
+      rootFolderPath: settings.rootFolderPath.value,
+      monitor: settings.monitor.value,
+      qualityProfileId: settings.qualityProfileId.value,
+      minimumAvailability: settings.minimumAvailability.value,
+      searchForMovie: settings.searchForMovie.value,
+      tags: settings.tags.value
     });
-  };
+  }, [tmdbId, settings, addMovie]);
 
-  //
-  // Render
-
-  render() {
-    return (
-      <AddNewMovieModalContent
-        {...this.props}
-        onInputChange={this.onInputChange}
-        onAddMoviePress={this.onAddMoviePress}
-      />
-    );
-  }
+  return (
+    <AddNewMovieModalContent
+      {...props}
+      {...settings}
+      isAdding={isAdding}
+      addError={addError}
+      isSmallScreen={isSmallScreen}
+      validationErrors={validationErrors}
+      validationWarnings={validationWarnings}
+      isWindows={isWindows}
+      onInputChange={handleInputChange}
+      onAddMoviePress={handleAddMoviePress}
+    />
+  );
 }
 
 AddNewMovieModalContentConnector.propTypes = {
   tmdbId: PropTypes.number.isRequired,
-  rootFolderPath: PropTypes.object,
-  monitor: PropTypes.object.isRequired,
-  qualityProfileId: PropTypes.object,
-  minimumAvailability: PropTypes.object.isRequired,
-  searchForMovie: PropTypes.object.isRequired,
-  tags: PropTypes.object.isRequired,
-  onModalClose: PropTypes.func.isRequired,
-  setAddMovieDefault: PropTypes.func.isRequired,
-  addMovie: PropTypes.func.isRequired
+  onModalClose: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieModalContentConnector);
+export default AddNewMovieModalContentConnector;

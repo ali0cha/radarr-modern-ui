@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withAddDefaults from 'AddMovie/withAddDefaults';
 import withMovies from 'Movie/withMovies';
 import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
 import createImportMovieItemSelector from 'Store/Selectors/createImportMovieItemSelector';
@@ -74,4 +75,4 @@ ImportMovieSelectMovieConnector.propTypes = {
   setImportMovieValue: PropTypes.func.isRequired
 };
 
-export default withMovies(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieSelectMovieConnector));
+export default withAddDefaults(withMovies(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieSelectMovieConnector)));

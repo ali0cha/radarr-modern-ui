@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { createSelector } from 'reselect';
+import { setAddDefaults } from 'AddMovie/useAddMovie';
+import withAddDefaults from 'AddMovie/withAddDefaults';
 import { useRootFolder } from 'RootFolder/useRootFolders';
 import withQualityProfiles from 'Settings/Profiles/Quality/withQualityProfiles';
-import { setAddMovieDefault } from 'Store/Actions/addMovieActions';
 import { clearImportMovie, importMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
 import ImportMovie from './ImportMovie';
 
@@ -13,13 +14,13 @@ function createMapStateToProps() {
   return createSelector(
     (state, { rootFolderIdParam }) => rootFolderIdParam,
     (state, { rootFolder }) => rootFolder,
-    (state) => state.addMovie,
+    (state, { addDefaults }) => addDefaults,
     (state) => state.importMovie,
     (state, { qualityProfilesState }) => qualityProfilesState,
     (
       rootFolderIdParam,
       rootFolder,
-      addMovie,
+      addDefaults,
       importMovieState,
       qualityProfiles
     ) => {
@@ -28,7 +29,7 @@ function createMapStateToProps() {
       const result = {
         rootFolderId,
         qualityProfiles: qualityProfiles.items,
-        defaultQualityProfileId: addMovie.defaults.qualityProfileId
+        defaultQualityProfileId: addDefaults.qualityProfileId
       };
 
       if (rootFolder) {
@@ -47,8 +48,7 @@ function createMapStateToProps() {
 const mapDispatchToProps = {
   dispatchSetImportMovieValue: setImportMovieValue,
   dispatchImportMovie: importMovie,
-  dispatchClearImportMovie: clearImportMovie,
-  dispatchSetAddMovieDefault: setAddMovieDefault
+  dispatchClearImportMovie: clearImportMovie
 };
 
 class ImportMovieConnectorBase extends Component {
@@ -59,8 +59,7 @@ class ImportMovieConnectorBase extends Component {
   componentDidMount() {
     const {
       qualityProfiles,
-      defaultQualityProfileId,
-      dispatchSetAddMovieDefault
+      defaultQualityProfileId
     } = this.props;
 
     let setDefaults = false;
@@ -75,7 +74,7 @@ class ImportMovieConnectorBase extends Component {
     }
 
     if (setDefaults) {
-      dispatchSetAddMovieDefault(setDefaultPayload);
+      setAddDefaults(setDefaultPayload);
     }
   }
 
@@ -87,7 +86,7 @@ class ImportMovieConnectorBase extends Component {
   // Listeners
 
   onInputChange = (ids, name, value) => {
-    this.props.dispatchSetAddMovieDefault({ [name]: value });
+    setAddDefaults({ [name]: value });
 
     ids.forEach((id) => {
       this.props.dispatchSetImportMovieValue({
@@ -124,11 +123,10 @@ ImportMovieConnectorBase.propTypes = {
   defaultQualityProfileId: PropTypes.number.isRequired,
   dispatchSetImportMovieValue: PropTypes.func.isRequired,
   dispatchImportMovie: PropTypes.func.isRequired,
-  dispatchClearImportMovie: PropTypes.func.isRequired,
-  dispatchSetAddMovieDefault: PropTypes.func.isRequired
+  dispatchClearImportMovie: PropTypes.func.isRequired
 };
 
-const ConnectedImportMovie = withQualityProfiles(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnectorBase));
+const ConnectedImportMovie = withAddDefaults(withQualityProfiles(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieConnectorBase)));
 
 function ImportMovieConnector() {
   const { rootFolderId } = useParams();

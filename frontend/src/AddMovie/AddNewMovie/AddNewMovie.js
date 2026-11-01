@@ -216,8 +216,6 @@ AddNewMovie.propTypes = {
   term: PropTypes.string,
   isFetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
-  isAdding: PropTypes.bool.isRequired,
-  addError: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   hasExistingMovies: PropTypes.bool.isRequired,
   onMovieLookupChange: PropTypes.func.isRequired,

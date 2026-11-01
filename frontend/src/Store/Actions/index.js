@@ -1,4 +1,3 @@
-import * as addMovie from './addMovieActions';
 import * as app from './appActions';
 import * as captcha from './captchaActions';
 import * as customFilters from './customFilterActions';
@@ -8,7 +7,6 @@ import * as providerOptions from './providerOptionActions';
 import * as system from './systemActions';
 
 export default [
-  addMovie,
   app,
   captcha,
   customFilters,

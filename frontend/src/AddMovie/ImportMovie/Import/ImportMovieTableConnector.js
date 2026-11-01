@@ -1,20 +1,21 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withAddDefaults from 'AddMovie/withAddDefaults';
 import withMovies from 'Movie/withMovies';
 import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
 import ImportMovieTable from './ImportMovieTable';
 
 function createMapStateToProps() {
   return createSelector(
-    (state) => state.addMovie,
+    (state, { addDefaults }) => addDefaults,
     (state) => state.importMovie,
     (state) => state.app.dimensions,
     (state, { allMovies }) => allMovies,
-    (addMovie, importMovie, dimensions, allMovies) => {
+    (addDefaults, importMovie, dimensions, allMovies) => {
       return {
-        defaultMonitor: addMovie.defaults.monitor,
-        defaultQualityProfileId: addMovie.defaults.qualityProfileId,
-        defaultMinimumAvailability: addMovie.defaults.minimumAvailability,
+        defaultMonitor: addDefaults.monitor,
+        defaultQualityProfileId: addDefaults.qualityProfileId,
+        defaultMinimumAvailability: addDefaults.minimumAvailability,
         items: importMovie.items,
         isSmallScreen: dimensions.isSmallScreen,
         allMovies
@@ -40,4 +41,4 @@ function createMapDispatchToProps(dispatch, props) {
   };
 }
 
-export default withMovies(connect(createMapStateToProps, createMapDispatchToProps)(ImportMovieTable));
+export default withAddDefaults(withMovies(connect(createMapStateToProps, createMapDispatchToProps)(ImportMovieTable)));
