@@ -5,7 +5,6 @@ import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
-import ReleasesAppState from './ReleasesAppState';
 import SystemAppState from './SystemAppState';
 
 interface FilterBuilderPropOption {
@@ -68,7 +67,6 @@ interface AppState {
   interactiveImport: InteractiveImportAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
-  releases: ReleasesAppState;
   system: SystemAppState;
 }
 

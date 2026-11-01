@@ -1,11 +1,6 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Modal from 'Components/Modal/Modal';
 import { sizes } from 'Helpers/Props';
-import {
-  cancelFetchReleases,
-  clearReleases,
-} from 'Store/Actions/releaseActions';
 import MovieInteractiveSearchModalContent, {
   MovieInteractiveSearchModalContentProps,
 } from './MovieInteractiveSearchModalContent';
@@ -20,25 +15,16 @@ function MovieInteractiveSearchModal({
   movieId,
   onModalClose,
 }: MovieInteractiveSearchModalProps) {
-  const dispatch = useDispatch();
-
-  const handleModalClose = useCallback(() => {
-    onModalClose();
-
-    dispatch(cancelFetchReleases());
-    dispatch(clearReleases());
-  }, [dispatch, onModalClose]);
-
   return (
     <Modal
       isOpen={isOpen}
       closeOnBackgroundClick={false}
       size={sizes.EXTRA_EXTRA_LARGE}
-      onModalClose={handleModalClose}
+      onModalClose={onModalClose}
     >
       <MovieInteractiveSearchModalContent
         movieId={movieId}
-        onModalClose={handleModalClose}
+        onModalClose={onModalClose}
       />
     </Modal>
   );

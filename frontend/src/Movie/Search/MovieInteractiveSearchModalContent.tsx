@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Button from 'Components/Link/Button';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
@@ -9,10 +8,6 @@ import { scrollDirections } from 'Helpers/Props';
 import InteractiveSearch from 'InteractiveSearch/InteractiveSearch';
 import Movie from 'Movie/Movie';
 import useMovie from 'Movie/useMovie';
-import {
-  cancelFetchReleases,
-  clearReleases,
-} from 'Store/Actions/releaseActions';
 import translate from 'Utilities/String/translate';
 
 export interface MovieInteractiveSearchModalContentProps {
@@ -24,16 +19,7 @@ function MovieInteractiveSearchModalContent({
   movieId,
   onModalClose,
 }: MovieInteractiveSearchModalContentProps) {
-  const dispatch = useDispatch();
-
   const { title, year } = useMovie(movieId) as Movie;
-
-  useEffect(() => {
-    return () => {
-      dispatch(cancelFetchReleases());
-      dispatch(clearReleases());
-    };
-  }, [dispatch]);
 
   const movieTitle = `${title}${year > 0 ? ` (${year})` : ''}`;
 

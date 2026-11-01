@@ -1,7 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
-import ReleasesAppState from 'App/State/ReleasesAppState';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -11,19 +8,12 @@ import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
-import { SortDirection } from 'Helpers/Props/sortDirections';
-import {
-  fetchReleases,
-  grabRelease,
-  setReleasesFilter,
-  setReleasesSort,
-} from 'Store/Actions/releaseActions';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import InteractiveSearchFilterModal from './InteractiveSearchFilterModal';
 import InteractiveSearchPayload from './InteractiveSearchPayload';
 import InteractiveSearchRow from './InteractiveSearchRow';
+import { clearGrabStates, grabRelease, useReleases } from './useReleases';
 import styles from './InteractiveSearch.module.css';
 
 const columns: Column[] = [
@@ -135,44 +125,20 @@ function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
     customFilters,
     sortKey,
     sortDirection,
-  }: ReleasesAppState & ClientSideCollectionAppState = useSelector(
-    createClientSideCollectionSelector('releases')
-  );
+    handleFilterSelect,
+    handleSortPress,
+  } = useReleases(searchPayload);
 
-  const dispatch = useDispatch();
+  const handleGrabPress = useCallback((payload: { guid: string }) => {
+    grabRelease(payload);
+  }, []);
 
-  const handleFilterSelect = useCallback(
-    (selectedFilterKey: string | number) => {
-      dispatch(setReleasesFilter({ selectedFilterKey }));
-    },
-    [dispatch]
-  );
-
-  const handleSortPress = useCallback(
-    (sortKey: string, sortDirection?: SortDirection) => {
-      dispatch(setReleasesSort({ sortKey, sortDirection }));
-    },
-    [dispatch]
-  );
-
-  const handleGrabPress = useCallback(
-    (payload: object) => {
-      dispatch(grabRelease(payload));
-    },
-    [dispatch]
-  );
-
-  useEffect(
-    () => {
-      // Only fetch releases if they are not already being fetched and not yet populated.
-
-      if (!isFetching && !isPopulated) {
-        dispatch(fetchReleases(searchPayload));
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  // The grabbing states are forgotten when the releases are not shown any more
+  useEffect(() => {
+    return () => {
+      clearGrabStates();
+    };
+  }, []);
 
   const errorMessage = getErrorMessage(error);
 
@@ -186,7 +152,7 @@ function InteractiveSearch({ searchPayload }: InteractiveSearchProps) {
           customFilters={customFilters}
           buttonComponent={PageMenuButton}
           filterModalConnectorComponent={InteractiveSearchFilterModal}
-          filterModalConnectorComponentProps={{ type: 'movies' }}
+          filterModalConnectorComponentProps={{ searchPayload }}
           onFilterSelect={handleFilterSelect}
         />
       </div>

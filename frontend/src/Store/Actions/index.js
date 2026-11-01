@@ -7,7 +7,6 @@ import * as importMovie from './importMovieActions';
 import * as interactiveImportActions from './interactiveImportActions';
 import * as oAuth from './oAuthActions';
 import * as providerOptions from './providerOptionActions';
-import * as releases from './releaseActions';
 import * as system from './systemActions';
 
 export default [
@@ -20,6 +19,5 @@ export default [
   interactiveImportActions,
   oAuth,
   providerOptions,
-  releases,
   system
 ];

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 import Button from 'Components/Link/Button';
@@ -13,6 +12,7 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import SelectLanguageModal from 'InteractiveImport/Language/SelectLanguageModal';
 import SelectMovieModal from 'InteractiveImport/Movie/SelectMovieModal';
 import SelectQualityModal from 'InteractiveImport/Quality/SelectQualityModal';
+import { grabRelease } from 'InteractiveSearch/useReleases';
 import Language from 'Language/Language';
 import Movie from 'Movie/Movie';
 import MovieLanguages from 'Movie/MovieLanguages';
@@ -20,7 +20,6 @@ import MovieQuality from 'Movie/MovieQuality';
 import { useMovie } from 'Movie/useMovies';
 import { QualityModel } from 'Quality/Quality';
 import { useEnabledDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
-import { grabRelease } from 'Store/Actions/releaseActions';
 import translate from 'Utilities/String/translate';
 import SelectDownloadClientModal from './DownloadClient/SelectDownloadClientModal';
 import OverrideMatchData from './OverrideMatchData';
@@ -68,7 +67,6 @@ function OverrideMatchModalContent(props: OverrideMatchModalContentProps) {
   );
   const previousIsGrabbing = usePrevious(isGrabbing);
 
-  const dispatch = useDispatch();
   const movie: Movie | undefined = useMovie(movieId);
   const { items: downloadClients } = useEnabledDownloadClients(protocol);
 
@@ -136,17 +134,15 @@ function OverrideMatchModalContent(props: OverrideMatchModalContentProps) {
       return;
     }
 
-    dispatch(
-      grabRelease({
-        indexerId,
-        guid,
-        movieId,
-        quality,
-        languages,
-        downloadClientId,
-        shouldOverride: true,
-      })
-    );
+    grabRelease({
+      indexerId,
+      guid,
+      movieId,
+      quality,
+      languages,
+      downloadClientId,
+      shouldOverride: true,
+    });
   }, [
     indexerId,
     guid,
@@ -155,7 +151,6 @@ function OverrideMatchModalContent(props: OverrideMatchModalContentProps) {
     languages,
     downloadClientId,
     setError,
-    dispatch,
   ]);
 
   useEffect(() => {

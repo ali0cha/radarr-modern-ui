@@ -59,10 +59,6 @@ import { useMovieFilesForMovie } from 'MovieFile/useMovieFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import useUISettings from 'Settings/UI/useUISettings';
-import {
-  cancelFetchReleases,
-  clearReleases,
-} from 'Store/Actions/releaseActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import fonts from 'Styles/Variables/fonts';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -417,8 +413,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
 
     return () => {
       unregisterPagePopulator(populate);
-      dispatch(cancelFetchReleases());
-      dispatch(clearReleases());
     };
   }, [populate, dispatch]);
 

@@ -1,45 +1,29 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
 import FilterModal from 'Components/Filter/FilterModal';
-import { setReleasesFilter } from 'Store/Actions/releaseActions';
-
-function createReleasesSelector() {
-  return createSelector(
-    (state: AppState) => state.releases.items,
-    (releases) => {
-      return releases;
-    }
-  );
-}
-
-function createFilterBuilderPropsSelector() {
-  return createSelector(
-    (state: AppState) => state.releases.filterBuilderProps,
-    (filterBuilderProps) => {
-      return filterBuilderProps;
-    }
-  );
-}
+import InteractiveSearchPayload from './InteractiveSearchPayload';
+import {
+  filterBuilderProps,
+  useReleases,
+  useReleasesFilterStore,
+} from './useReleases';
 
 interface InteractiveSearchFilterModalProps {
   isOpen: boolean;
+  searchPayload: InteractiveSearchPayload;
 }
 
 export default function InteractiveSearchFilterModal({
+  searchPayload,
   ...otherProps
 }: InteractiveSearchFilterModalProps) {
-  const sectionItems = useSelector(createReleasesSelector());
-  const filterBuilderProps = useSelector(createFilterBuilderPropsSelector());
-
-  const dispatch = useDispatch();
+  const { allItems: sectionItems } = useReleases(searchPayload);
+  const setFilter = useReleasesFilterStore((state) => state.setFilter);
 
   const dispatchSetFilter = useCallback(
-    (payload: unknown) => {
-      dispatch(setReleasesFilter(payload));
+    ({ selectedFilterKey }: { selectedFilterKey: string | number }) => {
+      setFilter(selectedFilterKey);
     },
-    [dispatch]
+    [setFilter]
   );
 
   return (
