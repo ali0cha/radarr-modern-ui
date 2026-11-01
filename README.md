@@ -4,6 +4,12 @@ An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports it
 
 This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
 
+> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `fix/login-styles`:
+>
+> ```bash
+> git checkout fix/login-styles
+> ```
+
 ## Goal
 
 Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on:
@@ -18,7 +24,7 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 
 ## Status
 
-**Redux is gone.** Every section of the store was moved, one piece at a time, and the packages are removed (`redux`, `react-redux`, `redux-actions`, `redux-batched-actions`, `redux-localstorage`, `redux-thunk`, `reselect`). Each piece is a branch stacked on the previous one, so that every step can be reviewed (and tried) alone. The last branch, `redux/remove-redux`, contains all of them.
+**Redux is gone.** Every section of the store was moved, one piece at a time, and the packages are removed (`redux`, `react-redux`, `redux-actions`, `redux-batched-actions`, `redux-localstorage`, `redux-thunk`, `reselect`). Each piece is a branch stacked on the previous one, so that every step can be reviewed (and tried) alone. The last branch, `fix/login-styles`, contains all of them.
 
 | Branches (in order) | What they do |
 | --- | --- |
@@ -48,6 +54,8 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 - **Not covered:** the project has no automated tests for the front-end, and a few things were not tried for real: signing in with the OAuth providers (only up to the window of the provider, with a simulated answer), the reports that Sentry sends (its set up and the cleaning of what it would send were checked in isolation, nothing was sent), and Windows or macOS.
 
 ## Build and try it
+
+Start from the last branch of the stack (`git checkout fix/login-styles`), then:
 
 ```bash
 yarn install
