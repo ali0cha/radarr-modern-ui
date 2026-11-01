@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import AppState, { CustomFilter } from 'App/State/AppState';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import Column from 'Components/Table/Column';
 import { mergeColumns } from 'Components/Table/pagedTable';
 import { createPersist } from 'Helpers/createPersist';
@@ -287,9 +286,7 @@ export function useMovieIndex() {
   const view = useMovieIndexStore((state) => state.view);
   const columns = useMovieIndexColumns();
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () => allCustomFilters.filter(({ type }) => type === 'movieIndex'),

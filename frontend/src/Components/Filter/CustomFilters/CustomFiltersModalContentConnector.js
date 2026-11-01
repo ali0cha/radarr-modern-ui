@@ -1,23 +1,18 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { deleteCustomFilter } from 'Store/Actions/customFilterActions';
+import React from 'react';
+import { useDeleteCustomFilter } from 'Components/Filter/useCustomFilters';
 import CustomFiltersModalContent from './CustomFiltersModalContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.customFilters.isDeleting,
-    (state) => state.customFilters.deleteError,
-    (isDeleting, deleteError) => {
-      return {
-        isDeleting,
-        deleteError
-      };
-    }
+function CustomFiltersModalContentConnector(props) {
+  const { deleteCustomFilter, isDeleting, deleteError } = useDeleteCustomFilter();
+
+  return (
+    <CustomFiltersModalContent
+      {...props}
+      isDeleting={isDeleting}
+      deleteError={deleteError}
+      dispatchDeleteCustomFilter={deleteCustomFilter}
+    />
   );
 }
 
-const mapDispatchToProps = {
-  dispatchDeleteCustomFilter: deleteCustomFilter
-};
-
-export default connect(createMapStateToProps, mapDispatchToProps)(CustomFiltersModalContent);
+export default CustomFiltersModalContentConnector;

@@ -1,8 +1,7 @@
 import { get } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { create } from 'zustand';
-import AppState, { CustomFilter } from 'App/State/AppState';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import { createPersist } from 'Helpers/createPersist';
 import useApiQuery, { fetchApi, getApiPath } from 'Helpers/Hooks/useApiQuery';
 import { ASCENDING, SortDirection } from 'Helpers/Props/sortDirections';
@@ -126,9 +125,7 @@ export function useReleases(searchPayload: InteractiveSearchPayload) {
     sortDirection: SortDirection;
   }>({ sortKey: 'releaseWeight', sortDirection: ASCENDING });
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () => allCustomFilters.filter(({ type }) => type === 'releases'),

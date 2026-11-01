@@ -1,42 +1,32 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { deleteCustomFilter, saveCustomFilter } from 'Store/Actions/customFilterActions';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useDeleteCustomFilter, useSaveCustomFilter } from 'Components/Filter/useCustomFilters';
 import FilterBuilderModalContent from './FilterBuilderModalContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { customFilters }) => customFilters,
-    (state, { id }) => id,
-    (state) => state.customFilters.isSaving,
-    (state) => state.customFilters.saveError,
-    (customFilters, id, isSaving, saveError) => {
-      if (id) {
-        const customFilter = customFilters.find((c) => c.id === id);
+function FilterBuilderModalContentConnector({ customFilters, id, ...otherProps }) {
+  const { saveCustomFilter, isSaving, saveError } = useSaveCustomFilter();
+  const { deleteCustomFilter } = useDeleteCustomFilter();
 
-        return {
-          id: customFilter.id,
-          label: customFilter.label,
-          filters: customFilter.filters,
-          customFilters,
-          isSaving,
-          saveError
-        };
-      }
+  const customFilter = id ? customFilters.find((c) => c.id === id) : undefined;
 
-      return {
-        label: '',
-        filters: [],
-        customFilters,
-        isSaving,
-        saveError
-      };
-    }
+  return (
+    <FilterBuilderModalContent
+      {...otherProps}
+      id={customFilter ? customFilter.id : undefined}
+      label={customFilter ? customFilter.label : ''}
+      filters={customFilter ? customFilter.filters : []}
+      customFilters={customFilters}
+      isSaving={isSaving}
+      saveError={saveError}
+      onSaveCustomFilterPress={saveCustomFilter}
+      dispatchDeleteCustomFilter={deleteCustomFilter}
+    />
   );
 }
 
-const mapDispatchToProps = {
-  onSaveCustomFilterPress: saveCustomFilter,
-  dispatchDeleteCustomFilter: deleteCustomFilter
+FilterBuilderModalContentConnector.propTypes = {
+  id: PropTypes.number,
+  customFilters: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(FilterBuilderModalContent);
+export default FilterBuilderModalContentConnector;

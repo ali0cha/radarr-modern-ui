@@ -5,9 +5,8 @@ import {
 } from '@tanstack/react-query';
 import { cloneDeep, get } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { queryClient } from 'App/queryClient';
-import AppState, { CustomFilter } from 'App/State/AppState';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import Column from 'Components/Table/Column';
 import { mergeColumns } from 'Components/Table/pagedTable';
 import { createPersist } from 'Helpers/createPersist';
@@ -598,9 +597,7 @@ export function useDiscoverMovieView() {
   const options = useDiscoverMovieOptions();
   const columns = useDiscoverMovieColumns();
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () => allCustomFilters.filter(({ type }) => type === 'discoverMovie'),

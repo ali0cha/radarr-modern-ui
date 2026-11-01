@@ -1,5 +1,4 @@
 import { Error } from './AppSectionState';
-import CustomFiltersAppState from './CustomFiltersAppState';
 import MessagesAppState from './MessagesAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import SystemAppState from './SystemAppState';
@@ -59,7 +58,6 @@ export interface AppSectionState {
 
 interface AppState {
   app: AppSectionState;
-  customFilters: CustomFiltersAppState;
   providerOptions: ProviderOptionsAppState;
   system: SystemAppState;
 }

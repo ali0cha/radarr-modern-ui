@@ -5,8 +5,7 @@ import {
 } from '@tanstack/react-query';
 import { get } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import AppState, { CustomFilter } from 'App/State/AppState';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import { createPersist } from 'Helpers/createPersist';
 import useApiMutation from 'Helpers/Hooks/useApiMutation';
 import useApiQuery, {
@@ -468,9 +467,7 @@ export function useMovieCollectionsView() {
   );
   const view = useMovieCollectionsStore((state) => state.view);
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () => allCustomFilters.filter(({ type }) => type === 'movieCollections'),

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import AppState, { CustomFilter } from 'App/State/AppState';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import usePagedApiQuery from 'Helpers/Hooks/usePagedApiQuery';
 import { SortDirection } from 'Helpers/Props/sortDirections';
 import { TableOptionsChangePayload } from 'typings/Table';
@@ -47,9 +46,7 @@ function usePagedTable<T>({
 
   const [page, setPage] = useState(1);
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () =>

@@ -2,10 +2,10 @@ import { keepPreviousData, QueryClient } from '@tanstack/react-query';
 import { get, times } from 'lodash';
 import moment from 'moment';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import AppState, { CustomFilter, Filter } from 'App/State/AppState';
+import { Filter } from 'App/State/AppState';
 import * as calendarViews from 'Calendar/calendarViews';
 import { CalendarView } from 'Calendar/calendarViews';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import { createPersist } from 'Helpers/createPersist';
 import useApiQuery, { getApiPath } from 'Helpers/Hooks/useApiQuery';
 import {
@@ -258,9 +258,7 @@ export function useCalendar() {
   const store = useCalendarStore();
   const { firstDayOfWeek } = useUISettings();
 
-  const allCustomFilters = useSelector(
-    (state: AppState) => state.customFilters.items
-  ) as CustomFilter[];
+  const { customFilters: allCustomFilters } = useCustomFilters();
 
   const customFilters = useMemo(
     () => allCustomFilters.filter(({ type }) => type === 'calendar'),

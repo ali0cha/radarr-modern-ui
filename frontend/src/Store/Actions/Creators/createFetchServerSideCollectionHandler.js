@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import { batchActions } from 'redux-batched-actions';
+import { queryClient } from 'App/queryClient';
+import { getCustomFilters } from 'Components/Filter/useCustomFilters';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import findSelectedFilters from 'Utilities/Filter/findSelectedFilters';
 import getSectionState from 'Utilities/State/getSectionState';
@@ -30,7 +32,7 @@ function createFetchServerSideCollectionHandler(section, url, fetchDataAugmenter
       filters
     } = sectionState;
 
-    const customFilters = getState().customFilters.items.filter((customFilter) => {
+    const customFilters = getCustomFilters(queryClient).filter((customFilter) => {
       return customFilter.type === section || customFilter.type === baseSection;
     });
 

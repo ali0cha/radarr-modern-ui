@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
 import { useMovieCollections } from 'Collection/useMovieCollections';
+import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import { useInitializeLanguage } from 'Language/useLanguageName';
 import { useLanguages } from 'Language/useLanguages';
 import { useMovies } from 'Movie/useMovies';
@@ -11,26 +12,19 @@ import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { useUISettingsQuery } from 'Settings/UI/useUISettings';
 import { fetchTranslations } from 'Store/Actions/appActions';
-import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import { fetchStatus } from 'Store/Actions/systemActions';
 import { useTagsQuery } from 'Tags/useTags';
 
 const createErrorsSelector = () =>
   createSelector(
-    (state: AppState) => state.customFilters.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
-    (customFiltersError, systemStatusError, translationsError) => {
-      const hasError = !!(
-        customFiltersError ||
-        systemStatusError ||
-        translationsError
-      );
+    (systemStatusError, translationsError) => {
+      const hasError = !!(systemStatusError || translationsError);
 
       return {
         hasError,
         errors: {
-          customFiltersError,
           systemStatusError,
           translationsError,
         },
@@ -46,6 +40,8 @@ const useAppPage = () => {
   const { isPopulated: isMoviesPopulated, error: moviesError } = useMovies();
   const { isPopulated: isCollectionsPopulated, error: movieCollectionsError } =
     useMovieCollections();
+  const { isPopulated: isCustomFiltersPopulated, error: customFiltersError } =
+    useCustomFilters();
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
   const { isPopulated: isImportListsPopulated, error: importListsError } =
     useImportLists();
@@ -62,13 +58,12 @@ const useAppPage = () => {
 
   const isStatePopulated = useSelector(
     (state: AppState) =>
-      state.customFilters.isPopulated &&
-      state.system.status.isPopulated &&
-      state.app.translations.isPopulated
+      state.system.status.isPopulated && state.app.translations.isPopulated
   );
 
   const isPopulated =
     isStatePopulated &&
+    isCustomFiltersPopulated &&
     isMoviesPopulated &&
     isCollectionsPopulated &&
     isTagsPopulated &&
@@ -84,6 +79,7 @@ const useAppPage = () => {
 
   const hasError =
     hasStateError ||
+    !!customFiltersError ||
     !!moviesError ||
     !!movieCollectionsError ||
     !!tagsError ||
@@ -96,6 +92,7 @@ const useAppPage = () => {
   const errors = useMemo(
     () => ({
       ...stateErrors,
+      customFiltersError: customFiltersError ?? undefined,
       moviesError: moviesError ?? undefined,
       movieCollectionsError: movieCollectionsError ?? undefined,
       tagsError: tagsError ?? undefined,
@@ -107,6 +104,7 @@ const useAppPage = () => {
     }),
     [
       stateErrors,
+      customFiltersError,
       moviesError,
       movieCollectionsError,
       tagsError,
@@ -132,7 +130,6 @@ const useAppPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchCustomFilters());
     dispatch(fetchStatus());
     dispatch(fetchTranslations());
   }, [dispatch]);
