@@ -4,10 +4,10 @@ An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports it
 
 This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
 
-> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `fix/login-styles`:
+> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `chore/remove-orphans`:
 >
 > ```bash
-> git checkout fix/login-styles
+> git checkout chore/remove-orphans
 > ```
 
 ## Goal
@@ -24,11 +24,11 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 
 ## Status
 
-**Redux is gone.** Every section of the store was moved, one piece at a time, and the packages are removed (`redux`, `react-redux`, `redux-actions`, `redux-batched-actions`, `redux-localstorage`, `redux-thunk`, `reselect`). Each piece is a branch stacked on the previous one, so that every step can be reviewed (and tried) alone. The last branch, `fix/login-styles`, contains all of them.
+**Redux is gone.** Every section of the store was moved, one piece at a time, and the packages are removed (`redux`, `react-redux`, `redux-actions`, `redux-batched-actions`, `redux-localstorage`, `redux-thunk`, `reselect`). Each piece is a branch stacked on the previous one, so that every step can be reviewed (and tried) alone. The last branch, `chore/remove-orphans`, contains all of them.
 
 | Branches (in order) | What they do |
 | --- | --- |
-| `build/vite` | Webpack to Vite (CSS Modules, JSX in `.js` files, same output in `_output/UI`) |
+| `build/vite` | Webpack to Vite (CSS Modules, JSX in `.js` files, same output in `_output/UI`, including the `Content/styles.css` that the backend's login page links to) |
 | `build/router` | React Router 5 to 7 with a data router and the URL base |
 | `redux/query-pilot`, `redux/tags`, `redux/root-folders`, `redux/small-sections` | TanStack Query and the first sections: movie credits, tags, root folders, movie history, extra files, organize preview, parse, file system paths |
 | `redux/settings-infra`, `redux/providers` | Generic settings hooks, zustand stores, persisted advanced settings; generic provider hooks (list, schema, save, test, bulk edit and delete) and the indexers |
@@ -43,19 +43,18 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 | `redux/system`, `redux/app` | The system pages (status, health, tasks, backups, updates, logs) and what the whole app shares (window size, messages, version, connection, sidebar, translations) |
 | `redux/remove-redux` | The store, its middlewares and its packages are removed |
 | `chore/remove-orphans` | Files that nothing imports anymore: those left by the move out of Redux, and a few that Radarr itself did not use |
-| `fix/login-styles` | Writes `Content/styles.css` again, which the backend's login and logout pages link to (see below). It belongs to the Vite step, it is kept as a separate commit on top |
 | `ts/utilities` | TypeScript conversion of the utilities, independent of the others |
 
 ## Things worth knowing
 
 - **Saved preferences are kept.** The views, sorts, filters, columns, page sizes and defaults that a user chose used to be saved by `redux-localstorage` in one document. Each store that replaced a section reads what it needs from that document the first time, after the old migrations (`blacklist` renamed to `blocklist`, `preDB`, monitor saved as `true` or `false`) were applied to it, so nobody starts from scratch.
 - **Small behavior changes** that came with the move, on purpose: the discover page loads again once the lists are refreshed, the reCAPTCHA of an input is shown again (it needed values that nothing gave it anymore) and the popup that adds a movie from discover closes when the movie is added instead of before.
-- **The login page was broken by the Vite step, and is fixed.** The backend serves `login.html` and `logout.html` itself, and they link to `Content/styles.css`, which the Webpack build wrote and the Vite build did not: the login page answered with an error for everyone who signs in with the forms authentication. It was found by starting from an empty Radarr, and `fix/login-styles` writes the file again. Anything else that the backend reads from the UI folder (`Content/` fonts, images, manifest, robots) was checked and is served.
+- **The login page needed a file that Vite does not write by itself.** The backend serves `login.html` and `logout.html` itself, and they link to `Content/styles.css`, which the Webpack build wrote and the Vite build did not: the login page answered with an error for everyone who signs in with the forms authentication. It was found by starting from an empty Radarr, and the Vite step writes the file again. Anything else that the backend reads from the UI folder (`Content/` fonts, images, manifest, robots) was checked and is served.
 - **Not covered:** the project has no automated tests for the front-end, and a few things were not tried for real: signing in with the OAuth providers (only up to the window of the provider, with a simulated answer), the reports that Sentry sends (its set up and the cleaning of what it would send were checked in isolation, nothing was sent), and Windows or macOS.
 
 ## Build and try it
 
-Start from the last branch of the stack (`git checkout fix/login-styles`), then:
+Start from the last branch of the stack (`git checkout chore/remove-orphans`), then:
 
 ```bash
 yarn install
