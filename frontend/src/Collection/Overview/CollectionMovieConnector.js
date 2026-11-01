@@ -1,56 +1,35 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withDimensions from 'App/withDimensions';
-import withMovies from 'Movie/withMovies';
-import withToggleMovieMonitored from 'Movie/withToggleMovieMonitored';
-import createCollectionExistingMovieSelector from 'Store/Selectors/createCollectionExistingMovieSelector';
+import React, { useCallback } from 'react';
+import { useDimensions } from 'App/useAppStore';
+import { useMovies, useToggleMovieMonitored } from 'Movie/useMovies';
 import CollectionMovie from './CollectionMovie';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { dimensions }) => dimensions,
-    createCollectionExistingMovieSelector(),
-    (dimensions, existingMovie) => {
-      return {
-        isSmallScreen: dimensions.isSmallScreen,
-        isExistingMovie: !!existingMovie,
-        ...existingMovie
-      };
-    }
+function CollectionMovieConnector(props) {
+  const { tmdbId } = props;
+
+  const { movies } = useMovies();
+  const { isSmallScreen } = useDimensions();
+  const existingMovie = movies.find((movie) => movie.tmdbId === tmdbId);
+  const { toggleMonitored, isSaving } = useToggleMovieMonitored(existingMovie ? existingMovie.id : 0);
+
+  const handleMonitorTogglePress = useCallback((monitored) => {
+    toggleMonitored(monitored);
+  }, [toggleMonitored]);
+
+  return (
+    <CollectionMovie
+      {...props}
+      isSmallScreen={isSmallScreen}
+      isExistingMovie={!!existingMovie}
+      {...existingMovie}
+      isSaving={isSaving}
+      onMonitorTogglePress={handleMonitorTogglePress}
+    />
   );
 }
 
-class CollectionMovieConnector extends Component {
-
-  //
-  // Listeners
-
-  onMonitorTogglePress = (monitored) => {
-    this.props.toggleMovieMonitored({
-      movieId: this.props.id,
-      monitored
-    });
-  };
-
-  //
-  // Render
-
-  render() {
-    return (
-      <CollectionMovie
-        {...this.props}
-        onMonitorTogglePress={this.onMonitorTogglePress}
-      />
-    );
-  }
-}
-
 CollectionMovieConnector.propTypes = {
-  id: PropTypes.number,
-  monitored: PropTypes.bool,
-  toggleMovieMonitored: PropTypes.func.isRequired
+  tmdbId: PropTypes.number.isRequired
 };
 
-export default withDimensions(withMovies(connect(createMapStateToProps)(withToggleMovieMonitored(CollectionMovieConnector))));
+export default CollectionMovieConnector;

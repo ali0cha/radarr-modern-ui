@@ -1,18 +1,24 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withMovies from 'Movie/withMovies';
-import createExistingMovieSelector from 'Store/Selectors/createExistingMovieSelector';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useMovies } from 'Movie/useMovies';
 import ImportMovieSearchResult from './ImportMovieSearchResult';
 
-function createMapStateToProps() {
-  return createSelector(
-    createExistingMovieSelector(),
-    (isExistingMovie) => {
-      return {
-        isExistingMovie
-      };
-    }
+function ImportMovieSearchResultConnector(props) {
+  const { tmdbId } = props;
+
+  const { movies } = useMovies();
+  const isExistingMovie = movies.some((movie) => movie.tmdbId === tmdbId);
+
+  return (
+    <ImportMovieSearchResult
+      {...props}
+      isExistingMovie={isExistingMovie}
+    />
   );
 }
 
-export default withMovies(connect(createMapStateToProps)(ImportMovieSearchResult));
+ImportMovieSearchResultConnector.propTypes = {
+  tmdbId: PropTypes.number.isRequired
+};
+
+export default ImportMovieSearchResultConnector;

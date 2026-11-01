@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useMemo } from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import PageSectionContent from 'Components/Page/PageSectionContent';
@@ -17,8 +16,6 @@ import Tag from './Tag';
 import styles from './Tags.module.css';
 
 function Tags() {
-  const dispatch = useDispatch();
-
   // The import lists, indexers, download clients and notifications are listed
   // in the details of a tag
   useImportLists();
@@ -46,8 +43,6 @@ function Tags() {
     () => [...(tags ?? [])].sort(sortByProp('label')),
     [tags]
   );
-
-  useEffect(() => {}, [dispatch]);
 
   if (!items.length) {
     return (

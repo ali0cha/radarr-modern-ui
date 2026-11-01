@@ -51,10 +51,6 @@ function cleanseData(event, hint) {
   return result;
 }
 
-function identity(stuff) {
-  return stuff;
-}
-
 function stripUrlBase(frame) {
   if (frame.filename && window.Radarr.urlBase) {
     frame.filename = frame.filename.replace(window.Radarr.urlBase, '');
@@ -62,31 +58,8 @@ function stripUrlBase(frame) {
   return frame;
 }
 
-function createMiddleware() {
-  return (store) => (next) => (action) => {
-    try {
-      // Adds a breadcrumb for reporting later (if necessary).
-      sentry.addBreadcrumb({
-        category: 'redux',
-        message: action.type
-      });
-
-      return next(action);
-    } catch (err) {
-      console.error(`[sentry] Reporting error to Sentry: ${err}`);
-
-      // Send the report including breadcrumbs.
-      sentry.captureException(err, {
-        extra: {
-          action: identity(action),
-          state: identity(store.getState())
-        }
-      });
-    }
-  };
-}
-
-export default function createSentryMiddleware() {
+// Reports the errors of the app, when the analytics are enabled
+export default function initializeSentry() {
   const {
     analytics,
     branch,
@@ -121,5 +94,4 @@ export default function createSentryMiddleware() {
     scope.setTag('production', isProduction);
   });
 
-  return createMiddleware();
 }

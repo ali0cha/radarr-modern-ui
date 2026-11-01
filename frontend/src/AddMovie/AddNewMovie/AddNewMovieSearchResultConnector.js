@@ -1,29 +1,34 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withDimensions from 'App/withDimensions';
-import withMovieFileForMovie from 'Movie/withMovieFileForMovie';
-import withMovies from 'Movie/withMovies';
-import withUISettings from 'Settings/UI/withUISettings';
-import createExistingMovieSelector from 'Store/Selectors/createExistingMovieSelector';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useDimensions } from 'App/useAppStore';
+import { useMovies } from 'Movie/useMovies';
+import { useMovieFilesForMovie } from 'MovieFile/useMovieFiles';
+import useUISettings from 'Settings/UI/useUISettings';
 import AddNewMovieSearchResult from './AddNewMovieSearchResult';
 
-function createMapStateToProps() {
-  return createSelector(
-    createExistingMovieSelector(),
-    (state, { dimensions }) => dimensions,
-    (state, { movieFile }) => movieFile,
-    (state, { internalId }) => internalId,
-    (state, { uiSettings }) => uiSettings.movieRuntimeFormat,
-    (isExistingMovie, dimensions, movieFile, internalId, movieRuntimeFormat) => {
-      return {
-        existingMovieId: internalId,
-        isExistingMovie,
-        isSmallScreen: dimensions.isSmallScreen,
-        movieFile,
-        movieRuntimeFormat
-      };
-    }
+function AddNewMovieSearchResultConnector(props) {
+  const { tmdbId, internalId } = props;
+
+  const { movies } = useMovies();
+  const { isSmallScreen } = useDimensions();
+  const { movieRuntimeFormat } = useUISettings();
+  const { items: movieFiles } = useMovieFilesForMovie(internalId > 0 ? internalId : undefined);
+
+  return (
+    <AddNewMovieSearchResult
+      {...props}
+      existingMovieId={internalId}
+      isExistingMovie={movies.some((movie) => movie.tmdbId === tmdbId)}
+      isSmallScreen={isSmallScreen}
+      movieFile={movieFiles.find((item) => item.movieId === internalId)}
+      movieRuntimeFormat={movieRuntimeFormat}
+    />
   );
 }
 
-export default withDimensions(withMovies(withMovieFileForMovie(withUISettings(connect(createMapStateToProps)(AddNewMovieSearchResult)))));
+AddNewMovieSearchResultConnector.propTypes = {
+  tmdbId: PropTypes.number.isRequired,
+  internalId: PropTypes.number
+};
+
+export default AddNewMovieSearchResultConnector;

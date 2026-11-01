@@ -29,8 +29,3 @@ export interface CustomFilter {
   label: string;
   filters: PropertyFilter[];
 }
-
-// Nothing is kept in the Redux store anymore
-type AppState = Record<string, unknown>;
-
-export default AppState;

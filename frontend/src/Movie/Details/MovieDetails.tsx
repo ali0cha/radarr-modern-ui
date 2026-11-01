@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import TextTruncate from 'react-text-truncate';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
@@ -92,7 +91,6 @@ interface MovieDetailsProps {
 }
 
 function MovieDetails({ movieId }: MovieDetailsProps) {
-  const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -411,7 +409,7 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     return () => {
       unregisterPagePopulator(populate);
     };
-  }, [populate, dispatch]);
+  }, [populate]);
 
   useEffect(() => {
     if ((!isRefreshing && wasRefreshing) || (!isRenaming && wasRenaming)) {

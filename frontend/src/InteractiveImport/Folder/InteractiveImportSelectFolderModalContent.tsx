@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import {} from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand } from 'Commands/useCommands';
 import PathInput from 'Components/Form/PathInput';

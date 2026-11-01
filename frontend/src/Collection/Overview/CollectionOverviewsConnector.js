@@ -1,14 +1,12 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useDimensions } from 'App/useAppStore';
 import { useMovieCollectionsStore } from 'Collection/useMovieCollections';
-import withUISettings from 'Settings/UI/withUISettings';
+import useUISettings from 'Settings/UI/useUISettings';
 import CollectionOverviews from './CollectionOverviews';
 
 function CollectionOverviewsConnector(props) {
-  const { uiSettings } = props;
-
   const overviewOptions = useMovieCollectionsStore((state) => state.overviewOptions);
+  const uiSettings = useUISettings();
   const dimensions = useDimensions();
 
   return (
@@ -24,8 +22,4 @@ function CollectionOverviewsConnector(props) {
   );
 }
 
-CollectionOverviewsConnector.propTypes = {
-  uiSettings: PropTypes.object.isRequired
-};
-
-export default withUISettings(CollectionOverviewsConnector);
+export default CollectionOverviewsConnector;

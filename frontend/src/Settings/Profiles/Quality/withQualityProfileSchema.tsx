@@ -1,7 +1,7 @@
 import React, { ComponentType } from 'react';
 import { useQualityProfileSchema } from './useQualityProfiles';
 
-// For the components that are still connected to Redux: gives them the schema
+// For the class components, which cannot use hooks: gives them the schema
 // of the quality profiles, which holds all the qualities, as
 // qualityProfileSchemaState.
 function withQualityProfileSchema<T extends object>(
