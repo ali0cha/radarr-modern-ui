@@ -10,29 +10,39 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 
 | | Radarr (upstream) | This fork |
 | --- | --- | --- |
-| Language | JavaScript, partly TypeScript | TypeScript, converting what is left |
-| Build | Webpack | Vite |
+| Language | JavaScript, partly TypeScript | TypeScript for the data layer and the new code, the screens that were JavaScript keep being converted |
+| Build | Webpack 5 | Vite 8 |
 | Routing | React Router 5 | React Router 7, data router |
-| Server data | Redux (thunks, one section per resource) | TanStack Query hooks |
-| Client state | Redux | zustand stores, local to the component or persisted |
+| Server data | Redux (thunks, one section per resource) | TanStack Query 5 hooks |
+| Client state | Redux | zustand 5 stores, local to the component, or persisted in the browser |
 
 ## Status
 
-The migration goes one piece at a time, each on its own branch stacked on the previous one, so that every step can be reviewed (and tried) alone.
+**Redux is gone.** Every section of the store was moved, one piece at a time, and the packages are removed (`redux`, `react-redux`, `redux-actions`, `redux-batched-actions`, `redux-localstorage`, `redux-thunk`, `reselect`). Each piece is a branch stacked on the previous one, so that every step can be reviewed (and tried) alone. The last branch, `redux/remove-redux`, contains all of them.
 
-| Branch | What it does |
+| Branches (in order) | What they do |
 | --- | --- |
-| `build/vite` | Webpack to Vite 8 (CSS Modules, JSX in `.js` files, same output in `_output/UI`) |
+| `build/vite` | Webpack to Vite (CSS Modules, JSX in `.js` files, same output in `_output/UI`) |
 | `build/router` | React Router 5 to 7 with a data router and the URL base |
-| `redux/query-pilot` | TanStack Query and the first Redux sections moved to it |
-| `redux/tags`, `redux/root-folders`, `redux/small-sections` | Tags, root folders, movie history, extra files, organize preview, parse, file system paths |
-| `redux/settings-infra` | Generic settings hooks, zustand stores, persisted advanced settings |
-| `redux/providers` | Generic provider hooks (list, schema, save, test, bulk edit and delete), indexers |
-| `redux/download-clients` | Download clients and their options |
-| `redux/import-lists` | Import lists, their options and the lists that follow a person |
+| `redux/query-pilot`, `redux/tags`, `redux/root-folders`, `redux/small-sections` | TanStack Query and the first sections: movie credits, tags, root folders, movie history, extra files, organize preview, parse, file system paths |
+| `redux/settings-infra`, `redux/providers` | Generic settings hooks, zustand stores, persisted advanced settings; generic provider hooks (list, schema, save, test, bulk edit and delete) and the indexers |
+| `redux/download-clients`, `redux/import-lists`, `redux/notifications` | The providers that use them |
+| `redux/custom-formats`, `redux/auto-tagging`, `redux/delay-profiles`, `redux/release-profiles`, `redux/languages-flags`, `redux/quality` | Custom formats, auto tagging, delay and release profiles, languages, indexer flags, quality profiles and definitions |
+| `redux/config-sections`, `redux/exclusions-mappings` | General, media management, naming, metadata and UI settings; import list exclusions and remote path mappings |
+| `redux/history-blocklist`, `redux/queue-wanted` | The tables that the server cuts in pages: history, blocklist, queue, missing and cutoff unmet |
+| `redux/movies-core`, `redux/commands`, `redux/movie-files`, `redux/collections`, `redux/calendar` | The movies and the movie index, the commands, the movie files, the collections, the calendar |
+| `redux/releases`, `redux/interactive-import` | Interactive search and manual import |
+| `redux/discover-movie`, `redux/add-movie`, `redux/import-movie` | Discover, adding a movie, importing the movies of a root folder |
+| `redux/captcha`, `redux/oauth`, `redux/provider-options`, `redux/custom-filters` | What the forms need: the captcha, the OAuth sign in, the options that a provider gives for a field, the custom filters |
+| `redux/system`, `redux/app` | The system pages (status, health, tasks, backups, updates, logs) and what the whole app shares (window size, messages, version, connection, sidebar, translations) |
+| `redux/remove-redux` | The store, its middlewares and its packages are removed |
 | `ts/utilities` | TypeScript conversion of the utilities, independent of the others |
 
-Still on Redux: notifications, custom formats, auto tagging, delay and release profiles, quality profiles and definitions, naming, media management, metadata, UI and general settings, import list exclusions, remote path mappings; then the paged collections (history, queue, blocklist, wanted), the movie index and details, commands, and finally removing Redux itself.
+## Things worth knowing
+
+- **Saved preferences are kept.** The views, sorts, filters, columns, page sizes and defaults that a user chose used to be saved by `redux-localstorage` in one document. Each store that replaced a section reads what it needs from that document the first time, after the old migrations (`blacklist` renamed to `blocklist`, `preDB`, monitor saved as `true` or `false`) were applied to it, so nobody starts from scratch.
+- **Small behavior changes** that came with the move, on purpose: the discover page loads again once the lists are refreshed, the reCAPTCHA of an input is shown again (it needed values that nothing gave it anymore) and the popup that adds a movie from discover closes when the movie is added instead of before.
+- **Not covered:** the project has no automated tests for the front-end, and a few things were not tried for real: signing in with the OAuth providers, restoring a backup and restarting the application for real, the reporting of errors to Sentry, and Windows or macOS.
 
 ## Build and try it
 
@@ -43,7 +53,7 @@ yarn typecheck
 yarn lint
 ```
 
-The UI is served by the Radarr backend from `_output/UI`, so to try it, point a Radarr build at that folder. Each migrated screen was also checked by hand against a real Radarr (7.0.0.10815, `develop`): adding, editing, testing and deleting providers, bulk actions, validation errors, and live updates through SignalR.
+The UI is served by the Radarr backend from `_output/UI`, so to try it, point a Radarr build at that folder. Each migrated screen was checked by hand against a real Radarr (7.0.0.10815, `develop`): adding, editing, testing and deleting, bulk actions, validation errors, errors from the server, live updates through SignalR, losing and getting back the connection, and starting from a browser that has the preferences of the old UI as well as from an empty one.
 
 ## Upstream
 
