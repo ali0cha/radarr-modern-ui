@@ -8,8 +8,6 @@
   &.isFocused {
     outline: 0;
     border-color: var(--inputFocusBorderColor);
-    box-shadow: inset 0 1px 1px var(--inputBoxShadowColor),
-      0 0 8px var(--inputFocusBoxShadowColor);
   }
 }
 
@@ -23,12 +21,20 @@
 
 .internalInput {
   flex: 1 1 0%;
-  margin-left: 3px;
+  margin-left: 6px;
   min-width: 20%;
   max-width: 100%;
   width: 0%;
   height: 31px;
   border: none;
-  background-color: var(--inputBackgroundColor);
-  color: var(--textColor);
+  background-color: transparent;
+  color: var(--ink);
+  font-size: 13px;
+
+  &:focus-visible {
+    box-shadow: none;
+  }
+  @media (pointer: coarse) {
+    font-size: 16px;
+  }
 }

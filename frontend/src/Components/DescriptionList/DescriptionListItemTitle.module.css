@@ -3,10 +3,10 @@
 }
 
 .title {
-  font-weight: bold;
+  font-weight: 600;
 }
 
-@media (min-width: 768px) {
+@media (--breakpointSmallUp) {
   .title {
     @add-mixin truncate;
 

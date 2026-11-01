@@ -1,3 +1,4 @@
+.episode,
 .languages,
 .status {
   composes: cell from 'Components/Table/Cells/TableRowCell.module.css';

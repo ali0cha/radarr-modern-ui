@@ -172,7 +172,7 @@ class EditQualityProfileModalContent extends Component {
                     <div className={styles.formGroupsContainer}>
                       <div className={styles.formGroupWrapper}>
                         <FormGroup size={sizes.EXTRA_SMALL}>
-                          <FormLabel size={sizes.SMALL}>
+                          <FormLabel>
                             {translate('Name')}
                           </FormLabel>
 
@@ -185,7 +185,7 @@ class EditQualityProfileModalContent extends Component {
                         </FormGroup>
 
                         <FormGroup size={sizes.EXTRA_SMALL}>
-                          <FormLabel size={sizes.SMALL}>
+                          <FormLabel>
                             {translate('UpgradesAllowed')}
                           </FormLabel>
 
@@ -201,7 +201,7 @@ class EditQualityProfileModalContent extends Component {
                         {
                           upgradeAllowed.value &&
                             <FormGroup size={sizes.EXTRA_SMALL}>
-                              <FormLabel size={sizes.SMALL}>
+                              <FormLabel>
                                 {translate('UpgradeUntil')}
                               </FormLabel>
 
@@ -219,7 +219,7 @@ class EditQualityProfileModalContent extends Component {
                         {
                           formatItems.value.length > 0 &&
                             <FormGroup size={sizes.EXTRA_SMALL}>
-                              <FormLabel size={sizes.SMALL}>
+                              <FormLabel>
                                 {translate('MinimumCustomFormatScore')}
                               </FormLabel>
 
@@ -236,7 +236,7 @@ class EditQualityProfileModalContent extends Component {
                         {
                           upgradeAllowed.value && formatItems.value.length > 0 &&
                             <FormGroup size={sizes.EXTRA_SMALL}>
-                              <FormLabel size={sizes.SMALL}>
+                              <FormLabel>
                                 {translate('UpgradeUntilCustomFormatScore')}
                               </FormLabel>
 
@@ -253,7 +253,7 @@ class EditQualityProfileModalContent extends Component {
                         {
                           upgradeAllowed.value && formatItems.value.length > 0 ?
                             <FormGroup size={sizes.EXTRA_SMALL}>
-                              <FormLabel size={sizes.SMALL}>
+                              <FormLabel>
                                 {translate('MinimumCustomFormatScoreIncrement')}
                               </FormLabel>
 
@@ -270,7 +270,7 @@ class EditQualityProfileModalContent extends Component {
                         }
 
                         <FormGroup size={sizes.EXTRA_SMALL}>
-                          <FormLabel size={sizes.SMALL}>
+                          <FormLabel>
                             {translate('Language')}
                           </FormLabel>
 

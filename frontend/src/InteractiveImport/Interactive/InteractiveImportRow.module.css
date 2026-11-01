@@ -6,7 +6,7 @@
 
 .quality,
 .languages {
-  composes: cell from 'Components/Table/Cells/TableRowCell.module.css';
+  composes: cell from 'Components/Table/Cells/TableRowCellButton.module.css';
 
   text-align: center;
 }

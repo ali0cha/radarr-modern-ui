@@ -1,6 +1,6 @@
 .additionalInfo {
   flex-grow: 1;
-  color: #777;
+  color: var(--inkMuted);
 }
 
 .steps {
@@ -9,16 +9,11 @@
 
 .step {
   display: flex;
+  margin-bottom: 10px;
   font-size: var(--largeFontSize);
   line-height: 20px;
 }
 
 .stepState {
   margin-right: 8px;
-}
-
-@media (--breakpointSmall) {
-  composes: modalFooter from 'Components/Modal/ModalFooter.module.css';
-
-  flex-wrap: wrap;
 }

@@ -18,6 +18,7 @@
 .leftButtons,
 .rightButtons {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -29,6 +30,7 @@
 .rightButtons {
   justify-content: flex-end;
   flex: 1 1 50%;
+  gap: 10px;
 }
 
 .deleteButton {
