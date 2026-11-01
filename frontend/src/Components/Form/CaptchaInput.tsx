@@ -1,19 +1,18 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import Icon from 'Components/Icon';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
+import { InputChanged } from 'typings/inputs';
+import FormInputButton from './FormInputButton';
+import TextInput from './TextInput';
 import {
   getCaptchaCookie,
   refreshCaptcha,
   resetCaptcha,
-} from 'Store/Actions/captchaActions';
-import { InputChanged } from 'typings/inputs';
-import FormInputButton from './FormInputButton';
-import TextInput from './TextInput';
+  useCaptchaStore,
+} from './useCaptcha';
 import styles from './CaptchaInput.module.css';
 
 export interface CaptchaInputProps {
@@ -21,12 +20,9 @@ export interface CaptchaInputProps {
   name: string;
   value?: string;
   provider: string;
-  providerData: object;
+  providerData: Record<string, unknown>;
   hasError?: boolean;
   hasWarning?: boolean;
-  refreshing: boolean;
-  siteKey?: string;
-  secretToken?: string;
   onChange: (change: InputChanged<string>) => unknown;
 }
 
@@ -38,13 +34,9 @@ function CaptchaInput({
   providerData,
   hasError,
   hasWarning,
-  refreshing,
-  siteKey,
-  secretToken,
   onChange,
 }: CaptchaInputProps) {
-  const { token } = useSelector((state: AppState) => state.captcha);
-  const dispatch = useDispatch();
+  const { token, refreshing, siteKey, secretToken } = useCaptchaStore();
   const previousToken = usePrevious(token);
 
   const handleCaptchaChange = useCallback(
@@ -57,20 +49,18 @@ function CaptchaInput({
         return;
       }
 
-      dispatch(
-        getCaptchaCookie({
-          provider,
-          providerData,
-          captchaResponse: token,
-        })
-      );
+      getCaptchaCookie({
+        provider,
+        providerData,
+        captchaResponse: token,
+      });
     },
-    [provider, providerData, dispatch]
+    [provider, providerData]
   );
 
   const handleRefreshPress = useCallback(() => {
-    dispatch(refreshCaptcha({ provider, providerData }));
-  }, [provider, providerData, dispatch]);
+    refreshCaptcha({ provider, providerData });
+  }, [provider, providerData]);
 
   useEffect(() => {
     if (token && token !== previousToken) {
@@ -79,8 +69,8 @@ function CaptchaInput({
   }, [name, token, previousToken, onChange]);
 
   useEffect(() => {
-    dispatch(resetCaptcha());
-  }, [dispatch]);
+    resetCaptcha();
+  }, []);
 
   return (
     <div>

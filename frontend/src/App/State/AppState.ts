@@ -1,5 +1,4 @@
 import { Error } from './AppSectionState';
-import CaptchaAppState from './CaptchaAppState';
 import CustomFiltersAppState from './CustomFiltersAppState';
 import MessagesAppState from './MessagesAppState';
 import OAuthAppState from './OAuthAppState';
@@ -61,7 +60,6 @@ export interface AppSectionState {
 
 interface AppState {
   app: AppSectionState;
-  captcha: CaptchaAppState;
   customFilters: CustomFiltersAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
