@@ -1,4 +1,5 @@
-import React from 'react';
+import classNames from 'classnames';
+import React, { useCallback } from 'react';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
@@ -16,6 +17,10 @@ interface AdvancedSettingsButtonProps {
 function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
   const showAdvancedSettings = useShowAdvancedSettings();
 
+  const handlePress = useCallback(() => {
+    toggleShowAdvancedSettings();
+  }, []);
+
   return (
     <Link
       className={styles.button}
@@ -24,33 +29,30 @@ function AdvancedSettingsButton({ showLabel }: AdvancedSettingsButtonProps) {
           ? translate('ShownClickToHide')
           : translate('HiddenClickToShow')
       }
-      onPress={toggleShowAdvancedSettings}
+      onPress={handlePress}
     >
-      <Icon name={icons.ADVANCED_SETTINGS} size={21} />
+      <div className={styles.iconWrapper}>
+        <Icon name={icons.ADVANCED_SETTINGS} size={16} />
 
-      <span className={styles.indicatorContainer}>
-        <Icon
-          className={styles.indicatorBackground}
-          name={icons.CIRCLE}
-          size={16}
-          filled={true}
-        />
-
-        <Icon
-          className={showAdvancedSettings ? styles.enabled : styles.disabled}
-          name={showAdvancedSettings ? icons.CHECK : icons.CLOSE}
-          size={10}
-        />
-      </span>
+        <span
+          className={classNames(
+            styles.indicatorContainer,
+            showAdvancedSettings ? styles.enabled : styles.disabled
+          )}
+        >
+          <Icon
+            name={showAdvancedSettings ? icons.CHECK_CIRCLE : icons.FATAL}
+            size={9}
+          />
+        </span>
+      </div>
 
       {showLabel ? (
-        <div className={styles.labelContainer}>
-          <div className={styles.label}>
-            {showAdvancedSettings
-              ? translate('HideAdvanced')
-              : translate('ShowAdvanced')}
-          </div>
-        </div>
+        <span className={styles.label}>
+          {showAdvancedSettings
+            ? translate('HideAdvanced')
+            : translate('ShowAdvanced')}
+        </span>
       ) : null}
     </Link>
   );

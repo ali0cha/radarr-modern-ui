@@ -37,12 +37,10 @@ function PageToolbarButton({
       <Icon
         name={isSpinning ? spinningName || iconName : iconName}
         isSpinning={isSpinning}
-        size={21}
+        size={16}
       />
 
-      <div className={styles.labelContainer}>
-        <div className={styles.label}>{label}</div>
-      </div>
+      <span className={styles.label}>{label}</span>
     </Link>
   );
 }
