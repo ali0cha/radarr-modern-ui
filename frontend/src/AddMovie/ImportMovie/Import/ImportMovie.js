@@ -35,10 +35,14 @@ class ImportMovie extends Component {
   // Listeners
 
   getSelectedIds = () => {
+    const { items } = this.props;
+
+    // The folders that were imported are not there anymore, whether the table
+    // had the time to unselect them or not.
     return reduce(
       this.state.selectedState,
       (result, value, id) => {
-        if (value) {
+        if (value && items.some((item) => item.id === id)) {
           result.push(id);
         }
 
@@ -174,7 +178,8 @@ ImportMovie.propTypes = {
 };
 
 ImportMovie.defaultProps = {
-  unmappedFolders: []
+  unmappedFolders: [],
+  items: []
 };
 
 export default ImportMovie;
