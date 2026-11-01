@@ -225,8 +225,8 @@ class ImportMovieFooter extends Component {
                   body={
                     <ul>
                       {
-                        Array.isArray(importError.responseJSON) ?
-                          importError.responseJSON.map((error, index) => {
+                        Array.isArray(importError.statusBody) ?
+                          importError.statusBody.map((error, index) => {
                             return (
                               <li key={index}>
                                 {error.errorMessage}
@@ -235,7 +235,7 @@ class ImportMovieFooter extends Component {
                           }) :
                           <li>
                             {
-                              JSON.stringify(importError.responseJSON)
+                              JSON.stringify(importError.statusBody)
                             }
                           </li>
                       }

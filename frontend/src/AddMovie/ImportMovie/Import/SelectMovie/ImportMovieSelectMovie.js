@@ -9,6 +9,7 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Portal from 'Components/Portal';
 import { icons, kinds } from 'Helpers/Props';
 import getUniqueElememtId from 'Utilities/getUniqueElementId';
+import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import ImportMovieSearchResultConnector from './ImportMovieSearchResultConnector';
 import ImportMovieTitle from './ImportMovieTitle';
@@ -118,9 +119,7 @@ class ImportMovieSelectMovie extends Component {
       isLookingUpMovie
     } = this.props;
 
-    const errorMessage = error &&
-      error.responseJSON &&
-      error.responseJSON.message;
+    const errorMessage = getErrorMessage(error);
 
     return (
       <Manager>

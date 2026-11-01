@@ -1,60 +1,61 @@
-import _ from 'lodash';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withAddDefaults from 'AddMovie/withAddDefaults';
-import { cancelLookupMovie, lookupUnsearchedMovies } from 'Store/Actions/importMovieActions';
+import { some } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useAddDefaults } from 'AddMovie/useAddMovie';
+import {
+  cancelLookupMovie,
+  lookupUnsearchedMovies,
+  useImportMovieStore
+} from '../useImportMovie';
 import ImportMovieFooter from './ImportMovieFooter';
 
 function isMixed(items, selectedIds, defaultValue, key) {
-  return _.some(items, (movie) => {
+  return some(items, (movie) => {
     return selectedIds.indexOf(movie.id) > -1 && movie[key] !== defaultValue;
   });
 }
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { addDefaults }) => addDefaults,
-    (state) => state.importMovie,
-    (state, { selectedIds }) => selectedIds,
-    (addDefaults, importMovie, selectedIds) => {
-      const {
-        monitor: defaultMonitor,
-        qualityProfileId: defaultQualityProfileId,
-        minimumAvailability: defaultMinimumAvailability
-      } = addDefaults;
+function ImportMovieFooterConnector({ selectedIds, ...otherProps }) {
+  const {
+    monitor: defaultMonitor,
+    qualityProfileId: defaultQualityProfileId,
+    minimumAvailability: defaultMinimumAvailability
+  } = useAddDefaults();
 
-      const {
-        isLookingUpMovie,
-        isImporting,
-        items,
-        importError
-      } = importMovie;
+  const {
+    isLookingUpMovie,
+    isImporting,
+    items,
+    importError
+  } = useImportMovieStore();
 
-      const isMonitorMixed = isMixed(items, selectedIds, defaultMonitor, 'monitor');
-      const isQualityProfileIdMixed = isMixed(items, selectedIds, defaultQualityProfileId, 'qualityProfileId');
-      const isMinimumAvailabilityMixed = isMixed(items, selectedIds, defaultMinimumAvailability, 'minimumAvailability');
-      const hasUnsearchedItems = !isLookingUpMovie && items.some((item) => !item.isPopulated);
+  const isMonitorMixed = isMixed(items, selectedIds, defaultMonitor, 'monitor');
+  const isQualityProfileIdMixed = isMixed(items, selectedIds, defaultQualityProfileId, 'qualityProfileId');
+  const isMinimumAvailabilityMixed = isMixed(items, selectedIds, defaultMinimumAvailability, 'minimumAvailability');
+  const hasUnsearchedItems = !isLookingUpMovie && items.some((item) => !item.isPopulated);
 
-      return {
-        selectedCount: selectedIds.length,
-        isLookingUpMovie,
-        isImporting,
-        defaultMonitor,
-        defaultQualityProfileId,
-        defaultMinimumAvailability,
-        isMonitorMixed,
-        isQualityProfileIdMixed,
-        isMinimumAvailabilityMixed,
-        importError,
-        hasUnsearchedItems
-      };
-    }
+  return (
+    <ImportMovieFooter
+      {...otherProps}
+      selectedCount={selectedIds.length}
+      isLookingUpMovie={isLookingUpMovie}
+      isImporting={isImporting}
+      defaultMonitor={defaultMonitor}
+      defaultQualityProfileId={defaultQualityProfileId}
+      defaultMinimumAvailability={defaultMinimumAvailability}
+      isMonitorMixed={isMonitorMixed}
+      isQualityProfileIdMixed={isQualityProfileIdMixed}
+      isMinimumAvailabilityMixed={isMinimumAvailabilityMixed}
+      importError={importError}
+      hasUnsearchedItems={hasUnsearchedItems}
+      onLookupPress={lookupUnsearchedMovies}
+      onCancelLookupPress={cancelLookupMovie}
+    />
   );
 }
 
-const mapDispatchToProps = {
-  onLookupPress: lookupUnsearchedMovies,
-  onCancelLookupPress: cancelLookupMovie
+ImportMovieFooterConnector.propTypes = {
+  selectedIds: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-export default withAddDefaults(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieFooter));
+export default ImportMovieFooterConnector;

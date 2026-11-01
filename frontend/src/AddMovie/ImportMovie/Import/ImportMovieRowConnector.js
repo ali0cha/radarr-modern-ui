@@ -1,87 +1,44 @@
-import _ from 'lodash';
+import { some } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withMovies from 'Movie/withMovies';
-import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
+import React, { useCallback } from 'react';
+import { useMovies } from 'Movie/useMovies';
+import { setImportMovieValue, useImportMovieItem } from '../useImportMovie';
 import ImportMovieRow from './ImportMovieRow';
 
-function createImportMovieItemSelector() {
-  return createSelector(
-    (state, { id }) => id,
-    (state) => state.importMovie.items,
-    (id, items) => {
-      return _.find(items, { id }) || {};
-    }
-  );
-}
+function ImportMovieRowConnector(props) {
+  const { id } = props;
 
-function createMapStateToProps() {
-  return createSelector(
-    createImportMovieItemSelector(),
-    (state, { allMovies }) => allMovies,
-    (item, movies) => {
-      const selectedMovie = item && item.selectedMovie;
-      const isExistingMovie = !!selectedMovie && _.some(movies, { tmdbId: selectedMovie.tmdbId });
+  const item = useImportMovieItem(id);
+  const { movies } = useMovies();
 
-      return {
-        ...item,
-        isExistingMovie
-      };
-    }
-  );
-}
-
-const mapDispatchToProps = {
-  queueLookupMovie,
-  setImportMovieValue
-};
-
-class ImportMovieRowConnector extends Component {
-
-  //
-  // Listeners
-
-  onInputChange = ({ name, value }) => {
-    this.props.setImportMovieValue({
-      id: this.props.id,
+  const handleInputChange = useCallback(({ name, value }) => {
+    setImportMovieValue({
+      id,
       [name]: value
     });
-  };
+  }, [id]);
 
-  //
-  // Render
-
-  render() {
-    // Don't show the row until we have the information we require for it.
-
-    const {
-      items,
-      monitor
-    } = this.props;
-
-    if (!items || !monitor) {
-      return null;
-    }
-
-    return (
-      <ImportMovieRow
-        {...this.props}
-        onInputChange={this.onInputChange}
-        onMovieSelect={this.onMovieSelect}
-      />
-    );
+  // Don't show the row until we have the information we require for it.
+  if (!item || !item.items || !item.monitor) {
+    return null;
   }
+
+  const selectedMovie = item.selectedMovie;
+  const isExistingMovie = !!selectedMovie && some(movies, { tmdbId: selectedMovie.tmdbId });
+
+  return (
+    <ImportMovieRow
+      {...props}
+      {...item}
+      isExistingMovie={isExistingMovie}
+      onInputChange={handleInputChange}
+    />
+  );
 }
 
 ImportMovieRowConnector.propTypes = {
   rootFolderId: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired,
-  monitor: PropTypes.string,
-  items: PropTypes.arrayOf(PropTypes.object),
-  queueLookupMovie: PropTypes.func.isRequired,
-  setImportMovieValue: PropTypes.func.isRequired
+  id: PropTypes.string.isRequired
 };
 
-export default withMovies(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieRowConnector));
+export default ImportMovieRowConnector;

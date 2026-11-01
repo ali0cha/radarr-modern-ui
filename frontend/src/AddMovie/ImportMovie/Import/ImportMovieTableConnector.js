@@ -1,44 +1,43 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withAddDefaults from 'AddMovie/withAddDefaults';
-import withMovies from 'Movie/withMovies';
-import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
+import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useAddDefaults } from 'AddMovie/useAddMovie';
+import { useMovies } from 'Movie/useMovies';
+import { queueLookupMovie, setImportMovieValue, useImportMovieItems } from '../useImportMovie';
 import ImportMovieTable from './ImportMovieTable';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { addDefaults }) => addDefaults,
-    (state) => state.importMovie,
-    (state) => state.app.dimensions,
-    (state, { allMovies }) => allMovies,
-    (addDefaults, importMovie, dimensions, allMovies) => {
-      return {
-        defaultMonitor: addDefaults.monitor,
-        defaultQualityProfileId: addDefaults.qualityProfileId,
-        defaultMinimumAvailability: addDefaults.minimumAvailability,
-        items: importMovie.items,
-        isSmallScreen: dimensions.isSmallScreen,
-        allMovies
-      };
-    }
+function ImportMovieTableConnector(props) {
+  const {
+    monitor: defaultMonitor,
+    qualityProfileId: defaultQualityProfileId,
+    minimumAvailability: defaultMinimumAvailability
+  } = useAddDefaults();
+
+  const items = useImportMovieItems();
+  const { movies: allMovies } = useMovies();
+  const dimensions = useSelector((state) => state.app.dimensions);
+
+  const handleMovieLookup = useCallback((name, path, relativePath) => {
+    queueLookupMovie({
+      name,
+      path,
+      relativePath,
+      term: name
+    });
+  }, []);
+
+  return (
+    <ImportMovieTable
+      {...props}
+      defaultMonitor={defaultMonitor}
+      defaultQualityProfileId={defaultQualityProfileId}
+      defaultMinimumAvailability={defaultMinimumAvailability}
+      items={items}
+      isSmallScreen={dimensions.isSmallScreen}
+      allMovies={allMovies}
+      onMovieLookup={handleMovieLookup}
+      onSetImportMovieValue={setImportMovieValue}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onMovieLookup(name, path, relativePath) {
-      dispatch(queueLookupMovie({
-        name,
-        path,
-        relativePath,
-        term: name
-      }));
-    },
-
-    onSetImportMovieValue(values) {
-      dispatch(setImportMovieValue(values));
-    }
-  };
-}
-
-export default withAddDefaults(withMovies(connect(createMapStateToProps, createMapDispatchToProps)(ImportMovieTable)));
+export default ImportMovieTableConnector;

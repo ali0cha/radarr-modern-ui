@@ -1,78 +1,58 @@
-import _ from 'lodash';
+import { find, some } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withAddDefaults from 'AddMovie/withAddDefaults';
-import withMovies from 'Movie/withMovies';
-import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
-import createImportMovieItemSelector from 'Store/Selectors/createImportMovieItemSelector';
+import React, { useCallback } from 'react';
+import { useAddDefaults } from 'AddMovie/useAddMovie';
+import { useMovies } from 'Movie/useMovies';
+import {
+  queueLookupMovie,
+  setImportMovieValue,
+  useImportMovieItem,
+  useImportMovieStore
+} from '../../useImportMovie';
 import ImportMovieSelectMovie from './ImportMovieSelectMovie';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.importMovie.isLookingUpMovie,
-    createImportMovieItemSelector(),
-    (isLookingUpMovie, item) => {
-      return {
-        isLookingUpMovie,
-        ...item
-      };
-    }
-  );
-}
+function ImportMovieSelectMovieConnector(props) {
+  const { id } = props;
 
-const mapDispatchToProps = {
-  queueLookupMovie,
-  setImportMovieValue
-};
+  const defaults = useAddDefaults();
+  const isLookingUpMovie = useImportMovieStore((state) => state.isLookingUpMovie);
+  const item = useImportMovieItem(id);
+  const { movies } = useMovies();
 
-class ImportMovieSelectMovieConnector extends Component {
+  const selectedMovie = item?.selectedMovie;
+  const isExistingMovie = !!selectedMovie && some(movies, { tmdbId: selectedMovie.tmdbId });
 
-  //
-  // Listeners
-
-  onSearchInputChange = (term) => {
-    this.props.queueLookupMovie({
-      name: this.props.id,
+  const handleSearchInputChange = useCallback((term) => {
+    queueLookupMovie({
+      name: id,
       term,
       topOfQueue: true
     });
-  };
+  }, [id]);
 
-  onMovieSelect = (tmdbId) => {
-    const {
+  const handleMovieSelect = useCallback((tmdbId) => {
+    setImportMovieValue({
       id,
-      items
-    } = this.props;
-
-    this.props.setImportMovieValue({
-      id,
-      selectedMovie: _.find(items, { tmdbId })
+      selectedMovie: find(item?.items, { tmdbId })
     });
-  };
+  }, [id, item]);
 
-  //
-  // Render
-
-  render() {
-    return (
-      <ImportMovieSelectMovie
-        {...this.props}
-        onSearchInputChange={this.onSearchInputChange}
-        onMovieSelect={this.onMovieSelect}
-      />
-    );
-  }
+  return (
+    <ImportMovieSelectMovie
+      {...props}
+      defaultMonitor={defaults.monitor}
+      defaultQualityProfileId={defaults.qualityProfileId}
+      {...item}
+      isLookingUpMovie={isLookingUpMovie}
+      isExistingMovie={isExistingMovie}
+      onSearchInputChange={handleSearchInputChange}
+      onMovieSelect={handleMovieSelect}
+    />
+  );
 }
 
 ImportMovieSelectMovieConnector.propTypes = {
-  id: PropTypes.string.isRequired,
-  items: PropTypes.arrayOf(PropTypes.object),
-  selectedMovie: PropTypes.object,
-  isSelected: PropTypes.bool,
-  queueLookupMovie: PropTypes.func.isRequired,
-  setImportMovieValue: PropTypes.func.isRequired
+  id: PropTypes.string.isRequired
 };
 
-export default withAddDefaults(withMovies(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieSelectMovieConnector)));
+export default ImportMovieSelectMovieConnector;
