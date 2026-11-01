@@ -1,8 +1,7 @@
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import useSystemStatus from './useSystemStatus';
 
 function useIsWindows() {
-  return useSelector((state: AppState) => state.system.status.item.isWindows);
+  return useSystemStatus().isWindows;
 }
 
 export default useIsWindows;

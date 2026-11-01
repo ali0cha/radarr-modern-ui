@@ -1,6 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { executeCommand, useCommand } from 'Commands/useCommands';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
@@ -8,7 +8,7 @@ import TableRow from 'Components/Table/TableRow';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
-import { fetchTask } from 'Store/Actions/systemActions';
+import { invalidateTasks } from 'System/useSystem';
 import { isCommandExecuting } from 'Utilities/Command';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
@@ -28,7 +28,6 @@ interface ScheduledTaskRowProps {
 
 function ScheduledTaskRow(props: ScheduledTaskRowProps) {
   const {
-    id,
     taskName,
     name,
     interval,
@@ -38,7 +37,7 @@ function ScheduledTaskRow(props: ScheduledTaskRowProps) {
     nextExecution,
   } = props;
 
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const { showRelativeDates, longDateFormat, shortDateFormat, timeFormat } =
     useUISettings();
@@ -95,10 +94,10 @@ function ScheduledTaskRow(props: ScheduledTaskRowProps) {
   useEffect(() => {
     if (!isExecuting && wasExecuting) {
       setTimeout(() => {
-        dispatch(fetchTask({ id }));
+        invalidateTasks(queryClient);
       }, 1000);
     }
-  }, [id, isExecuting, wasExecuting, dispatch]);
+  }, [isExecuting, wasExecuting, queryClient]);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(Date.now()), 1000);

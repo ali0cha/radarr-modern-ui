@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import Icon from 'Components/Icon';
 import Menu from 'Components/Menu/Menu';
 import MenuButton from 'Components/Menu/MenuButton';
@@ -8,7 +6,8 @@ import MenuContent from 'Components/Menu/MenuContent';
 import MenuItem from 'Components/Menu/MenuItem';
 import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
 import { align, icons, kinds } from 'Helpers/Props';
-import { restart, shutdown } from 'Store/Actions/systemActions';
+import { shutdown, useRestart } from 'System/useSystem';
+import useSystemStatus from 'System/useSystemStatus';
 import translate from 'Utilities/String/translate';
 import styles from './PageHeaderActionsMenu.module.css';
 
@@ -19,21 +18,19 @@ interface PageHeaderActionsMenuProps {
 function PageHeaderActionsMenu(props: PageHeaderActionsMenuProps) {
   const { onKeyboardShortcutsPress } = props;
 
-  const dispatch = useDispatch();
+  const restart = useRestart();
 
-  const { authentication, isContainerized } = useSelector(
-    (state: AppState) => state.system.status.item
-  );
+  const { authentication, isContainerized } = useSystemStatus();
 
   const showSignOut = authentication === 'forms' || authentication === 'oidc';
 
   const handleRestartPress = useCallback(() => {
-    dispatch(restart());
-  }, [dispatch]);
+    restart();
+  }, [restart]);
 
   const handleShutdownPress = useCallback(() => {
-    dispatch(shutdown());
-  }, [dispatch]);
+    shutdown();
+  }, []);
 
   return (
     <div>

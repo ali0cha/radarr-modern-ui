@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useAddRootFolder, useDeleteRootFolder, useRootFolders } from 'RootFolder/useRootFolders';
-import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+import useSystemStatus from 'System/useSystemStatus';
 import ImportMovieSelectFolder from './ImportMovieSelectFolder';
 
 function ImportMovieSelectFolderConnector() {
   const navigate = useNavigate();
-  const { isWindows } = useSelector(createSystemStatusSelector());
+  const { isWindows } = useSystemStatus();
   const rootFolders = useRootFolders();
   const { mutate: addRootFolder, isPending: isSaving, error: saveError } = useAddRootFolder();
   const { mutate: deleteRootFolder } = useDeleteRootFolder();

@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Icon, { IconKind } from 'Components/Icon';
@@ -16,10 +15,9 @@ import { icons, kinds } from 'Helpers/Props';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { useTestAllProviders } from 'Settings/useProviderSettings';
-import { fetchHealth } from 'Store/Actions/systemActions';
+import { useHealth } from 'System/useSystem';
 import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
-import createHealthSelector from './createHealthSelector';
 import HealthItemLink from './HealthItemLink';
 import styles from './Health.module.css';
 
@@ -43,10 +41,7 @@ const columns: Column[] = [
 ];
 
 function Health() {
-  const dispatch = useDispatch();
-  const { isFetching, isPopulated, items } = useSelector(
-    createHealthSelector()
-  );
+  const { isFetching, isPopulated, items } = useHealth();
   const {
     testAll: testAllDownloadClients,
     isTestingAll: isTestingAllDownloadClients,
@@ -59,10 +54,6 @@ function Health() {
   const handleTestAllDownloadClientsPress = testAllDownloadClients;
 
   const handleTestAllIndexersPress = testAllIndexers;
-
-  useEffect(() => {
-    dispatch(fetchHealth());
-  }, [dispatch]);
 
   return (
     <FieldSet

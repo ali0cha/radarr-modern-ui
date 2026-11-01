@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
 import { useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
@@ -14,8 +13,8 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 import { useManageSettings } from 'Settings/useSettings';
-import { restart } from 'Store/Actions/systemActions';
 import useIsWindowsService from 'System/useIsWindowsService';
+import { useRestart } from 'System/useSystem';
 import { InputChanged } from 'typings/inputs';
 import General from 'typings/Settings/General';
 import translate from 'Utilities/String/translate';
@@ -43,7 +42,7 @@ const requiresRestartKeys = [
 ];
 
 function GeneralSettings() {
-  const dispatch = useDispatch();
+  const restart = useRestart();
   const queryClient = useQueryClient();
   const isWindowsService = useIsWindowsService();
   const isResettingApiKey = useCommandExecuting(commandNames.RESET_API_KEY);
@@ -91,8 +90,8 @@ function GeneralSettings() {
 
   const handleConfirmRestart = useCallback(() => {
     setIsRestartRequiredModalOpen(false);
-    dispatch(restart());
-  }, [dispatch]);
+    restart();
+  }, [restart]);
 
   const handleCloseRestartRequiredModalOpen = useCallback(() => {
     setIsRestartRequiredModalOpen(false);

@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
@@ -16,8 +15,8 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import { icons, kinds } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
 import { useSettings } from 'Settings/useSettings';
-import { fetchUpdates } from 'Store/Actions/systemActions';
-import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+import { useUpdates } from 'System/useSystem';
+import useSystemStatus from 'System/useSystemStatus';
 import General, { UpdateMechanism } from 'typings/Settings/General';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
@@ -27,22 +26,9 @@ import styles from './Updates.module.css';
 
 const VERSION_REGEX = /\d+\.\d+\.\d+\.\d+/i;
 
-function createUpdatesSelector() {
-  return createSelector(
-    (state: AppState) => state.system.updates,
-    (updates) => {
-      const { error: updatesError, items, isFetching, isPopulated } = updates;
-
-      return { isFetching, isPopulated, updatesError, items };
-    }
-  );
-}
-
 function Updates() {
   const currentVersion = useSelector((state: AppState) => state.app.version);
-  const { packageUpdateMechanismMessage } = useSelector(
-    createSystemStatusSelector()
-  );
+  const { packageUpdateMechanismMessage } = useSystemStatus();
   const { shortDateFormat, longDateFormat, timeFormat } = useUISettings();
   const isInstallingUpdate = useCommandExecuting(
     commandNames.APPLICATION_UPDATE
@@ -51,9 +37,9 @@ function Updates() {
   const {
     isFetching: isFetchingUpdates,
     isPopulated: isUpdatesPopulated,
-    updatesError,
+    error: updatesError,
     items,
-  } = useSelector(createUpdatesSelector());
+  } = useUpdates();
 
   const {
     data: generalSettings,
@@ -66,7 +52,6 @@ function Updates() {
   const isPopulated = isUpdatesPopulated && isGeneralSettingsPopulated;
   const { updateMechanism } = generalSettings;
 
-  const dispatch = useDispatch();
   const [isMajorUpdateModalOpen, setIsMajorUpdateModalOpen] = useState(false);
   const hasError = !!(updatesError || generalSettingsError);
   const hasUpdates = isPopulated && !hasError && items.length > 0;
@@ -119,10 +104,6 @@ function Updates() {
   const handleCancelMajorVersionPress = useCallback(() => {
     setIsMajorUpdateModalOpen(false);
   }, [setIsMajorUpdateModalOpen]);
-
-  useEffect(() => {
-    dispatch(fetchUpdates());
-  }, [dispatch]);
 
   return (
     <PageContent title={translate('Updates')}>

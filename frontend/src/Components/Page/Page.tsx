@@ -10,7 +10,7 @@ import useAppPage from 'Helpers/Hooks/useAppPage';
 import useUISettings from 'Settings/UI/useUISettings';
 import { saveDimensions } from 'Store/Actions/appActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+import useSystemStatus from 'System/useSystemStatus';
 import ErrorPage from './ErrorPage';
 import PageHeader from './Header/PageHeader';
 import LoadingPage from './LoadingPage';
@@ -31,7 +31,7 @@ function Page({ children }: PageProps) {
 
   const { enableColorImpairedMode } = useUISettings();
   const { isSmallScreen } = useSelector(createDimensionsSelector());
-  const { authentication } = useSelector(createSystemStatusSelector());
+  const { authentication } = useSystemStatus();
   const authenticationEnabled = authentication !== 'none';
   const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(
     (state: AppState) => state.app

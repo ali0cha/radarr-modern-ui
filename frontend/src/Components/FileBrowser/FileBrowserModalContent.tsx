@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Alert from 'Components/Alert';
 import { PathInputInternal } from 'Components/Form/PathInput';
 import Button from 'Components/Link/Button';
@@ -15,7 +14,7 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds, scrollDirections } from 'Helpers/Props';
-import createSystemStatusSelector from 'Store/Selectors/createSystemStatusSelector';
+import useSystemStatus from 'System/useSystemStatus';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
 import FileBrowserRow from './FileBrowserRow';
@@ -46,7 +45,7 @@ export interface FileBrowserModalContentProps {
 function FileBrowserModalContent(props: FileBrowserModalContentProps) {
   const { name, value, includeFiles = true, onChange, onModalClose } = props;
 
-  const { isWindows, mode } = useSelector(createSystemStatusSelector());
+  const { isWindows, mode } = useSystemStatus();
 
   const [currentPath, setCurrentPath] = useState(value);
   const [request, setRequest] = useState<PathsRequest | null>({

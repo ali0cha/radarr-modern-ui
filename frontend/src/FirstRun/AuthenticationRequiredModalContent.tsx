@@ -1,5 +1,5 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import Alert from 'Components/Alert';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -18,7 +18,7 @@ import {
   authenticationRequiredOptions,
 } from 'Settings/General/SecuritySettings';
 import { useManageSettings } from 'Settings/useSettings';
-import { fetchStatus } from 'Store/Actions/systemActions';
+import { invalidateSystemStatus } from 'System/useSystemStatus';
 import { InputChanged } from 'typings/inputs';
 import General from 'typings/Settings/General';
 import translate from 'Utilities/String/translate';
@@ -40,7 +40,7 @@ export default function AuthenticationRequiredModalContent() {
     updateSetting,
     saveSettings,
   } = useManageSettings<General>(PATH);
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const {
     authenticationMethod,
@@ -73,8 +73,8 @@ export default function AuthenticationRequiredModalContent() {
       return;
     }
 
-    dispatch(fetchStatus());
-  }, [isSaving, wasSaving, saveError, dispatch]);
+    invalidateSystemStatus(queryClient);
+  }, [isSaving, wasSaving, saveError, queryClient]);
 
   const onPress = useCallback(() => {
     saveSettings();

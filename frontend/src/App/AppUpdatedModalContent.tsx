@@ -1,5 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Button from 'Components/Link/Button';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
@@ -9,8 +10,8 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
-import { fetchUpdates } from 'Store/Actions/systemActions';
 import UpdateChanges from 'System/Updates/UpdateChanges';
+import { invalidateUpdates, useUpdates } from 'System/useSystem';
 import Update from 'typings/Update';
 import translate from 'Utilities/String/translate';
 import AppState from './State/AppState';
@@ -63,11 +64,9 @@ interface AppUpdatedModalContentProps {
 }
 
 function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { version, prevVersion } = useSelector((state: AppState) => state.app);
-  const { isPopulated, error, items } = useSelector(
-    (state: AppState) => state.system.updates
-  );
+  const { isPopulated, error, items } = useUpdates();
   const previousVersion = usePrevious(version);
 
   const { onModalClose } = props;
@@ -79,14 +78,10 @@ function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchUpdates());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (version !== previousVersion) {
-      dispatch(fetchUpdates());
+      invalidateUpdates(queryClient);
     }
-  }, [version, previousVersion, dispatch]);
+  }, [version, previousVersion, queryClient]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

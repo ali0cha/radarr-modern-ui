@@ -26,7 +26,7 @@ import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
 import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQualityDefinitions';
 import { hideMessage, setAppValue, setVersion, showMessage } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
-import { fetchHealth } from 'Store/Actions/systemActions';
+import { invalidateHealth } from 'System/useSystem';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
 import titleCase from 'Utilities/String/titleCase';
@@ -60,8 +60,7 @@ const mapDispatchToProps = {
   dispatchSetVersion: setVersion,
   dispatchUpdate: update,
   dispatchUpdateItem: updateItem,
-  dispatchRemoveItem: removeItem,
-  dispatchFetchHealth: fetchHealth
+  dispatchRemoveItem: removeItem
 };
 
 function Logger(minimumLogLevel) {
@@ -203,7 +202,7 @@ class SignalRConnector extends Component {
   };
 
   handleHealth = () => {
-    this.props.dispatchFetchHealth();
+    invalidateHealth(queryClient);
   };
 
   handleImportlist = () => {
@@ -373,8 +372,7 @@ SignalRConnector.propTypes = {
   dispatchSetVersion: PropTypes.func.isRequired,
   dispatchUpdate: PropTypes.func.isRequired,
   dispatchUpdateItem: PropTypes.func.isRequired,
-  dispatchRemoveItem: PropTypes.func.isRequired,
-  dispatchFetchHealth: PropTypes.func.isRequired
+  dispatchRemoveItem: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(SignalRConnector);

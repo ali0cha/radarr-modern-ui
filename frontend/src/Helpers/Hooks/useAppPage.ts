@@ -12,20 +12,18 @@ import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { useUISettingsQuery } from 'Settings/UI/useUISettings';
 import { fetchTranslations } from 'Store/Actions/appActions';
-import { fetchStatus } from 'Store/Actions/systemActions';
+import { useSystemStatusQuery } from 'System/useSystemStatus';
 import { useTagsQuery } from 'Tags/useTags';
 
 const createErrorsSelector = () =>
   createSelector(
-    (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
-    (systemStatusError, translationsError) => {
-      const hasError = !!(systemStatusError || translationsError);
+    (translationsError) => {
+      const hasError = !!translationsError;
 
       return {
         hasError,
         errors: {
-          systemStatusError,
           translationsError,
         },
       };
@@ -42,6 +40,8 @@ const useAppPage = () => {
     useMovieCollections();
   const { isPopulated: isCustomFiltersPopulated, error: customFiltersError } =
     useCustomFilters();
+  const { isPopulated: isSystemStatusPopulated, error: systemStatusError } =
+    useSystemStatusQuery();
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
   const { isPopulated: isImportListsPopulated, error: importListsError } =
     useImportLists();
@@ -57,12 +57,12 @@ const useAppPage = () => {
     useIndexerFlags();
 
   const isStatePopulated = useSelector(
-    (state: AppState) =>
-      state.system.status.isPopulated && state.app.translations.isPopulated
+    (state: AppState) => state.app.translations.isPopulated
   );
 
   const isPopulated =
     isStatePopulated &&
+    isSystemStatusPopulated &&
     isCustomFiltersPopulated &&
     isMoviesPopulated &&
     isCollectionsPopulated &&
@@ -79,6 +79,7 @@ const useAppPage = () => {
 
   const hasError =
     hasStateError ||
+    !!systemStatusError ||
     !!customFiltersError ||
     !!moviesError ||
     !!movieCollectionsError ||
@@ -92,6 +93,7 @@ const useAppPage = () => {
   const errors = useMemo(
     () => ({
       ...stateErrors,
+      systemStatusError: systemStatusError ?? undefined,
       customFiltersError: customFiltersError ?? undefined,
       moviesError: moviesError ?? undefined,
       movieCollectionsError: movieCollectionsError ?? undefined,
@@ -104,6 +106,7 @@ const useAppPage = () => {
     }),
     [
       stateErrors,
+      systemStatusError,
       customFiltersError,
       moviesError,
       movieCollectionsError,
@@ -130,7 +133,6 @@ const useAppPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchStatus());
     dispatch(fetchTranslations());
   }, [dispatch]);
 

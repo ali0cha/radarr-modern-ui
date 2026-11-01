@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React from 'react';
 import FieldSet from 'Components/FieldSet';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import { fetchTasks } from 'Store/Actions/systemActions';
+import { useTasks } from 'System/useSystem';
 import translate from 'Utilities/String/translate';
 import ScheduledTaskRow from './ScheduledTaskRow';
 
@@ -44,14 +42,7 @@ const columns: Column[] = [
 ];
 
 function ScheduledTasks() {
-  const dispatch = useDispatch();
-  const { isFetching, isPopulated, items } = useSelector(
-    (state: AppState) => state.system.tasks
-  );
-
-  useEffect(() => {
-    dispatch(fetchTasks());
-  }, [dispatch]);
+  const { isFetching, isPopulated, items } = useTasks();
 
   return (
     <FieldSet legend={translate('Scheduled')}>

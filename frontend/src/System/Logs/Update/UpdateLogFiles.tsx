@@ -1,37 +1,28 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import React, { useCallback } from 'react';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
-import { fetchUpdateLogFiles } from 'Store/Actions/systemActions';
+import { useUpdateLogFiles } from 'System/useSystem';
 import LogFiles from '../LogFiles';
 
 function UpdateLogFiles() {
-  const dispatch = useDispatch();
-  const { isFetching, items } = useSelector(
-    (state: AppState) => state.system.updateLogFiles
-  );
+  const { isFetching, items, refetch } = useUpdateLogFiles();
 
   const isDeleteFilesExecuting = useCommandExecuting(
     commandNames.DELETE_UPDATE_LOG_FILES
   );
 
   const handleRefreshPress = useCallback(() => {
-    dispatch(fetchUpdateLogFiles());
-  }, [dispatch]);
+    refetch();
+  }, [refetch]);
 
   const handleDeleteFilesPress = useCallback(() => {
     executeCommand({
       name: commandNames.DELETE_UPDATE_LOG_FILES,
       commandFinished: () => {
-        dispatch(fetchUpdateLogFiles());
+        refetch();
       },
     });
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchUpdateLogFiles());
-  }, [dispatch]);
+  }, [refetch]);
 
   return (
     <LogFiles

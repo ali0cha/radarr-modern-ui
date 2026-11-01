@@ -1,7 +1,4 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React from 'react';
 import FieldSet from 'Components/FieldSet';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ProgressBar from 'Components/ProgressBar';
@@ -12,7 +9,7 @@ import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import { kinds, sizes } from 'Helpers/Props';
 import { Kind } from 'Helpers/Props/kinds';
-import { fetchDiskSpace } from 'Store/Actions/systemActions';
+import { useDiskSpace } from 'System/useSystem';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import styles from './DiskSpace.module.css';
@@ -40,22 +37,8 @@ const columns: Column[] = [
   },
 ];
 
-function createDiskSpaceSelector() {
-  return createSelector(
-    (state: AppState) => state.system.diskSpace,
-    (diskSpace) => {
-      return diskSpace;
-    }
-  );
-}
-
 function DiskSpace() {
-  const dispatch = useDispatch();
-  const { isFetching, items } = useSelector(createDiskSpaceSelector());
-
-  useEffect(() => {
-    dispatch(fetchDiskSpace());
-  }, [dispatch]);
+  const { isFetching, items } = useDiskSpace();
 
   return (
     <FieldSet legend={translate('DiskSpace')}>
