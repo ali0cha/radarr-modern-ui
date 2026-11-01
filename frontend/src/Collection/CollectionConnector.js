@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDimensions } from 'App/useAppStore';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand } from 'Commands/useCommands';
 import withCommandExecuting from 'Commands/withCommandExecuting';
 import withScrollPosition from 'Components/withScrollPosition';
 import scrollPositions from 'Store/scrollPositions';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import Collection from './Collection';
 import {
   useMovieCollections,
@@ -15,15 +14,13 @@ import {
   useSaveMovieCollections
 } from './useMovieCollections';
 
-const selectDimensions = createDimensionsSelector();
-
 function CollectionConnector(props) {
   const { isCommandExecuting } = props;
 
   const collections = useMovieCollectionsView();
   const { refetch } = useMovieCollections();
   const { saveCollections, isSaving } = useSaveMovieCollections();
-  const dimensions = useSelector(selectDimensions);
+  const dimensions = useDimensions();
   const setSort = useMovieCollectionsStore((state) => state.setSort);
   const setFilter = useMovieCollectionsStore((state) => state.setFilter);
 

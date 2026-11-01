@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withDimensions from 'App/withDimensions';
 import withMovies from 'Movie/withMovies';
 import withToggleMovieMonitored from 'Movie/withToggleMovieMonitored';
 import createCollectionExistingMovieSelector from 'Store/Selectors/createCollectionExistingMovieSelector';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import CollectionMovieLabel from './CollectionMovieLabel';
 
 function createMapStateToProps() {
   return createSelector(
-    createDimensionsSelector(),
+    (state, { dimensions }) => dimensions,
     createCollectionExistingMovieSelector(),
     (dimensions, existingMovie) => {
       return {
@@ -53,4 +53,4 @@ CollectionMovieLabelConnector.propTypes = {
   toggleMovieMonitored: PropTypes.func.isRequired
 };
 
-export default withMovies(connect(createMapStateToProps)(withToggleMovieMonitored(CollectionMovieLabelConnector)));
+export default withDimensions(withMovies(connect(createMapStateToProps)(withToggleMovieMonitored(CollectionMovieLabelConnector))));

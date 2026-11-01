@@ -1,7 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import { fetchTranslations, useAppStore } from 'App/useAppStore';
 import { useMovieCollections } from 'Collection/useMovieCollections';
 import { useCustomFilters } from 'Components/Filter/useCustomFilters';
 import { useInitializeLanguage } from 'Language/useLanguageName';
@@ -11,28 +9,10 @@ import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { useUISettingsQuery } from 'Settings/UI/useUISettings';
-import { fetchTranslations } from 'Store/Actions/appActions';
 import { useSystemStatusQuery } from 'System/useSystemStatus';
 import { useTagsQuery } from 'Tags/useTags';
 
-const createErrorsSelector = () =>
-  createSelector(
-    (state: AppState) => state.app.translations.error,
-    (translationsError) => {
-      const hasError = !!translationsError;
-
-      return {
-        hasError,
-        errors: {
-          translationsError,
-        },
-      };
-    }
-  );
-
 const useAppPage = () => {
-  const dispatch = useDispatch();
-
   useInitializeLanguage();
 
   const { isPopulated: isMoviesPopulated, error: moviesError } = useMovies();
@@ -56,12 +36,11 @@ const useAppPage = () => {
   const { isPopulated: isIndexerFlagsPopulated, error: indexerFlagsError } =
     useIndexerFlags();
 
-  const isStatePopulated = useSelector(
-    (state: AppState) => state.app.translations.isPopulated
-  );
+  const { isPopulated: isTranslationsPopulated, error: translationsError } =
+    useAppStore((state) => state.translations);
 
   const isPopulated =
-    isStatePopulated &&
+    isTranslationsPopulated &&
     isSystemStatusPopulated &&
     isCustomFiltersPopulated &&
     isMoviesPopulated &&
@@ -73,12 +52,8 @@ const useAppPage = () => {
     isLanguagesPopulated &&
     isIndexerFlagsPopulated;
 
-  const { hasError: hasStateError, errors: stateErrors } = useSelector(
-    createErrorsSelector()
-  );
-
   const hasError =
-    hasStateError ||
+    !!translationsError ||
     !!systemStatusError ||
     !!customFiltersError ||
     !!moviesError ||
@@ -92,7 +67,7 @@ const useAppPage = () => {
 
   const errors = useMemo(
     () => ({
-      ...stateErrors,
+      translationsError: translationsError ?? undefined,
       systemStatusError: systemStatusError ?? undefined,
       customFiltersError: customFiltersError ?? undefined,
       moviesError: moviesError ?? undefined,
@@ -105,7 +80,7 @@ const useAppPage = () => {
       indexerFlagsError: indexerFlagsError ?? undefined,
     }),
     [
-      stateErrors,
+      translationsError,
       systemStatusError,
       customFiltersError,
       moviesError,
@@ -133,8 +108,8 @@ const useAppPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchTranslations());
-  }, [dispatch]);
+    fetchTranslations();
+  }, []);
 
   return useMemo(() => {
     return { errors, hasError, isLocalStorageSupported, isPopulated };

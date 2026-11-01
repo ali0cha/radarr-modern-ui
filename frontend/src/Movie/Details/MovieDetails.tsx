@@ -6,11 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import TextTruncate from 'react-text-truncate';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
-import AppState from 'App/State/AppState';
+import { useDimensions, useIsSidebarVisible } from 'App/useAppStore';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand, useCommands } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
@@ -59,7 +59,6 @@ import { useMovieFilesForMovie } from 'MovieFile/useMovieFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import useUISettings from 'Settings/UI/useUISettings';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import fonts from 'Styles/Variables/fonts';
 import sortByProp from 'Utilities/Array/sortByProp';
 import { findCommand, isCommandExecuting } from 'Utilities/Command';
@@ -119,10 +118,8 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     refetch: refetchMovieCredits,
   } = useMovieCredits(movieId);
   const { movieRuntimeFormat } = useUISettings();
-  const isSidebarVisible = useSelector(
-    (state: AppState) => state.app.isSidebarVisible
-  );
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const isSidebarVisible = useIsSidebarVisible();
+  const { isSmallScreen } = useDimensions();
 
   const { commands } = useCommands();
 

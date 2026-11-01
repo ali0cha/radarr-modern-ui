@@ -1,14 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDimensions } from 'App/useAppStore';
 import { useOverviewOptions } from 'DiscoverMovie/useDiscoverMovie';
 import useUISettings from 'Settings/UI/useUISettings';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import DiscoverMovieOverviews from './DiscoverMovieOverviews';
 
 function DiscoverMovieOverviewsConnector(props) {
   const overviewOptions = useOverviewOptions();
   const uiSettings = useUISettings();
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
 
   return (
     <DiscoverMovieOverviews

@@ -1,16 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useAppStore } from 'App/useAppStore';
 import PageSidebarStatus from 'Components/Page/Sidebar/PageSidebarStatus';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { invalidateHealth, useHealth } from 'System/useSystem';
 
 function HealthStatus() {
   const queryClient = useQueryClient();
-  const { isConnected, isReconnecting } = useSelector(
-    (state: AppState) => state.app
-  );
+  const { isConnected, isReconnecting } = useAppStore();
   const { items } = useHealth();
 
   const wasReconnecting = usePrevious(isReconnecting);

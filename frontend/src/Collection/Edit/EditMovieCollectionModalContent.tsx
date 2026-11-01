@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDimensions } from 'App/useAppStore';
 import {
   useMovieCollection,
   useSaveMovieCollection,
@@ -17,7 +17,6 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { usePendingChangesStore } from 'Helpers/Hooks/usePendingChangesStore';
 import { inputTypes } from 'Helpers/Props';
 import MoviePoster from 'Movie/MoviePoster';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
 import MovieCollection from 'typings/MovieCollection';
@@ -53,7 +52,7 @@ function EditMovieCollectionModalContent({
     collectionId,
     onModalClose
   );
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
 
   const { settings, ...otherSettings } = useMemo(() => {
     return selectSettings(

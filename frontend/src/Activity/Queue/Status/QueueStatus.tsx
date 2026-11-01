@@ -1,14 +1,11 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useAppStore } from 'App/useAppStore';
 import PageSidebarStatus from 'Components/Page/Sidebar/PageSidebarStatus';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { useQueueStatus } from '../useQueue';
 
 function QueueStatus() {
-  const { isConnected, isReconnecting } = useSelector(
-    (state: AppState) => state.app
-  );
+  const { isConnected, isReconnecting } = useAppStore();
   const { count, errors, warnings, refetch } = useQueueStatus();
 
   const wasReconnecting = usePrevious(isReconnecting);

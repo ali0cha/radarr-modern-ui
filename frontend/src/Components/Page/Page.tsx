@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import AppUpdatedModal from 'App/AppUpdatedModal';
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
-import AppState from 'App/State/AppState';
+import { saveDimensions, useAppStore, useDimensions } from 'App/useAppStore';
 import SignalRConnector from 'Components/SignalRConnector';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import useAppPage from 'Helpers/Hooks/useAppPage';
 import useUISettings from 'Settings/UI/useUISettings';
-import { saveDimensions } from 'Store/Actions/appActions';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import useSystemStatus from 'System/useSystemStatus';
 import ErrorPage from './ErrorPage';
 import PageHeader from './Header/PageHeader';
@@ -22,7 +19,6 @@ interface PageProps {
 }
 
 function Page({ children }: PageProps) {
-  const dispatch = useDispatch();
   const { hasError, errors, isPopulated, isLocalStorageSupported } =
     useAppPage();
   const [isUpdatedModalOpen, setIsUpdatedModalOpen] = useState(false);
@@ -30,25 +26,22 @@ function Page({ children }: PageProps) {
     useState(false);
 
   const { enableColorImpairedMode } = useUISettings();
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
   const { authentication } = useSystemStatus();
   const authenticationEnabled = authentication !== 'none';
-  const { isSidebarVisible, isUpdated, isDisconnected, version } = useSelector(
-    (state: AppState) => state.app
-  );
+  const { isSidebarVisible, isUpdated, isDisconnected, version } =
+    useAppStore();
 
   const handleUpdatedModalClose = useCallback(() => {
     setIsUpdatedModalOpen(false);
   }, []);
 
   const handleResize = useCallback(() => {
-    dispatch(
-      saveDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      })
-    );
-  }, [dispatch]);
+    saveDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }, []);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);

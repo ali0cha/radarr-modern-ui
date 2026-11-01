@@ -1,6 +1,3 @@
-import { Error } from './AppSectionState';
-import MessagesAppState from './MessagesAppState';
-
 interface FilterBuilderPropOption {
   id: string;
   name: string;
@@ -33,29 +30,7 @@ export interface CustomFilter {
   filters: PropertyFilter[];
 }
 
-export interface AppSectionState {
-  isUpdated: boolean;
-  isConnected: boolean;
-  isDisconnected: boolean;
-  isReconnecting: boolean;
-  isSidebarVisible: boolean;
-  version: string;
-  prevVersion?: string;
-  dimensions: {
-    isSmallScreen: boolean;
-    isLargeScreen: boolean;
-    width: number;
-    height: number;
-  };
-  translations: {
-    error?: Error;
-    isPopulated: boolean;
-  };
-  messages: MessagesAppState;
-}
-
-interface AppState {
-  app: AppSectionState;
-}
+// Nothing is kept in the Redux store anymore
+type AppState = Record<string, unknown>;
 
 export default AppState;

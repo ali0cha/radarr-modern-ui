@@ -6,9 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigationType } from 'react-router-dom';
 import { SelectProvider } from 'App/SelectContext';
+import { useDimensions } from 'App/useAppStore';
 import { RSS_SYNC } from 'Commands/commandNames';
 import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
@@ -28,7 +28,6 @@ import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import NoMovie from 'Movie/NoMovie';
 import { invalidateMovies } from 'Movie/useMovies';
 import scrollPositions from 'Store/scrollPositions';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import translate from 'Utilities/String/translate';
 import MovieIndexFilterMenu from './Menus/MovieIndexFilterMenu';
 import MovieIndexSortMenu from './Menus/MovieIndexSortMenu';
@@ -92,7 +91,7 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
   const setTableOptions = useMovieIndexStore((state) => state.setTableOptions);
 
   const isRssSyncExecuting = useCommandExecuting(RSS_SYNC);
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [isInteractiveImportModalOpen, setIsInteractiveImportModalOpen] =

@@ -1,18 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDimensions } from 'App/useAppStore';
 import { useMovieCollectionsStore } from 'Collection/useMovieCollections';
 import withUISettings from 'Settings/UI/withUISettings';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import CollectionOverviews from './CollectionOverviews';
-
-const selectDimensions = createDimensionsSelector();
 
 function CollectionOverviewsConnector(props) {
   const { uiSettings } = props;
 
   const overviewOptions = useMovieCollectionsStore((state) => state.overviewOptions);
-  const dimensions = useSelector(selectDimensions);
+  const dimensions = useDimensions();
 
   return (
     <CollectionOverviews

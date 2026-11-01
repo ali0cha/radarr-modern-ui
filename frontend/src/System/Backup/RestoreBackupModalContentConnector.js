@@ -1,11 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppStore } from 'App/useAppStore';
 import { useRestart } from 'System/useSystem';
 import RestoreBackupModalContent from './RestoreBackupModalContent';
 import { useRestoreBackup } from './useBackups';
 
 function RestoreBackupModalContentConnector(props) {
-  const isRestarting = useSelector((state) => state.app.isRestarting);
+  const isRestarting = useAppStore((state) => state.isRestarting);
   const { restoreBackup, isRestoring, restoreError } = useRestoreBackup();
   const restart = useRestart();
 

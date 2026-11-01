@@ -15,5 +15,11 @@ actions.forEach((action) => {
 export { defaultState };
 
 export default function() {
-  return enableBatching(combineReducers(reducers));
+  // Nothing is kept in the store anymore, it is only left for what still
+  // uses it until it is removed
+  const reducer = Object.keys(reducers).length ?
+    combineReducers(reducers) :
+    (state = {}) => state;
+
+  return enableBatching(reducer);
 }

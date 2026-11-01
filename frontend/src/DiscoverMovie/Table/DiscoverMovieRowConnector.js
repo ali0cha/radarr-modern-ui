@@ -1,20 +1,19 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withUISettings from 'Settings/UI/withUISettings';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import React from 'react';
+import { useDimensions } from 'App/useAppStore';
+import useUISettings from 'Settings/UI/useUISettings';
 import DiscoverMovieRow from './DiscoverMovieRow';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { uiSettings }) => uiSettings.movieRuntimeFormat,
-    createDimensionsSelector(),
-    (movieRuntimeFormat, dimensions) => {
-      return {
-        movieRuntimeFormat,
-        isSmallScreen: dimensions.isSmallScreen
-      };
-    }
+function DiscoverMovieRowConnector(props) {
+  const { movieRuntimeFormat } = useUISettings();
+  const { isSmallScreen } = useDimensions();
+
+  return (
+    <DiscoverMovieRow
+      {...props}
+      movieRuntimeFormat={movieRuntimeFormat}
+      isSmallScreen={isSmallScreen}
+    />
   );
 }
 
-export default withUISettings(connect(createMapStateToProps)(DiscoverMovieRow));
+export default DiscoverMovieRowConnector;

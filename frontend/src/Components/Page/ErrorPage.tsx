@@ -7,7 +7,7 @@ import styles from './ErrorPage.module.css';
 interface ErrorPageProps {
   version: string;
   isLocalStorageSupported: boolean;
-  translationsError?: Error;
+  translationsError?: string;
   moviesError?: Error | ApiError;
   customFiltersError?: Error | ApiError;
   tagsError?: Error | ApiError;
@@ -37,10 +37,7 @@ function ErrorPage(props: ErrorPageProps) {
     errorMessage =
       'Local Storage is not supported or disabled. A plugin or private browsing may have disabled it.';
   } else if (translationsError) {
-    errorMessage = getErrorMessage(
-      translationsError,
-      'Failed to load translations from API'
-    );
+    errorMessage = translationsError;
   } else if (moviesError) {
     errorMessage = getErrorMessage(
       moviesError,

@@ -1,12 +1,11 @@
 import { QueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { pingServer, setAppValue } from 'App/useAppStore';
 import useApiQuery, {
   fetchApi,
   getApiPath,
   invalidateApiQueries,
 } from 'Helpers/Hooks/useApiQuery';
-import { pingServer, setAppValue } from 'Store/Actions/appActions';
 import DiskSpace from 'typings/DiskSpace';
 import Health from 'typings/Health';
 import LogFile from 'typings/LogFile';
@@ -64,20 +63,18 @@ export const invalidateUpdates = (queryClient: QueryClient) =>
 
 // Restarts the application, and waits for it to be back
 export function useRestart() {
-  const dispatch = useDispatch();
-
   return useCallback(() => {
     return fetchApi(getApiPath('/system/restart'), {
       method: 'POST',
       headers: { 'X-Api-Key': window.Radarr.apiKey },
     }).then(
       () => {
-        dispatch(setAppValue({ isRestarting: true }));
-        dispatch(pingServer());
+        setAppValue({ isRestarting: true });
+        pingServer();
       },
       () => undefined
     );
-  }, [dispatch]);
+  }, []);
 }
 
 export function shutdown() {

@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import AddNewMovieModalContent from 'AddMovie/AddNewMovie/AddNewMovieModalContent';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import { useDimensions } from 'App/useAppStore';
 import selectSettings from 'Store/Selectors/selectSettings';
 import useIsWindows from 'System/useIsWindows';
 import {
@@ -15,7 +14,7 @@ function AddNewDiscoverMovieModalContentConnector(props) {
   const { tmdbId, onModalClose } = props;
 
   const defaults = useAddDefaults();
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
   const isWindows = useIsWindows();
 
   const handleAdded = useCallback(() => onModalClose(true), [onModalClose]);

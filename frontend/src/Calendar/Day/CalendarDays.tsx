@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useIsSidebarVisible } from 'App/useAppStore';
 import * as calendarViews from 'Calendar/calendarViews';
 import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
 import CalendarDay from './CalendarDay';
@@ -14,9 +13,7 @@ function CalendarDays() {
     (state) => state.gotoPreviousRange
   );
   const gotoNextRange = useCalendarStore((state) => state.gotoNextRange);
-  const isSidebarVisible = useSelector(
-    (state: AppState) => state.app.isSidebarVisible
-  );
+  const isSidebarVisible = useIsSidebarVisible();
 
   const updateTimeout = useRef<ReturnType<typeof setTimeout>>();
   const touchStart = useRef<number | null>(null);

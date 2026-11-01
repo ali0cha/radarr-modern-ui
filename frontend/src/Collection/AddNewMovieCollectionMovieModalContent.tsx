@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import MovieMinimumAvailabilityPopoverContent from 'AddMovie/MovieMinimumAvailabilityPopoverContent';
+import { useDimensions } from 'App/useAppStore';
 import {
   useAddCollectionMovie,
   useMovieCollection,
@@ -21,7 +21,6 @@ import { usePendingChangesStore } from 'Helpers/Hooks/usePendingChangesStore';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
 import { Image, MovieMonitor } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import useIsWindows from 'System/useIsWindows';
 import { InputChanged } from 'typings/inputs';
@@ -51,7 +50,7 @@ function AddNewMovieCollectionMovieModalContent({
 }: AddNewMovieCollectionMovieModalContentProps) {
   const collection = useMovieCollection(collectionId)!;
 
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
   const isWindows = useIsWindows();
 
   const { pendingChanges, setPendingChange } = usePendingChangesStore<

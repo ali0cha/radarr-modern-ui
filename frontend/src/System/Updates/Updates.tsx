@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useAppStore } from 'App/useAppStore';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
@@ -27,7 +26,7 @@ import styles from './Updates.module.css';
 const VERSION_REGEX = /\d+\.\d+\.\d+\.\d+/i;
 
 function Updates() {
-  const currentVersion = useSelector((state: AppState) => state.app.version);
+  const currentVersion = useAppStore((state) => state.version);
   const { packageUpdateMechanismMessage } = useSystemStatus();
   const { shortDateFormat, longDateFormat, timeFormat } = useUISettings();
   const isInstallingUpdate = useCommandExecuting(

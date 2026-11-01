@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { useAddDefaults } from 'AddMovie/useAddMovie';
+import { useDimensions } from 'App/useAppStore';
 import { useMovies } from 'Movie/useMovies';
 import { queueLookupMovie, setImportMovieValue, useImportMovieItems } from '../useImportMovie';
 import ImportMovieTable from './ImportMovieTable';
@@ -14,7 +14,7 @@ function ImportMovieTableConnector(props) {
 
   const items = useImportMovieItems();
   const { movies: allMovies } = useMovies();
-  const dimensions = useSelector((state) => state.app.dimensions);
+  const dimensions = useDimensions();
 
   const handleMovieLookup = useCallback((name, path, relativePath) => {
     queueLookupMovie({

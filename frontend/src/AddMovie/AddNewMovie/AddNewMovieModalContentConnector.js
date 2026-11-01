@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import { useDimensions } from 'App/useAppStore';
 import selectSettings from 'Store/Selectors/selectSettings';
 import useIsWindows from 'System/useIsWindows';
 import { setAddDefaults, useAddDefaults, useAddMovie } from '../useAddMovie';
@@ -11,7 +10,7 @@ function AddNewMovieModalContentConnector(props) {
   const { tmdbId } = props;
 
   const defaults = useAddDefaults();
-  const { isSmallScreen } = useSelector(createDimensionsSelector());
+  const { isSmallScreen } = useDimensions();
   const isWindows = useIsWindows();
   const { addMovie, isAdding, addError } = useAddMovie();
 

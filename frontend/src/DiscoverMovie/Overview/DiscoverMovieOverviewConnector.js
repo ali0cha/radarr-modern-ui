@@ -1,17 +1,16 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import React from 'react';
+import { useDimensions } from 'App/useAppStore';
 import DiscoverMovieOverview from './DiscoverMovieOverview';
 
-function createMapStateToProps() {
-  return createSelector(
-    createDimensionsSelector(),
-    (dimensions) => {
-      return {
-        isSmallScreen: dimensions.isSmallScreen
-      };
-    }
+function DiscoverMovieOverviewConnector(props) {
+  const { isSmallScreen } = useDimensions();
+
+  return (
+    <DiscoverMovieOverview
+      {...props}
+      isSmallScreen={isSmallScreen}
+    />
   );
 }
 
-export default connect(createMapStateToProps)(DiscoverMovieOverview);
+export default DiscoverMovieOverviewConnector;

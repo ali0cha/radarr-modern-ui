@@ -1,8 +1,5 @@
 import * as signalR from '@microsoft/signalr/dist/browser/signalr.js';
-import PropTypes from 'prop-types';
 import { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import {
   invalidateQueue,
   invalidateQueueDetails,
@@ -10,6 +7,7 @@ import {
   setQueueStatus
 } from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
+import { hideMessage, setAppValue, setVersion, showMessage } from 'App/useAppStore';
 import { updateCalendarItem } from 'Calendar/useCalendar';
 import { invalidateMovieCollections, removeMovieCollection, setMovieCollection } from 'Collection/useMovieCollections';
 import { handleCommandFinished, handleCommandUpdated } from 'Commands/commandEvents';
@@ -24,8 +22,6 @@ import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { METADATA_PATH } from 'Settings/Metadata/Metadata/useMetadata';
 import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
 import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQualityDefinitions';
-import { hideMessage, setAppValue, setVersion, showMessage } from 'Store/Actions/appActions';
-import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { invalidateHealth } from 'System/useSystem';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
@@ -39,29 +35,6 @@ function getHandlerName(name) {
 
   return `handle${name}`;
 }
-
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.app.isReconnecting,
-    (state) => state.app.isDisconnected,
-    (isReconnecting, isDisconnected) => {
-      return {
-        isReconnecting,
-        isDisconnected
-      };
-    }
-  );
-}
-
-const mapDispatchToProps = {
-  dispatchShowMessage: showMessage,
-  dispatchHideMessage: hideMessage,
-  dispatchSetAppValue: setAppValue,
-  dispatchSetVersion: setVersion,
-  dispatchUpdate: update,
-  dispatchUpdateItem: updateItem,
-  dispatchRemoveItem: removeItem
-};
 
 function Logger(minimumLogLevel) {
   this.minimumLogLevel = minimumLogLevel;
@@ -116,7 +89,7 @@ class SignalRConnector extends Component {
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           if (retryContext.elapsedMilliseconds > 180000) {
-            this.props.dispatchSetAppValue({ isDisconnected: true });
+            setAppValue({ isDisconnected: true });
           }
           return Math.min(retryContext.previousRetryCount, 10) * 1000;
         }
@@ -170,8 +143,8 @@ class SignalRConnector extends Component {
     const resource = body.resource;
     const status = resource.status;
     const messageActions = {
-      showMessage: this.props.dispatchShowMessage,
-      hideMessage: this.props.dispatchHideMessage
+      showMessage,
+      hideMessage
     };
 
     // Both successful and failed commands need to be
@@ -262,7 +235,7 @@ class SignalRConnector extends Component {
   handleVersion = (body) => {
     const version = body.version;
 
-    this.props.dispatchSetVersion({ version });
+    setVersion({ version });
   };
 
   handleWantedCutoff = (body) => {
@@ -299,7 +272,7 @@ class SignalRConnector extends Component {
     console.error('[signalR] failed to connect');
     console.error(error);
 
-    this.props.dispatchSetAppValue({
+    setAppValue({
       isConnected: false,
       isReconnecting: false,
       isDisconnected: false,
@@ -310,7 +283,7 @@ class SignalRConnector extends Component {
   onStart = () => {
     console.debug('[signalR] connected');
 
-    this.props.dispatchSetAppValue({
+    setAppValue({
       isConnected: true,
       isReconnecting: false,
       isDisconnected: false,
@@ -319,16 +292,12 @@ class SignalRConnector extends Component {
   };
 
   onReconnecting = () => {
-    this.props.dispatchSetAppValue({ isReconnecting: true });
+    setAppValue({ isReconnecting: true });
   };
 
   onReconnected = () => {
 
-    const {
-      dispatchSetAppValue
-    } = this.props;
-
-    dispatchSetAppValue({
+    setAppValue({
       isConnected: true,
       isReconnecting: false,
       isDisconnected: false,
@@ -363,16 +332,4 @@ class SignalRConnector extends Component {
   }
 }
 
-SignalRConnector.propTypes = {
-  isReconnecting: PropTypes.bool.isRequired,
-  isDisconnected: PropTypes.bool.isRequired,
-  dispatchShowMessage: PropTypes.func.isRequired,
-  dispatchHideMessage: PropTypes.func.isRequired,
-  dispatchSetAppValue: PropTypes.func.isRequired,
-  dispatchSetVersion: PropTypes.func.isRequired,
-  dispatchUpdate: PropTypes.func.isRequired,
-  dispatchUpdateItem: PropTypes.func.isRequired,
-  dispatchRemoveItem: PropTypes.func.isRequired
-};
-
-export default connect(createMapStateToProps, mapDispatchToProps)(SignalRConnector);
+export default SignalRConnector;

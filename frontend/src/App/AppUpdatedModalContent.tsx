@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppStore } from 'App/useAppStore';
 import Button from 'Components/Link/Button';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import InlineMarkdown from 'Components/Markdown/InlineMarkdown';
@@ -14,7 +14,6 @@ import UpdateChanges from 'System/Updates/UpdateChanges';
 import { invalidateUpdates, useUpdates } from 'System/useSystem';
 import Update from 'typings/Update';
 import translate from 'Utilities/String/translate';
-import AppState from './State/AppState';
 import styles from './AppUpdatedModalContent.module.css';
 
 function mergeUpdates(items: Update[], version: string, prevVersion?: string) {
@@ -65,7 +64,7 @@ interface AppUpdatedModalContentProps {
 
 function AppUpdatedModalContent(props: AppUpdatedModalContentProps) {
   const queryClient = useQueryClient();
-  const { version, prevVersion } = useSelector((state: AppState) => state.app);
+  const { version, prevVersion } = useAppStore();
   const { isPopulated, error, items } = useUpdates();
   const previousVersion = usePrevious(version);
 
