@@ -75,22 +75,12 @@ class DiscoverMovie extends Component {
     const {
       items,
       sortKey,
-      sortDirection,
-      includeRecommendations,
-      includeTrending,
-      includePopular
+      sortDirection
     } = this.props;
-
-    if (includeRecommendations !== prevProps.includeRecommendations ||
-      includeTrending !== prevProps.includeTrending ||
-      includePopular !== prevProps.includePopular
-    ) {
-      this.props.dispatchFetchListMovies();
-    }
 
     if (sortKey !== prevProps.sortKey ||
         sortDirection !== prevProps.sortDirection ||
-        hasDifferentItemsOrOrder(prevProps.items, items)
+        hasDifferentItemsOrOrder(prevProps.items, items, 'tmdbId')
     ) {
       this.setJumpBarItems();
       this.setSelectedState();
@@ -263,6 +253,8 @@ class DiscoverMovie extends Component {
       onScroll,
       onAddMoviesPress,
       isSyncingLists,
+      isAdding,
+      isExcluding,
       ...otherProps
     } = this.props;
 
@@ -424,6 +416,8 @@ class DiscoverMovie extends Component {
           isLoaded &&
             <DiscoverMovieFooterConnector
               selectedIds={selectedMovieIds}
+              isAdding={isAdding}
+              isExcluding={isExcluding}
               onAddMoviesPress={this.onAddMoviesPress}
               onExcludeMoviesPress={this.onExcludeMoviesPress}
             />
@@ -461,6 +455,8 @@ DiscoverMovie.propTypes = {
   includeTrending: PropTypes.bool.isRequired,
   includePopular: PropTypes.bool.isRequired,
   isSyncingLists: PropTypes.bool.isRequired,
+  isAdding: PropTypes.bool.isRequired,
+  isExcluding: PropTypes.bool.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
   onSortSelect: PropTypes.func.isRequired,
   onFilterSelect: PropTypes.func.isRequired,
@@ -468,8 +464,7 @@ DiscoverMovie.propTypes = {
   onScroll: PropTypes.func.isRequired,
   onAddMoviesPress: PropTypes.func.isRequired,
   onExcludeMoviesPress: PropTypes.func.isRequired,
-  onImportListSyncPress: PropTypes.func.isRequired,
-  dispatchFetchListMovies: PropTypes.func.isRequired
+  onImportListSyncPress: PropTypes.func.isRequired
 };
 
 export default DiscoverMovie;

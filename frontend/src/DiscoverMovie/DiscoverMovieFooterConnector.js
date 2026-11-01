@@ -1,70 +1,41 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { setAddMovieDefault } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
 import DiscoverMovieFooter from './DiscoverMovieFooter';
+import { useAddDefaults, useDiscoverMovieStore } from './useDiscoverMovie';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.discoverMovie,
-    (state, { selectedIds }) => selectedIds,
-    (discoverMovie, selectedIds) => {
-      const {
-        monitor: defaultMonitor,
-        qualityProfileId: defaultQualityProfileId,
-        minimumAvailability: defaultMinimumAvailability,
-        rootFolderPath: defaultRootFolderPath,
-        searchForMovie: defaultSearchForMovie
-      } = discoverMovie.defaults;
+function DiscoverMovieFooterConnector({ selectedIds, isAdding, isExcluding, ...otherProps }) {
+  const {
+    monitor: defaultMonitor,
+    qualityProfileId: defaultQualityProfileId,
+    minimumAvailability: defaultMinimumAvailability,
+    rootFolderPath: defaultRootFolderPath,
+    searchForMovie: defaultSearchForMovie
+  } = useAddDefaults();
 
-      const {
-        isAdding,
-        isSaving
-      } = discoverMovie;
+  const handleInputChange = useCallback(({ name, value }) => {
+    useDiscoverMovieStore.getState().setDefaults({ [name]: value });
+  }, []);
 
-      return {
-        selectedCount: selectedIds.length,
-        isAdding,
-        isExcluding: isSaving,
-        defaultMonitor,
-        defaultQualityProfileId,
-        defaultMinimumAvailability,
-        defaultRootFolderPath,
-        defaultSearchForMovie
-      };
-    }
+  return (
+    <DiscoverMovieFooter
+      {...otherProps}
+      selectedCount={selectedIds.length}
+      isAdding={isAdding}
+      isExcluding={isExcluding}
+      defaultMonitor={defaultMonitor}
+      defaultQualityProfileId={defaultQualityProfileId}
+      defaultMinimumAvailability={defaultMinimumAvailability}
+      defaultRootFolderPath={defaultRootFolderPath}
+      defaultSearchForMovie={defaultSearchForMovie}
+      onInputChange={handleInputChange}
+    />
   );
 }
 
-const mapDispatchToProps = {
-  setAddMovieDefault
-};
-
-class DiscoverMovieFooterConnector extends Component {
-
-  //
-  // Listeners
-
-  onInputChange = ({ name, value }) => {
-    this.props.setAddMovieDefault({ [name]: value });
-  };
-
-  //
-  // Render
-
-  render() {
-    return (
-      <DiscoverMovieFooter
-        {...this.props}
-        onInputChange={this.onInputChange}
-      />
-    );
-  }
-}
-
 DiscoverMovieFooterConnector.propTypes = {
-  setAddMovieDefault: PropTypes.func.isRequired
+  selectedIds: PropTypes.arrayOf(PropTypes.number).isRequired,
+  isAdding: PropTypes.bool.isRequired,
+  isExcluding: PropTypes.bool.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(DiscoverMovieFooterConnector);
+export default DiscoverMovieFooterConnector;

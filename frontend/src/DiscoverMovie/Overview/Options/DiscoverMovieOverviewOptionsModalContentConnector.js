@@ -1,29 +1,32 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { setListMovieOption, setListMovieOverviewOption } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
+import {
+  useDiscoverMovieOptions,
+  useDiscoverMovieStore,
+  useOverviewOptions
+} from 'DiscoverMovie/useDiscoverMovie';
 import DiscoverMovieOverviewOptionsModalContent from './DiscoverMovieOverviewOptionsModalContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.discoverMovie,
-    (discoverMovie) => {
-      return {
-        ...discoverMovie.options,
-        ...discoverMovie.overviewOptions
-      };
-    }
+function DiscoverMovieOverviewOptionsModalContentConnector(props) {
+  const options = useDiscoverMovieOptions();
+  const overviewOptions = useOverviewOptions();
+
+  const handleChangeOverviewOption = useCallback((payload) => {
+    useDiscoverMovieStore.getState().setOverviewOptions(payload);
+  }, []);
+
+  const handleChangeOption = useCallback((payload) => {
+    useDiscoverMovieStore.getState().setOptions(payload);
+  }, []);
+
+  return (
+    <DiscoverMovieOverviewOptionsModalContent
+      {...props}
+      {...options}
+      {...overviewOptions}
+      onChangeOverviewOption={handleChangeOverviewOption}
+      onChangeOption={handleChangeOption}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onChangeOverviewOption(payload) {
-      dispatch(setListMovieOverviewOption(payload));
-    },
-    onChangeOption(payload) {
-      dispatch(setListMovieOption(payload));
-    }
-  };
-}
-
-export default connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieOverviewOptionsModalContent);
+export default DiscoverMovieOverviewOptionsModalContentConnector;

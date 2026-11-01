@@ -1,43 +1,31 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { addImportListExclusions } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
+import { useExcludeDiscoverMovies } from 'DiscoverMovie/useDiscoverMovie';
 import ExcludeMovieModalContent from './ExcludeMovieModalContent';
 
-const mapDispatchToProps = {
-  addImportListExclusions
-};
+function ExcludeMovieModalContentConnector(props) {
+  const { tmdbId, onModalClose } = props;
 
-class ExcludeMovieModalContentConnector extends Component {
+  const handleExcluded = useCallback(() => onModalClose(true), [onModalClose]);
+  const { excludeMovies } = useExcludeDiscoverMovies(handleExcluded);
 
-  //
-  // Listeners
+  const handleExcludePress = useCallback(() => {
+    excludeMovies([tmdbId]);
+  }, [tmdbId, excludeMovies]);
 
-  onExcludePress = () => {
-    this.props.addImportListExclusions({ ids: [this.props.tmdbId] });
-
-    this.props.onModalClose(true);
-  };
-
-  //
-  // Render
-
-  render() {
-    return (
-      <ExcludeMovieModalContent
-        {...this.props}
-        onExcludePress={this.onExcludePress}
-      />
-    );
-  }
+  return (
+    <ExcludeMovieModalContent
+      {...props}
+      onExcludePress={handleExcludePress}
+    />
+  );
 }
 
 ExcludeMovieModalContentConnector.propTypes = {
   tmdbId: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   year: PropTypes.number.isRequired,
-  onModalClose: PropTypes.func.isRequired,
-  addImportListExclusions: PropTypes.func.isRequired
+  onModalClose: PropTypes.func.isRequired
 };
 
-export default connect(undefined, mapDispatchToProps)(ExcludeMovieModalContentConnector);
+export default ExcludeMovieModalContentConnector;

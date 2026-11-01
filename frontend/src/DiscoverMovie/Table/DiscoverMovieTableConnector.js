@@ -1,27 +1,25 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { setListMovieSort } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useDiscoverMovieColumns, useDiscoverMovieStore } from 'DiscoverMovie/useDiscoverMovie';
+import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import DiscoverMovieTable from './DiscoverMovieTable';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.app.dimensions,
-    (state) => state.discoverMovie.columns,
-    (dimensions, columns) => {
-      return {
-        isSmallScreen: dimensions.isSmallScreen,
-        columns
-      };
-    }
+function DiscoverMovieTableConnector(props) {
+  const columns = useDiscoverMovieColumns();
+  const { isSmallScreen } = useSelector(createDimensionsSelector());
+
+  const handleSortPress = useCallback((sortKey) => {
+    useDiscoverMovieStore.getState().setSort(sortKey);
+  }, []);
+
+  return (
+    <DiscoverMovieTable
+      {...props}
+      isSmallScreen={isSmallScreen}
+      columns={columns}
+      onSortPress={handleSortPress}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onSortPress(sortKey) {
-      dispatch(setListMovieSort({ sortKey }));
-    }
-  };
-}
-
-export default connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieTable);
+export default DiscoverMovieTableConnector;

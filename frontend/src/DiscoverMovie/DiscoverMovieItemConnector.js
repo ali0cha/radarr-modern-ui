@@ -1,60 +1,29 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import createDiscoverMovieSelector from 'Store/Selectors/createDiscoverMovieSelector';
+import React from 'react';
+import { useDiscoverMovie } from './useDiscoverMovie';
 
-function createMapStateToProps() {
-  return createSelector(
-    createDiscoverMovieSelector(),
-    (
-      movie
-    ) => {
+function DiscoverMovieItemConnector({ movieId, component: ItemComponent, ...otherProps }) {
+  const movie = useDiscoverMovie(movieId);
 
-      // If a movie is deleted this selector may fire before the parent
-      // selectors, which will result in an undefined movie, if that happens
-      // we want to return early here and again in the render function to avoid
-      // trying to show a movie that has no information available.
+  // If a movie is added or removed this may fire before the parent
+  // re-renders, which results in an undefined movie, if that happens
+  // we do not want to show a movie that has no information available.
+  if (!movie || !movie.tmdbId) {
+    return null;
+  }
 
-      if (!movie) {
-        return {};
-      }
-
-      return {
-        ...movie
-      };
-    }
+  return (
+    <ItemComponent
+      {...otherProps}
+      {...movie}
+      movieId={movieId}
+    />
   );
 }
 
-class DiscoverMovieItemConnector extends Component {
-
-  //
-  // Render
-
-  render() {
-    const {
-      tmdbId,
-      component: ItemComponent,
-      ...otherProps
-    } = this.props;
-
-    if (!tmdbId) {
-      return null;
-    }
-
-    return (
-      <ItemComponent
-        {...otherProps}
-        tmdbId={tmdbId}
-      />
-    );
-  }
-}
-
 DiscoverMovieItemConnector.propTypes = {
-  tmdbId: PropTypes.number,
+  movieId: PropTypes.number,
   component: PropTypes.elementType.isRequired
 };
 
-export default connect(createMapStateToProps)(DiscoverMovieItemConnector);
+export default DiscoverMovieItemConnector;

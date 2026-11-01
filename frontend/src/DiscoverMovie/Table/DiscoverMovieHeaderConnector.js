@@ -1,13 +1,18 @@
-import { connect } from 'react-redux';
-import { setListMovieTableOption } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
+import { useDiscoverMovieStore } from 'DiscoverMovie/useDiscoverMovie';
 import DiscoverMovieHeader from './DiscoverMovieHeader';
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onTableOptionChange(payload) {
-      dispatch(setListMovieTableOption(payload));
-    }
-  };
+function DiscoverMovieHeaderConnector(props) {
+  const handleTableOptionChange = useCallback((payload) => {
+    useDiscoverMovieStore.getState().setTableOptions(payload);
+  }, []);
+
+  return (
+    <DiscoverMovieHeader
+      {...props}
+      onTableOptionChange={handleTableOptionChange}
+    />
+  );
 }
 
-export default connect(undefined, createMapDispatchToProps)(DiscoverMovieHeader);
+export default DiscoverMovieHeaderConnector;

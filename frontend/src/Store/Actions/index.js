@@ -2,7 +2,6 @@ import * as addMovie from './addMovieActions';
 import * as app from './appActions';
 import * as captcha from './captchaActions';
 import * as customFilters from './customFilterActions';
-import * as discoverMovie from './discoverMovieActions';
 import * as importMovie from './importMovieActions';
 import * as oAuth from './oAuthActions';
 import * as providerOptions from './providerOptionActions';
@@ -13,7 +12,6 @@ export default [
   app,
   captcha,
   customFilters,
-  discoverMovie,
   importMovie,
   oAuth,
   providerOptions,

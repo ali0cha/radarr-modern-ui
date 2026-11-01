@@ -1,25 +1,26 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import withUISettings from 'Settings/UI/withUISettings';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useOverviewOptions } from 'DiscoverMovie/useDiscoverMovie';
+import useUISettings from 'Settings/UI/useUISettings';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import DiscoverMovieOverviews from './DiscoverMovieOverviews';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.discoverMovie.overviewOptions,
-    (state, { uiSettings }) => uiSettings,
-    createDimensionsSelector(),
-    (overviewOptions, uiSettings, dimensions) => {
-      return {
-        overviewOptions,
-        showRelativeDates: uiSettings.showRelativeDates,
-        shortDateFormat: uiSettings.shortDateFormat,
-        longDateFormat: uiSettings.longDateFormat,
-        timeFormat: uiSettings.timeFormat,
-        isSmallScreen: dimensions.isSmallScreen
-      };
-    }
+function DiscoverMovieOverviewsConnector(props) {
+  const overviewOptions = useOverviewOptions();
+  const uiSettings = useUISettings();
+  const { isSmallScreen } = useSelector(createDimensionsSelector());
+
+  return (
+    <DiscoverMovieOverviews
+      {...props}
+      overviewOptions={overviewOptions}
+      showRelativeDates={uiSettings.showRelativeDates}
+      shortDateFormat={uiSettings.shortDateFormat}
+      longDateFormat={uiSettings.longDateFormat}
+      timeFormat={uiSettings.timeFormat}
+      isSmallScreen={isSmallScreen}
+    />
   );
 }
 
-export default withUISettings(connect(createMapStateToProps)(DiscoverMovieOverviews));
+export default DiscoverMovieOverviewsConnector;

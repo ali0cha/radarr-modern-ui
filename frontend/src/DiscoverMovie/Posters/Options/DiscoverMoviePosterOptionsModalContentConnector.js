@@ -1,29 +1,32 @@
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { setListMovieOption, setListMoviePosterOption } from 'Store/Actions/discoverMovieActions';
+import React, { useCallback } from 'react';
+import {
+  useDiscoverMovieOptions,
+  useDiscoverMovieStore,
+  usePosterOptions
+} from 'DiscoverMovie/useDiscoverMovie';
 import DiscoverMoviePosterOptionsModalContent from './DiscoverMoviePosterOptionsModalContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state) => state.discoverMovie,
-    (discoverMovie) => {
-      return {
-        ...discoverMovie.options,
-        ...discoverMovie.posterOptions
-      };
-    }
+function DiscoverMoviePosterOptionsModalContentConnector(props) {
+  const options = useDiscoverMovieOptions();
+  const posterOptions = usePosterOptions();
+
+  const handleChangePosterOption = useCallback((payload) => {
+    useDiscoverMovieStore.getState().setPosterOptions(payload);
+  }, []);
+
+  const handleChangeOption = useCallback((payload) => {
+    useDiscoverMovieStore.getState().setOptions(payload);
+  }, []);
+
+  return (
+    <DiscoverMoviePosterOptionsModalContent
+      {...props}
+      {...options}
+      {...posterOptions}
+      onChangePosterOption={handleChangePosterOption}
+      onChangeOption={handleChangeOption}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    onChangePosterOption(payload) {
-      dispatch(setListMoviePosterOption(payload));
-    },
-    onChangeOption(payload) {
-      dispatch(setListMovieOption(payload));
-    }
-  };
-}
-
-export default connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMoviePosterOptionsModalContent);
+export default DiscoverMoviePosterOptionsModalContentConnector;

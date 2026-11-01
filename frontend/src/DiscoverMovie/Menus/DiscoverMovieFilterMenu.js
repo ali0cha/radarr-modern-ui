@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FilterMenu from 'Components/Menu/FilterMenu';
-import DiscoverMovieFilterModalConnector from 'DiscoverMovie/DiscoverMovieFilterModalConnector';
+import DiscoverMovieFilterModal from 'DiscoverMovie/DiscoverMovieFilterModal';
 import { align } from 'Helpers/Props';
 
 function DiscoverMovieFilterMenu(props) {
@@ -20,7 +20,7 @@ function DiscoverMovieFilterMenu(props) {
       selectedFilterKey={selectedFilterKey}
       filters={filters}
       customFilters={customFilters}
-      filterModalConnectorComponent={DiscoverMovieFilterModalConnector}
+      filterModalConnectorComponent={DiscoverMovieFilterModal}
       onFilterSelect={onFilterSelect}
     />
   );
