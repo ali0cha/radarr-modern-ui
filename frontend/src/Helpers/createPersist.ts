@@ -1,5 +1,6 @@
 import { create, type StateCreator } from 'zustand';
 import { persist, type PersistOptions } from 'zustand/middleware';
+import upgradeLegacyState from './upgradeLegacyState';
 
 const LEGACY_KEY = 'radarr';
 
@@ -14,7 +15,9 @@ function readLegacyState(): Record<string, unknown> | undefined {
   const json =
     localStorage.getItem(instanceKey) ?? localStorage.getItem(LEGACY_KEY);
 
-  return json ? (JSON.parse(json) as Record<string, unknown>) : undefined;
+  return json
+    ? upgradeLegacyState(JSON.parse(json) as Record<string, unknown>)
+    : undefined;
 }
 
 interface CreatePersistOptions<T>
