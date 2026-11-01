@@ -1,7 +1,6 @@
 import { Error } from './AppSectionState';
 import CaptchaAppState from './CaptchaAppState';
 import CustomFiltersAppState from './CustomFiltersAppState';
-import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
@@ -64,7 +63,6 @@ interface AppState {
   app: AppSectionState;
   captcha: CaptchaAppState;
   customFilters: CustomFiltersAppState;
-  interactiveImport: InteractiveImportAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
   system: SystemAppState;

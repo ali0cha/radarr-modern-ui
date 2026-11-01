@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Icon from 'Components/Icon';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRowCellButton from 'Components/Table/Cells/TableRowCellButton';
@@ -13,6 +12,10 @@ import SelectLanguageModal from 'InteractiveImport/Language/SelectLanguageModal'
 import SelectMovieModal from 'InteractiveImport/Movie/SelectMovieModal';
 import SelectQualityModal from 'InteractiveImport/Quality/SelectQualityModal';
 import SelectReleaseGroupModal from 'InteractiveImport/ReleaseGroup/SelectReleaseGroupModal';
+import {
+  reprocessInteractiveImportItems,
+  updateInteractiveImportItem,
+} from 'InteractiveImport/useInteractiveImport';
 import Language from 'Language/Language';
 import IndexerFlags from 'Movie/IndexerFlags';
 import Movie from 'Movie/Movie';
@@ -20,10 +23,6 @@ import MovieFormats from 'Movie/MovieFormats';
 import MovieLanguages from 'Movie/MovieLanguages';
 import MovieQuality from 'Movie/MovieQuality';
 import { QualityModel } from 'Quality/Quality';
-import {
-  reprocessInteractiveImportItems,
-  updateInteractiveImportItem,
-} from 'Store/Actions/interactiveImportActions';
 import CustomFormat from 'typings/CustomFormat';
 import { SelectStateInputProps } from 'typings/props';
 import Rejection from 'typings/Rejection';
@@ -87,8 +86,6 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
     onSelectedChange,
     onValidRowChange,
   } = props;
-
-  const dispatch = useDispatch();
 
   const isMovieColumnVisible = useMemo(
     () => columns.find((c) => c.name === 'movie')?.isVisible ?? false,
@@ -159,19 +156,17 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
 
   const onMovieSelect = useCallback(
     (movie: Movie) => {
-      dispatch(
-        updateInteractiveImportItem({
-          id,
-          movie,
-        })
-      );
+      updateInteractiveImportItem({
+        id,
+        movie,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: [id] }));
+      reprocessInteractiveImportItems({ ids: [id] });
 
       setSelectModalOpen(null);
       selectRowAfterChange();
     },
-    [id, dispatch, setSelectModalOpen, selectRowAfterChange]
+    [id, setSelectModalOpen, selectRowAfterChange]
   );
 
   const onSelectReleaseGroupPress = useCallback(() => {
@@ -180,19 +175,17 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
 
   const onReleaseGroupSelect = useCallback(
     (releaseGroup: string) => {
-      dispatch(
-        updateInteractiveImportItem({
-          id,
-          releaseGroup,
-        })
-      );
+      updateInteractiveImportItem({
+        id,
+        releaseGroup,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: [id] }));
+      reprocessInteractiveImportItems({ ids: [id] });
 
       setSelectModalOpen(null);
       selectRowAfterChange();
     },
-    [id, dispatch, setSelectModalOpen, selectRowAfterChange]
+    [id, setSelectModalOpen, selectRowAfterChange]
   );
 
   const onSelectQualityPress = useCallback(() => {
@@ -201,19 +194,17 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
 
   const onQualitySelect = useCallback(
     (quality: QualityModel) => {
-      dispatch(
-        updateInteractiveImportItem({
-          id,
-          quality,
-        })
-      );
+      updateInteractiveImportItem({
+        id,
+        quality,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: [id] }));
+      reprocessInteractiveImportItems({ ids: [id] });
 
       setSelectModalOpen(null);
       selectRowAfterChange();
     },
-    [id, dispatch, setSelectModalOpen, selectRowAfterChange]
+    [id, setSelectModalOpen, selectRowAfterChange]
   );
 
   const onSelectLanguagePress = useCallback(() => {
@@ -222,19 +213,17 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
 
   const onLanguagesSelect = useCallback(
     (languages: Language[]) => {
-      dispatch(
-        updateInteractiveImportItem({
-          id,
-          languages,
-        })
-      );
+      updateInteractiveImportItem({
+        id,
+        languages,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: [id] }));
+      reprocessInteractiveImportItems({ ids: [id] });
 
       setSelectModalOpen(null);
       selectRowAfterChange();
     },
-    [id, dispatch, setSelectModalOpen, selectRowAfterChange]
+    [id, setSelectModalOpen, selectRowAfterChange]
   );
 
   const onSelectIndexerFlagsPress = useCallback(() => {
@@ -243,19 +232,17 @@ function InteractiveImportRow(props: InteractiveImportRowProps) {
 
   const onIndexerFlagsSelect = useCallback(
     (indexerFlags: number) => {
-      dispatch(
-        updateInteractiveImportItem({
-          id,
-          indexerFlags,
-        })
-      );
+      updateInteractiveImportItem({
+        id,
+        indexerFlags,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: [id] }));
+      reprocessInteractiveImportItems({ ids: [id] });
 
       setSelectModalOpen(null);
       selectRowAfterChange();
     },
-    [id, dispatch, setSelectModalOpen, selectRowAfterChange]
+    [id, setSelectModalOpen, selectRowAfterChange]
   );
 
   const movieTitle = movie ? movie.title : '';

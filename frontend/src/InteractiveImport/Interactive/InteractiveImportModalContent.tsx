@@ -1,9 +1,5 @@
 import { cloneDeep, without } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
-import InteractiveImportAppState from 'App/State/InteractiveImportAppState';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand } from 'Commands/useCommands';
 import SelectInput, { SelectInputOption } from 'Components/Form/SelectInput';
@@ -26,6 +22,7 @@ import TableBody from 'Components/Table/TableBody';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds, scrollDirections } from 'Helpers/Props';
+import { SortDirection } from 'Helpers/Props/sortDirections';
 import ImportMode from 'InteractiveImport/ImportMode';
 import SelectIndexerFlagsModal from 'InteractiveImport/IndexerFlags/SelectIndexerFlagsModal';
 import InteractiveImport, {
@@ -35,6 +32,14 @@ import SelectLanguageModal from 'InteractiveImport/Language/SelectLanguageModal'
 import SelectMovieModal from 'InteractiveImport/Movie/SelectMovieModal';
 import SelectQualityModal from 'InteractiveImport/Quality/SelectQualityModal';
 import SelectReleaseGroupModal from 'InteractiveImport/ReleaseGroup/SelectReleaseGroupModal';
+import {
+  reprocessInteractiveImportItems,
+  setInteractiveImportMode,
+  setInteractiveImportSort,
+  updateInteractiveImportItems,
+  useInteractiveImport,
+  useInteractiveImportPreferences,
+} from 'InteractiveImport/useInteractiveImport';
 import Language from 'Language/Language';
 import Movie from 'Movie/Movie';
 import { MovieFile } from 'MovieFile/MovieFile';
@@ -43,15 +48,6 @@ import {
   useUpdateMovieFiles,
 } from 'MovieFile/useMovieFiles';
 import { QualityModel } from 'Quality/Quality';
-import {
-  clearInteractiveImport,
-  fetchInteractiveImportItems,
-  reprocessInteractiveImportItems,
-  setInteractiveImportMode,
-  setInteractiveImportSort,
-  updateInteractiveImportItems,
-} from 'Store/Actions/interactiveImportActions';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import { SortCallback } from 'typings/callbacks';
 import { CheckInputChanged } from 'typings/inputs';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
@@ -172,13 +168,6 @@ function isSameMovieFile(
   return true;
 }
 
-const importModeSelector = createSelector(
-  (state: AppState) => state.interactiveImport.importMode,
-  (importMode) => {
-    return importMode;
-  }
-);
-
 export interface InteractiveImportModalContentProps {
   downloadId?: string;
   movieId?: number;
@@ -216,6 +205,8 @@ function InteractiveImportModalContent(
     onModalClose,
   } = props;
 
+  const [filterExistingFiles, setFilterExistingFiles] = useState(false);
+
   const {
     isFetching,
     isPopulated,
@@ -224,13 +215,18 @@ function InteractiveImportModalContent(
     originalItems,
     sortKey,
     sortDirection,
-  }: InteractiveImportAppState = useSelector(
-    createClientSideCollectionSelector('interactiveImport')
-  );
+  } = useInteractiveImport({
+    downloadId,
+    movieId,
+    folder,
+    filterExistingFiles,
+  });
 
   const { deleteMovieFiles, isDeleting, deleteError } = useDeleteMovieFiles();
   const { updateMovieFiles } = useUpdateMovieFiles();
-  const importMode = useSelector(importModeSelector);
+  const importMode = useInteractiveImportPreferences(
+    (state) => state.importMode
+  );
 
   const [invalidRowsSelected, setInvalidRowsSelected] = useState<number[]>([]);
   const [withoutMovieFileIdRowsSelected, setWithoutMovieFileIdRowsSelected] =
@@ -240,13 +236,11 @@ function InteractiveImportModalContent(
   );
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] =
     useState(false);
-  const [filterExistingFiles, setFilterExistingFiles] = useState(false);
   const [interactiveImportErrorMessage, setInteractiveImportErrorMessage] =
     useState<string | null>(null);
   const [selectState, setSelectState] = useSelectState();
   const { allSelected, allUnselected, selectedState } = selectState;
   const previousIsDeleting = usePrevious(isDeleting);
-  const dispatch = useDispatch();
 
   const columns: Column[] = useMemo(() => {
     const result: Column[] = cloneDeep(COLUMNS);
@@ -314,30 +308,16 @@ function InteractiveImportModalContent(
   useEffect(
     () => {
       if (initialSortKey) {
-        const sortProps: { sortKey: string; sortDirection?: string } = {
+        const sortProps: { sortKey: string; sortDirection?: SortDirection } = {
           sortKey: initialSortKey,
         };
 
         if (initialSortDirection) {
-          sortProps.sortDirection = initialSortDirection;
+          sortProps.sortDirection = initialSortDirection as SortDirection;
         }
 
-        dispatch(setInteractiveImportSort(sortProps));
+        setInteractiveImportSort(sortProps);
       }
-
-      dispatch(
-        fetchInteractiveImportItems({
-          downloadId,
-          movieId,
-          folder,
-          filterExistingFiles,
-        })
-      );
-
-      // returned function will be called on component unmount
-      return () => {
-        dispatch(clearInteractiveImport());
-      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -525,39 +505,24 @@ function InteractiveImportModalContent(
     updateMovieFiles,
   ]);
 
-  const onSortPress = useCallback<SortCallback>(
-    (sortKey, sortDirection) => {
-      dispatch(setInteractiveImportSort({ sortKey, sortDirection }));
-    },
-    [dispatch]
-  );
+  const onSortPress = useCallback<SortCallback>((sortKey, sortDirection) => {
+    setInteractiveImportSort({ sortKey, sortDirection });
+  }, []);
 
   const onFilterExistingFilesChange = useCallback(
     (value: string | undefined) => {
       const filter = value !== 'all';
 
       setFilterExistingFiles(filter);
-
-      dispatch(
-        fetchInteractiveImportItems({
-          downloadId,
-          movieId,
-          folder,
-          filterExistingFiles: filter,
-        })
-      );
     },
-    [downloadId, movieId, folder, setFilterExistingFiles, dispatch]
+    [setFilterExistingFiles]
   );
 
   const onImportModeChange = useCallback<
     ({ value }: { value: ImportMode }) => void
-  >(
-    ({ value }) => {
-      dispatch(setInteractiveImportMode({ importMode: value }));
-    },
-    [dispatch]
-  );
+  >(({ value }) => {
+    setInteractiveImportMode({ importMode: value });
+  }, []);
 
   const onSelectModalSelect = useCallback<
     ({ value }: { value: SelectType }) => void
@@ -574,82 +539,72 @@ function InteractiveImportModalContent(
 
   const onMovieSelect = useCallback(
     (movie: Movie) => {
-      dispatch(
-        updateInteractiveImportItems({
-          ids: selectedIds,
-          movie,
-        })
-      );
+      updateInteractiveImportItems({
+        ids: selectedIds,
+        movie,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: selectedIds }));
+      reprocessInteractiveImportItems({ ids: selectedIds });
 
       setSelectModalOpen(null);
     },
-    [selectedIds, setSelectModalOpen, dispatch]
+    [selectedIds, setSelectModalOpen]
   );
 
   const onReleaseGroupSelect = useCallback(
     (releaseGroup: string) => {
-      dispatch(
-        updateInteractiveImportItems({
-          ids: selectedIds,
-          releaseGroup,
-        })
-      );
+      updateInteractiveImportItems({
+        ids: selectedIds,
+        releaseGroup,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: selectedIds }));
+      reprocessInteractiveImportItems({ ids: selectedIds });
 
       setSelectModalOpen(null);
     },
-    [selectedIds, dispatch]
+    [selectedIds]
   );
 
   const onLanguagesSelect = useCallback(
     (newLanguages: Language[]) => {
-      dispatch(
-        updateInteractiveImportItems({
-          ids: selectedIds,
-          languages: newLanguages,
-        })
-      );
+      updateInteractiveImportItems({
+        ids: selectedIds,
+        languages: newLanguages,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: selectedIds }));
+      reprocessInteractiveImportItems({ ids: selectedIds });
 
       setSelectModalOpen(null);
     },
-    [selectedIds, dispatch]
+    [selectedIds]
   );
 
   const onQualitySelect = useCallback(
     (quality: QualityModel) => {
-      dispatch(
-        updateInteractiveImportItems({
-          ids: selectedIds,
-          quality,
-        })
-      );
+      updateInteractiveImportItems({
+        ids: selectedIds,
+        quality,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: selectedIds }));
+      reprocessInteractiveImportItems({ ids: selectedIds });
 
       setSelectModalOpen(null);
     },
-    [selectedIds, dispatch]
+    [selectedIds]
   );
 
   const onIndexerFlagsSelect = useCallback(
     (indexerFlags: number) => {
-      dispatch(
-        updateInteractiveImportItems({
-          ids: selectedIds,
-          indexerFlags,
-        })
-      );
+      updateInteractiveImportItems({
+        ids: selectedIds,
+        indexerFlags,
+      });
 
-      dispatch(reprocessInteractiveImportItems({ ids: selectedIds }));
+      reprocessInteractiveImportItems({ ids: selectedIds });
 
       setSelectModalOpen(null);
     },
-    [selectedIds, dispatch]
+    [selectedIds]
   );
 
   const errorMessage = getErrorMessage(
