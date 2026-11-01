@@ -3,6 +3,12 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import {
+  invalidateQueue,
+  invalidateQueueDetails,
+  invalidateQueuePages,
+  setQueueStatus
+} from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
@@ -16,11 +22,12 @@ import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
 import { fetchMovies } from 'Store/Actions/movieActions';
-import { fetchQueue, fetchQueueDetails } from 'Store/Actions/queueActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
 import titleCase from 'Utilities/String/titleCase';
+import { CUTOFF_UNMET_PATH } from 'Wanted/CutoffUnmet/useCutoffUnmet';
+import { MISSING_PATH } from 'Wanted/Missing/useMissing';
 
 function getHandlerName(name) {
   name = titleCase(name);
@@ -33,12 +40,10 @@ function createMapStateToProps() {
   return createSelector(
     (state) => state.app.isReconnecting,
     (state) => state.app.isDisconnected,
-    (state) => state.queue.paged.isPopulated,
-    (isReconnecting, isDisconnected, isQueuePopulated) => {
+    (isReconnecting, isDisconnected) => {
       return {
         isReconnecting,
-        isDisconnected,
-        isQueuePopulated
+        isDisconnected
       };
     }
   );
@@ -54,8 +59,6 @@ const mapDispatchToProps = {
   dispatchUpdateItem: updateItem,
   dispatchRemoveItem: removeItem,
   dispatchFetchHealth: fetchHealth,
-  dispatchFetchQueue: fetchQueue,
-  dispatchFetchQueueDetails: fetchQueueDetails,
   dispatchFetchMovies: fetchMovies
 };
 
@@ -250,17 +253,15 @@ class SignalRConnector extends Component {
   };
 
   handleQueue = () => {
-    if (this.props.isQueuePopulated) {
-      this.props.dispatchFetchQueue();
-    }
+    invalidateQueuePages(queryClient);
   };
 
   handleQueueDetails = () => {
-    this.props.dispatchFetchQueueDetails();
+    invalidateQueueDetails(queryClient);
   };
 
   handleQueueStatus = (body) => {
-    this.props.dispatchUpdate({ section: 'queue.status', data: body.resource });
+    setQueueStatus(queryClient, body.resource);
   };
 
   handleVersion = (body) => {
@@ -271,21 +272,13 @@ class SignalRConnector extends Component {
 
   handleWantedCutoff = (body) => {
     if (body.action === 'updated') {
-      this.props.dispatchUpdateItem({
-        section: 'wanted.cutoffUnmet',
-        updateOnly: true,
-        ...body.resource
-      });
+      invalidateApiQueries(queryClient, CUTOFF_UNMET_PATH);
     }
   };
 
   handleWantedMissing = (body) => {
     if (body.action === 'updated') {
-      this.props.dispatchUpdateItem({
-        section: 'wanted.missing',
-        updateOnly: true,
-        ...body.resource
-      });
+      invalidateApiQueries(queryClient, MISSING_PATH);
     }
   };
 
@@ -353,6 +346,7 @@ class SignalRConnector extends Component {
     // are in sync after reconnecting.
     dispatchFetchMovies();
     dispatchFetchCommands();
+    invalidateQueue(queryClient);
     repopulatePage();
   };
 
@@ -377,7 +371,6 @@ class SignalRConnector extends Component {
 SignalRConnector.propTypes = {
   isReconnecting: PropTypes.bool.isRequired,
   isDisconnected: PropTypes.bool.isRequired,
-  isQueuePopulated: PropTypes.bool.isRequired,
   dispatchFetchCommands: PropTypes.func.isRequired,
   dispatchUpdateCommand: PropTypes.func.isRequired,
   dispatchFinishCommand: PropTypes.func.isRequired,
@@ -387,8 +380,6 @@ SignalRConnector.propTypes = {
   dispatchUpdateItem: PropTypes.func.isRequired,
   dispatchRemoveItem: PropTypes.func.isRequired,
   dispatchFetchHealth: PropTypes.func.isRequired,
-  dispatchFetchQueue: PropTypes.func.isRequired,
-  dispatchFetchQueueDetails: PropTypes.func.isRequired,
   dispatchFetchMovies: PropTypes.func.isRequired
 };
 

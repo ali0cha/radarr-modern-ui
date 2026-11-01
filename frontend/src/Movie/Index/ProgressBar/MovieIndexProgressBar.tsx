@@ -1,10 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useMovieQueueCount } from 'Activity/Queue/useQueue';
 import ProgressBar from 'Components/ProgressBar';
 import { sizes } from 'Helpers/Props';
-import createMovieQueueItemsDetailsSelector, {
-  MovieQueueDetails,
-} from 'Movie/Index/createMovieQueueDetailsSelector';
 import { MovieStatus } from 'Movie/Movie';
 import { MovieFile } from 'MovieFile/MovieFile';
 import getProgressBarKind from 'Utilities/Movie/getProgressBarKind';
@@ -36,13 +33,10 @@ function MovieIndexProgressBar({
   bottomRadius,
   isStandAlone,
 }: MovieIndexProgressBarProps) {
-  const queueDetails: MovieQueueDetails = useSelector(
-    createMovieQueueItemsDetailsSelector(movieId)
-  );
+  const queueCount = useMovieQueueCount(movieId);
 
   const progress = 100;
-  const queueStatusText =
-    queueDetails.count > 0 ? translate('Downloading') : null;
+  const queueStatusText = queueCount > 0 ? translate('Downloading') : null;
 
   let movieStatus = translate('NotAvailable');
   if (hasFile) {
@@ -68,7 +62,7 @@ function MovieIndexProgressBar({
         monitored,
         hasFile,
         isAvailable,
-        queueDetails.count > 0
+        queueCount > 0
       )}
       size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
       showText={detailedProgressBar}

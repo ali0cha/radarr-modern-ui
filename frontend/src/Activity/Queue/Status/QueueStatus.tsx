@@ -1,33 +1,23 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import PageSidebarStatus from 'Components/Page/Sidebar/PageSidebarStatus';
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import { fetchQueueStatus } from 'Store/Actions/queueActions';
-import createQueueStatusSelector from './createQueueStatusSelector';
+import { useQueueStatus } from '../useQueue';
 
 function QueueStatus() {
-  const dispatch = useDispatch();
   const { isConnected, isReconnecting } = useSelector(
     (state: AppState) => state.app
   );
-  const { isPopulated, count, errors, warnings } = useSelector(
-    createQueueStatusSelector()
-  );
+  const { count, errors, warnings, refetch } = useQueueStatus();
 
   const wasReconnecting = usePrevious(isReconnecting);
 
   useEffect(() => {
-    if (!isPopulated) {
-      dispatch(fetchQueueStatus());
-    }
-  }, [isPopulated, dispatch]);
-
-  useEffect(() => {
     if (isConnected && wasReconnecting) {
-      dispatch(fetchQueueStatus());
+      refetch();
     }
-  }, [isConnected, wasReconnecting, dispatch]);
+  }, [isConnected, wasReconnecting, refetch]);
 
   return (
     <PageSidebarStatus count={count} errors={errors} warnings={warnings} />

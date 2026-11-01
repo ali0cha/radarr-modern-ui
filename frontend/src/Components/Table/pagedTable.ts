@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { Filter, FilterBuilderProp } from 'App/State/AppState';
 import Column from 'Components/Table/Column';
 import { createPersist } from 'Helpers/createPersist';
@@ -112,7 +113,8 @@ export function createPagedTable(
           columns,
         } as PagedTableState & PagedTableActions),
       migrateFromLegacy: (legacyState) => {
-        const legacy = legacyState[section] as
+        // A section can be nested, e.g. 'wanted.missing'
+        const legacy = get(legacyState, section) as
           | Partial<PagedTableState>
           | undefined;
 

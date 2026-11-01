@@ -1,7 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ProtocolLabel from 'Activity/Queue/ProtocolLabel';
-import { Error } from 'App/State/AppSectionState';
 import IconButton from 'Components/Link/IconButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import ProgressBar from 'Components/ProgressBar';
@@ -22,7 +20,6 @@ import MovieTitleLink from 'Movie/MovieTitleLink';
 import useMovie from 'Movie/useMovie';
 import { QualityModel } from 'Quality/Quality';
 import useUISettings from 'Settings/UI/useUISettings';
-import { grabQueueItem, removeQueueItem } from 'Store/Actions/queueActions';
 import CustomFormat from 'typings/CustomFormat';
 import { SelectStateInputProps } from 'typings/props';
 import {
@@ -36,6 +33,7 @@ import translate from 'Utilities/String/translate';
 import QueueStatusCell from './QueueStatusCell';
 import RemoveQueueItemModal, { RemovePressProps } from './RemoveQueueItemModal';
 import TimeleftCell from './TimeleftCell';
+import { useGrabQueueItem, useRemoveQueueItem } from './useQueue';
 import styles from './QueueRow.module.css';
 
 interface QueueRowProps {
@@ -62,9 +60,6 @@ interface QueueRowProps {
   timeleft?: string;
   size: number;
   sizeleft: number;
-  isGrabbing?: boolean;
-  grabError?: Error;
-  isRemoving?: boolean;
   isSelected?: boolean;
   columns: Column[];
   onSelectedChange: (options: SelectStateInputProps) => void;
@@ -96,16 +91,12 @@ function QueueRow(props: QueueRowProps) {
     timeleft,
     size,
     sizeleft,
-    isGrabbing = false,
-    grabError,
-    isRemoving = false,
     isSelected,
     columns,
     onSelectedChange,
     onQueueRowModalOpenOrClose,
   } = props;
 
-  const dispatch = useDispatch();
   const movie = useMovie(movieId);
   const { showRelativeDates, shortDateFormat, timeFormat } = useUISettings();
 
@@ -115,9 +106,8 @@ function QueueRow(props: QueueRowProps) {
   const [isInteractiveImportModalOpen, setIsInteractiveImportModalOpen] =
     useState(false);
 
-  const handleGrabPress = useCallback(() => {
-    dispatch(grabQueueItem({ id }));
-  }, [id, dispatch]);
+  const { grab, isGrabbing, grabError } = useGrabQueueItem(id);
+  const { removeItem, isRemoving } = useRemoveQueueItem(id);
 
   const handleInteractiveImportPress = useCallback(() => {
     onQueueRowModalOpenOrClose(true);
@@ -137,10 +127,10 @@ function QueueRow(props: QueueRowProps) {
   const handleRemoveQueueItemModalConfirmed = useCallback(
     (payload: RemovePressProps) => {
       onQueueRowModalOpenOrClose(false);
-      dispatch(removeQueueItem({ id, ...payload }));
+      removeItem(payload);
       setIsRemoveQueueItemModalOpen(false);
     },
-    [id, setIsRemoveQueueItemModalOpen, onQueueRowModalOpenOrClose, dispatch]
+    [removeItem, setIsRemoveQueueItemModalOpen, onQueueRowModalOpenOrClose]
   );
 
   const handleRemoveQueueItemModalClose = useCallback(() => {
@@ -319,7 +309,7 @@ function QueueRow(props: QueueRowProps) {
                   name={icons.DOWNLOAD}
                   kind={grabError ? kinds.DANGER : kinds.DEFAULT}
                   isSpinning={isGrabbing}
-                  onPress={handleGrabPress}
+                  onPress={grab}
                 />
               ) : null}
 

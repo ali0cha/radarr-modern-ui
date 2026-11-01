@@ -21,6 +21,7 @@ interface PagedQueryOptions {
   // The server filters by query parameters named after the key of the filter,
   // lists are sent as repeated parameters.
   filters?: PropertyFilter[];
+  params?: Record<string, string | number | boolean>;
 }
 
 const NO_RECORDS: never[] = [];
@@ -34,6 +35,7 @@ function usePagedApiQuery<T>({
   sortKey,
   sortDirection,
   filters = [],
+  params: extraParams = {},
 }: PagedQueryOptions) {
   const params = new URLSearchParams({
     page: String(page),
@@ -47,6 +49,10 @@ function usePagedApiQuery<T>({
   if (sortDirection) {
     params.set('sortDirection', sortDirection);
   }
+
+  Object.entries(extraParams).forEach(([key, value]) => {
+    params.set(key, String(value));
+  });
 
   filters.forEach(({ key, value }) => {
     if (Array.isArray(value)) {

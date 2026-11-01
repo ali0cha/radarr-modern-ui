@@ -11,7 +11,6 @@ import {
   setMovieCollectionsFilter,
   setMovieCollectionsSort
 } from 'Store/Actions/movieCollectionActions';
-import { clearQueueDetails, fetchQueueDetails } from 'Store/Actions/queueActions';
 import scrollPositions from 'Store/scrollPositions';
 import createCollectionClientSideCollectionItemsSelector from 'Store/Selectors/createCollectionClientSideCollectionItemsSelector';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
@@ -42,12 +41,6 @@ function createMapDispatchToProps(dispatch, props) {
     dispatchFetchMovieCollections() {
       dispatch(fetchMovieCollections());
     },
-    dispatchFetchQueueDetails() {
-      dispatch(fetchQueueDetails());
-    },
-    dispatchClearQueueDetails() {
-      dispatch(clearQueueDetails());
-    },
     onUpdateSelectedPress(payload) {
       dispatch(saveMovieCollections(payload));
     },
@@ -72,11 +65,6 @@ class CollectionConnector extends Component {
 
   componentDidMount() {
     this.props.dispatchFetchMovieCollections();
-    this.props.dispatchFetchQueueDetails();
-  }
-
-  componentWillUnmount() {
-    this.props.dispatchClearQueueDetails();
   }
 
   //
@@ -96,8 +84,6 @@ class CollectionConnector extends Component {
   render() {
     const {
       dispatchFetchMovieCollections,
-      dispatchFetchQueueDetails,
-      dispatchClearQueueDetails,
       ...otherProps
     } = this.props;
 
@@ -116,9 +102,7 @@ CollectionConnector.propTypes = {
   isSmallScreen: PropTypes.bool.isRequired,
   view: PropTypes.string.isRequired,
   onUpdateSelectedPress: PropTypes.func.isRequired,
-  dispatchFetchMovieCollections: PropTypes.func.isRequired,
-  dispatchFetchQueueDetails: PropTypes.func.isRequired,
-  dispatchClearQueueDetails: PropTypes.func.isRequired
+  dispatchFetchMovieCollections: PropTypes.func.isRequired
 };
 
 export default withScrollPosition(

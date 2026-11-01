@@ -1,5 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
@@ -18,10 +20,6 @@ import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
-import {
-  clearQueueDetails,
-  fetchQueueDetails,
-} from 'Store/Actions/queueActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
@@ -40,6 +38,7 @@ const UPDATE_DELAY = 3600000; // 1 hour
 
 function Calendar() {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const requestCurrentPage = useCurrentPage();
   const updateTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -73,7 +72,6 @@ function Calendar() {
 
     return () => {
       dispatch(clearCalendar());
-      dispatch(clearQueueDetails());
       dispatch(clearMovieFiles());
       clearTimeout(updateTimeout.current);
     };
@@ -89,7 +87,7 @@ function Calendar() {
 
   useEffect(() => {
     const repopulate = () => {
-      dispatch(fetchQueueDetails({ time, view }));
+      invalidateQueueDetails(queryClient);
       dispatch(fetchCalendar({ time, view }));
     };
 
@@ -98,7 +96,7 @@ function Calendar() {
     return () => {
       unregisterPagePopulator(repopulate);
     };
-  }, [time, view, dispatch]);
+  }, [time, view, queryClient, dispatch]);
 
   useEffect(() => {
     handleScheduleUpdate();
@@ -121,12 +119,7 @@ function Calendar() {
 
   useEffect(() => {
     if (!previousItems || hasDifferentItems(items, previousItems)) {
-      const movieIds = selectUniqueIds<Movie, number>(items, 'id');
       const movieFileIds = selectUniqueIds<Movie, number>(items, 'movieFileId');
-
-      if (items.length) {
-        dispatch(fetchQueueDetails({ movieIds }));
-      }
 
       if (movieFileIds.length) {
         dispatch(fetchMovieFiles({ movieFileIds }));

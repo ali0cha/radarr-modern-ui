@@ -10,10 +10,8 @@ import MovieFilesAppState from './MovieFilesAppState';
 import MoviesAppState, { MovieIndexAppState } from './MoviesAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
-import QueueAppState from './QueueAppState';
 import ReleasesAppState from './ReleasesAppState';
 import SystemAppState from './SystemAppState';
-import WantedAppState from './WantedAppState';
 
 interface FilterBuilderPropOption {
   id: string;
@@ -81,10 +79,8 @@ interface AppState {
   movies: MoviesAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
-  queue: QueueAppState;
   releases: ReleasesAppState;
   system: SystemAppState;
-  wanted: WantedAppState;
 }
 
 export default AppState;

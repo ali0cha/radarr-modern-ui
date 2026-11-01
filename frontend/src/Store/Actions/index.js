@@ -13,10 +13,8 @@ import * as movieFiles from './movieFileActions';
 import * as movieIndex from './movieIndexActions';
 import * as oAuth from './oAuthActions';
 import * as providerOptions from './providerOptionActions';
-import * as queue from './queueActions';
 import * as releases from './releaseActions';
 import * as system from './systemActions';
-import * as wanted from './wantedActions';
 
 export default [
   addMovie,
@@ -31,11 +29,9 @@ export default [
   interactiveImportActions,
   oAuth,
   providerOptions,
-  queue,
   releases,
   movies,
   movieCollections,
   movieIndex,
-  system,
-  wanted
+  system
 ];

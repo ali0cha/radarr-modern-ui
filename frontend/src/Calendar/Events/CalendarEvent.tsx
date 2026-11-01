@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useQueueItemForMovie } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import getStatusStyle from 'Calendar/getStatusStyle';
 import Icon from 'Components/Icon';
@@ -9,7 +10,6 @@ import Link from 'Components/Link/Link';
 import { icons, kinds } from 'Helpers/Props';
 import useMovieFile from 'MovieFile/useMovieFile';
 import useUISettings from 'Settings/UI/useUISettings';
-import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemSelector';
 import translate from 'Utilities/String/translate';
 import CalendarEventQueueDetails from './CalendarEventQueueDetails';
 import styles from './CalendarEvent.module.css';
@@ -48,7 +48,7 @@ function CalendarEvent({
   grabbed,
 }: CalendarEventProps) {
   const movieFile = useMovieFile(movieFileId);
-  const queueItem = useSelector(createQueueItemSelectorForHook(id));
+  const queueItem = useQueueItemForMovie(id);
 
   const { enableColorImpairedMode } = useUISettings();
 

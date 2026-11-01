@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AppState, { Filter } from 'App/State/AppState';
+import { Filter } from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -16,52 +16,28 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
-import usePaging from 'Components/Table/usePaging';
-import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
-import Movie from 'Movie/Movie';
 import { executeCommand } from 'Store/Actions/commandActions';
-import {
-  clearQueueDetails,
-  fetchQueueDetails,
-} from 'Store/Actions/queueActions';
-import {
-  batchToggleMissingMovies,
-  clearMissing,
-  fetchMissing,
-  gotoMissingPage,
-  setMissingFilter,
-  setMissingSort,
-  setMissingTableOption,
-} from 'Store/Actions/wantedActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
-import { TableOptionsChangePayload } from 'typings/Table';
 import getFilterValue from 'Utilities/Filter/getFilterValue';
-import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
-import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
-import {
-  registerPagePopulator,
-  unregisterPagePopulator,
-} from 'Utilities/pagePopulator';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import MissingRow from './MissingRow';
+import { useMissing, useToggleMonitoredMissingMovies } from './useMissing';
 
 function getMonitoredValue(
   filters: Filter[],
-  selectedFilterKey: string
+  selectedFilterKey: string | number
 ): boolean {
   return !!getFilterValue(filters, selectedFilterKey, 'monitored', false);
 }
 
 function Missing() {
   const dispatch = useDispatch();
-  const requestCurrentPage = useCurrentPage();
 
   const {
     isFetching,
@@ -76,8 +52,19 @@ function Missing() {
     page,
     pageSize,
     totalPages,
-    totalRecords = 0,
-  } = useSelector((state: AppState) => state.wanted.missing);
+    totalRecords,
+    refetch,
+    handleFirstPagePress,
+    handlePreviousPagePress,
+    handleNextPagePress,
+    handleLastPagePress,
+    handlePageSelect,
+    handleFilterSelect,
+    handleSortPress,
+    handleTableOptionChange,
+  } = useMissing();
+
+  const { toggleMonitored, isSaving } = useToggleMonitoredMissingMovies();
 
   const isSearchingForAllMovies = useSelector(
     createCommandExecutingSelector(commandNames.MISSING_MOVIES_SEARCH)
@@ -95,32 +82,14 @@ function Missing() {
   const [isInteractiveImportModalOpen, setIsInteractiveImportModalOpen] =
     useState(false);
 
-  const {
-    handleFirstPagePress,
-    handlePreviousPagePress,
-    handleNextPagePress,
-    handleLastPagePress,
-    handlePageSelect,
-  } = usePaging({
-    page,
-    totalPages,
-    gotoPage: gotoMissingPage,
-  });
-
   const selectedIds = useMemo(() => {
     return getSelectedIds(selectedState);
   }, [selectedState]);
-
-  const isSaving = useMemo(() => {
-    return items.filter((m) => m.isSaving).length > 1;
-  }, [items]);
 
   const itemsSelected = !!selectedIds.length;
   const isShowingMonitored = getMonitoredValue(filters, selectedFilterKey);
   const isSearchingForMovies =
     isSearchingForAllMovies || isSearchingForSelectedMovies;
-
-  const previousItems = usePrevious(items);
 
   const handleSelectAllChange = useCallback(
     ({ value }: CheckInputChanged) => {
@@ -148,11 +117,11 @@ function Missing() {
         name: commandNames.MOVIE_SEARCH,
         movieIds: selectedIds,
         commandFinished: () => {
-          dispatch(fetchMissing());
+          refetch();
         },
       })
     );
-  }, [selectedIds, dispatch]);
+  }, [selectedIds, refetch, dispatch]);
 
   const handleSearchAllPress = useCallback(() => {
     setIsConfirmSearchAllModalOpen(true);
@@ -167,22 +136,17 @@ function Missing() {
       executeCommand({
         name: commandNames.MISSING_MOVIES_SEARCH,
         commandFinished: () => {
-          dispatch(fetchMissing());
+          refetch();
         },
       })
     );
 
     setIsConfirmSearchAllModalOpen(false);
-  }, [dispatch]);
+  }, [refetch, dispatch]);
 
   const handleToggleSelectedPress = useCallback(() => {
-    dispatch(
-      batchToggleMissingMovies({
-        movieIds: selectedIds,
-        monitored: !isShowingMonitored,
-      })
-    );
-  }, [isShowingMonitored, selectedIds, dispatch]);
+    toggleMonitored(selectedIds, !isShowingMonitored);
+  }, [isShowingMonitored, selectedIds, toggleMonitored]);
 
   const handleInteractiveImportPress = useCallback(() => {
     setIsInteractiveImportModalOpen(true);
@@ -191,70 +155,6 @@ function Missing() {
   const handleInteractiveImportModalClose = useCallback(() => {
     setIsInteractiveImportModalOpen(false);
   }, []);
-
-  const handleFilterSelect = useCallback(
-    (filterKey: number | string) => {
-      dispatch(setMissingFilter({ selectedFilterKey: filterKey }));
-    },
-    [dispatch]
-  );
-
-  const handleSortPress = useCallback(
-    (sortKey: string) => {
-      dispatch(setMissingSort({ sortKey }));
-    },
-    [dispatch]
-  );
-
-  const handleTableOptionChange = useCallback(
-    (payload: TableOptionsChangePayload) => {
-      dispatch(setMissingTableOption(payload));
-
-      if (payload.pageSize) {
-        dispatch(gotoMissingPage({ page: 1 }));
-      }
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchMissing());
-    } else {
-      dispatch(gotoMissingPage({ page: 1 }));
-    }
-
-    return () => {
-      dispatch(clearMissing());
-      dispatch(clearQueueDetails());
-    };
-  }, [requestCurrentPage, dispatch]);
-
-  useEffect(() => {
-    const repopulate = () => {
-      dispatch(fetchMissing());
-    };
-
-    registerPagePopulator(repopulate, [
-      'movieUpdated',
-      'movieFileUpdated',
-      'movieFileDeleted',
-    ]);
-
-    return () => {
-      unregisterPagePopulator(repopulate);
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!previousItems || hasDifferentItems(items, previousItems)) {
-      const movieIds = selectUniqueIds<Movie, number>(items, 'id');
-
-      if (movieIds.length) {
-        dispatch(fetchQueueDetails({ movieIds }));
-      }
-    }
-  }, [items, previousItems, dispatch]);
 
   return (
     <PageContent title={translate('Missing')}>

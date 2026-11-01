@@ -1,54 +1,19 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
-import FilterModal from 'Components/Filter/FilterModal';
-import { setQueueFilter } from 'Store/Actions/queueActions';
+import React from 'react';
+import PagedTableFilterModal from 'Components/Filter/PagedTableFilterModal';
+import { queueTable } from './useQueue';
 
-function createQueueSelector() {
-  return createSelector(
-    (state: AppState) => state.queue.paged.items,
-    (queueItems) => {
-      return queueItems;
-    }
-  );
-}
-
-function createFilterBuilderPropsSelector() {
-  return createSelector(
-    (state: AppState) => state.queue.paged.filterBuilderProps,
-    (filterBuilderProps) => {
-      return filterBuilderProps;
-    }
-  );
-}
-
-interface QueueFilterModalProps {
-  isOpen: boolean;
-}
+// The filter menu passes it the state of the filters
+type QueueFilterModalProps = Omit<
+  React.ComponentProps<typeof PagedTableFilterModal>,
+  'filterBuilderProps' | 'customFilterType'
+>;
 
 export default function QueueFilterModal(props: QueueFilterModalProps) {
-  const sectionItems = useSelector(createQueueSelector());
-  const filterBuilderProps = useSelector(createFilterBuilderPropsSelector());
-  const customFilterType = 'queue';
-
-  const dispatch = useDispatch();
-
-  const dispatchSetFilter = useCallback(
-    (payload: unknown) => {
-      dispatch(setQueueFilter(payload));
-    },
-    [dispatch]
-  );
-
   return (
-    <FilterModal
-      // TODO: Don't spread all the props
+    <PagedTableFilterModal
       {...props}
-      sectionItems={sectionItems}
-      filterBuilderProps={filterBuilderProps}
-      customFilterType={customFilterType}
-      dispatchSetFilter={dispatchSetFilter}
+      filterBuilderProps={queueTable.filterBuilderProps}
+      customFilterType="queue"
     />
   );
 }

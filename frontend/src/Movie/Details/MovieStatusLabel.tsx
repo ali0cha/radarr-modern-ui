@@ -1,10 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useQueueItemForMovie } from 'Activity/Queue/useQueue';
 import Label from 'Components/Label';
 import { kinds, sizes } from 'Helpers/Props';
 import { Kind } from 'Helpers/Props/kinds';
 import { MovieStatus } from 'Movie/Movie';
-import { createQueueItemSelectorForHook } from 'Store/Selectors/createQueueItemSelector';
 import Queue from 'typings/Queue';
 import getQueueStatusText from 'Utilities/Movie/getQueueStatusText';
 import firstCharToUpper from 'Utilities/String/firstCharToUpper';
@@ -68,7 +67,7 @@ function MovieStatusLabel({
   status,
   useLabel = false,
 }: MovieStatusLabelProps) {
-  const queueItem = useSelector(createQueueItemSelectorForHook(movieId));
+  const queueItem = useQueueItemForMovie(movieId);
 
   let movieStatus = getMovieStatus(
     status,

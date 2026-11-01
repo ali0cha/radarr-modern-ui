@@ -1,13 +1,11 @@
 import React, {
   ReactElement,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -22,41 +20,27 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
-import usePaging from 'Components/Table/usePaging';
-import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import createMoviesFetchingSelector from 'Movie/createMoviesFetchingSelector';
 import { executeCommand } from 'Store/Actions/commandActions';
-import {
-  clearQueue,
-  fetchQueue,
-  gotoQueuePage,
-  grabQueueItems,
-  removeQueueItems,
-  setQueueFilter,
-  setQueueSort,
-  setQueueTableOption,
-} from 'Store/Actions/queueActions';
-import { createCustomFiltersSelector } from 'Store/Selectors/createClientSideCollectionSelector';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
-import { TableOptionsChangePayload } from 'typings/Table';
-import {
-  registerPagePopulator,
-  unregisterPagePopulator,
-} from 'Utilities/pagePopulator';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import QueueFilterModal from './QueueFilterModal';
 import QueueOptions from './QueueOptions';
 import QueueRow from './QueueRow';
 import RemoveQueueItemModal, { RemovePressProps } from './RemoveQueueItemModal';
-import createQueueStatusSelector from './Status/createQueueStatusSelector';
+import {
+  useGrabQueueItems,
+  useQueue,
+  useQueueStatus,
+  useRemoveQueueItems,
+} from './useQueue';
 
 function Queue() {
-  const requestCurrentPage = useCurrentPage();
   const dispatch = useDispatch();
 
   const {
@@ -67,21 +51,27 @@ function Queue() {
     columns,
     selectedFilterKey,
     filters,
+    customFilters,
     sortKey,
     sortDirection,
     page,
     pageSize,
     totalPages,
     totalRecords,
-    isGrabbing,
-    isRemoving,
-  } = useSelector((state: AppState) => state.queue.paged);
+    handleFirstPagePress,
+    handlePreviousPagePress,
+    handleNextPagePress,
+    handleLastPagePress,
+    handlePageSelect,
+    handleFilterSelect,
+    handleSortPress,
+    handleTableOptionChange,
+  } = useQueue();
 
-  const { count } = useSelector(createQueueStatusSelector());
+  const { count } = useQueueStatus();
   const { isMoviesFetching, isMoviesPopulated, moviesError } = useSelector(
     createMoviesFetchingSelector()
   );
-  const customFilters = useSelector(createCustomFiltersSelector('queue'));
 
   const isRefreshMonitoredDownloadsExecuting = useSelector(
     createCommandExecutingSelector(commandNames.REFRESH_MONITORED_DOWNLOADS)
@@ -147,9 +137,16 @@ function Queue() {
     shouldBlockRefresh.current = isOpen;
   }, []);
 
+  const handleItemsChanged = useCallback(() => {
+    setSelectState({ type: 'unselectAll', items });
+  }, [items, setSelectState]);
+
+  const { grabItems, isGrabbing } = useGrabQueueItems(handleItemsChanged);
+  const { removeItems, isRemoving } = useRemoveQueueItems(handleItemsChanged);
+
   const handleGrabSelectedPress = useCallback(() => {
-    dispatch(grabQueueItems({ ids: selectedIds }));
-  }, [selectedIds, dispatch]);
+    grabItems({ ids: selectedIds });
+  }, [selectedIds, grabItems]);
 
   const handleRemoveSelectedPress = useCallback(() => {
     shouldBlockRefresh.current = true;
@@ -159,77 +156,16 @@ function Queue() {
   const handleRemoveSelectedConfirmed = useCallback(
     (payload: RemovePressProps) => {
       shouldBlockRefresh.current = false;
-      dispatch(removeQueueItems({ ids: selectedIds, ...payload }));
+      removeItems({ ids: selectedIds, ...payload });
       setIsConfirmRemoveModalOpen(false);
     },
-    [selectedIds, setIsConfirmRemoveModalOpen, dispatch]
+    [selectedIds, setIsConfirmRemoveModalOpen, removeItems]
   );
 
   const handleConfirmRemoveModalClose = useCallback(() => {
     shouldBlockRefresh.current = false;
     setIsConfirmRemoveModalOpen(false);
   }, [setIsConfirmRemoveModalOpen]);
-
-  const {
-    handleFirstPagePress,
-    handlePreviousPagePress,
-    handleNextPagePress,
-    handleLastPagePress,
-    handlePageSelect,
-  } = usePaging({
-    page,
-    totalPages,
-    gotoPage: gotoQueuePage,
-  });
-
-  const handleFilterSelect = useCallback(
-    (selectedFilterKey: string | number) => {
-      dispatch(setQueueFilter({ selectedFilterKey }));
-    },
-    [dispatch]
-  );
-
-  const handleSortPress = useCallback(
-    (sortKey: string) => {
-      dispatch(setQueueSort({ sortKey }));
-    },
-    [dispatch]
-  );
-
-  const handleTableOptionChange = useCallback(
-    (payload: TableOptionsChangePayload) => {
-      dispatch(setQueueTableOption(payload));
-
-      if (payload.pageSize) {
-        dispatch(gotoQueuePage({ page: 1 }));
-      }
-    },
-    [dispatch]
-  );
-
-  useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchQueue());
-    } else {
-      dispatch(gotoQueuePage({ page: 1 }));
-    }
-
-    return () => {
-      dispatch(clearQueue());
-    };
-  }, [requestCurrentPage, dispatch]);
-
-  useEffect(() => {
-    const repopulate = () => {
-      dispatch(fetchQueue());
-    };
-
-    registerPagePopulator(repopulate);
-
-    return () => {
-      unregisterPagePopulator(repopulate);
-    };
-  }, [dispatch]);
 
   if (!shouldBlockRefresh.current) {
     currentQueue.current = (

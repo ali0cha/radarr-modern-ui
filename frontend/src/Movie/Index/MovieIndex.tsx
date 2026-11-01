@@ -34,7 +34,6 @@ import {
   setMovieTableOption,
   setMovieView,
 } from 'Store/Actions/movieIndexActions';
-import { fetchQueueDetails } from 'Store/Actions/queueActions';
 import scrollPositions from 'Store/scrollPositions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
@@ -113,10 +112,6 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
     if (initialNavigationType.current === 'PUSH') {
       dispatch(fetchMovies());
     }
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchQueueDetails({ all: true }));
   }, [dispatch]);
 
   const onRssSyncPress = useCallback(() => {

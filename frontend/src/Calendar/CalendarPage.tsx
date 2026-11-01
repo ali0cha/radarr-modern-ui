@@ -1,7 +1,8 @@
 import moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { useQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -36,32 +37,12 @@ import styles from './CalendarPage.module.css';
 
 const MINIMUM_DAY_WIDTH = 120;
 
-function createMissingMovieIdsSelector() {
+function createCalendarSelector() {
   return createSelector(
     (state: AppState) => state.calendar.start,
     (state: AppState) => state.calendar.end,
     (state: AppState) => state.calendar.items,
-    (state: AppState) => state.queue.details.items,
-    (start, end, movies, queueDetails) => {
-      return movies.reduce<number[]>((acc, movie) => {
-        const { inCinemas } = movie;
-
-        if (
-          !movie.movieFileId &&
-          inCinemas &&
-          moment(inCinemas).isAfter(start) &&
-          moment(inCinemas).isBefore(end) &&
-          isBefore(inCinemas) &&
-          !queueDetails.some(
-            (details) => !!details.movie && details.movie.id === movie.id
-          )
-        ) {
-          acc.push(movie.id);
-        }
-
-        return acc;
-      }, []);
-    }
+    (start, end, movies) => ({ start, end, movies })
   );
 }
 
@@ -89,7 +70,29 @@ function CalendarPage() {
   const { selectedFilterKey, filters } = useSelector(
     (state: AppState) => state.calendar
   );
-  const missingMovieIds = useSelector(createMissingMovieIdsSelector());
+  const { start, end, movies } = useSelector(createCalendarSelector());
+  const queueDetails = useQueueDetails();
+
+  const missingMovieIds = useMemo(() => {
+    return movies.reduce<number[]>((acc, movie) => {
+      const { inCinemas } = movie;
+
+      if (
+        !movie.movieFileId &&
+        inCinemas &&
+        moment(inCinemas).isAfter(start) &&
+        moment(inCinemas).isBefore(end) &&
+        isBefore(inCinemas) &&
+        !queueDetails.some(
+          (details) => !!details.movie && details.movie.id === movie.id
+        )
+      ) {
+        acc.push(movie.id);
+      }
+
+      return acc;
+    }, []);
+  }, [start, end, movies, queueDetails]);
   const isSearchingForMissing = useSelector(createIsSearchingSelector());
   const isRssSyncExecuting = useSelector(
     createCommandExecutingSelector(commandNames.RSS_SYNC)

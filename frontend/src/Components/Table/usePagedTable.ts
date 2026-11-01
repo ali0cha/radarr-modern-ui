@@ -15,8 +15,14 @@ import { usePagerHandlers } from './usePageNavigation';
 interface PagedTableOptions {
   table: PagedTable;
   path: string;
-  // The type under which the custom filters of this table are saved
-  customFilterType: string;
+  // The type under which the custom filters of this table are saved, when it
+  // has any
+  customFilterType?: string;
+  // Parameters of the query that are not preferences of the table
+  params?: Record<string, string | number | boolean>;
+  // The page is fetched again when SignalR reports one of these (it is also
+  // fetched again when the connection is back)
+  populateReasons?: string[];
 }
 
 // A table that the server cuts in pages, sorts and filters: what is shown comes
@@ -25,6 +31,8 @@ function usePagedTable<T>({
   table,
   path,
   customFilterType,
+  params,
+  populateReasons,
 }: PagedTableOptions) {
   const {
     pageSize,
@@ -44,7 +52,10 @@ function usePagedTable<T>({
   ) as CustomFilter[];
 
   const customFilters = useMemo(
-    () => allCustomFilters.filter(({ type }) => type === customFilterType),
+    () =>
+      customFilterType
+        ? allCustomFilters.filter(({ type }) => type === customFilterType)
+        : [],
     [allCustomFilters, customFilterType]
   );
 
@@ -63,6 +74,13 @@ function usePagedTable<T>({
     [table.columns, storedColumns]
   );
 
+  // The first page is shown again when the parameters of the query change
+  const paramsKey = JSON.stringify(params ?? {});
+
+  useEffect(() => {
+    setPage(1);
+  }, [paramsKey]);
+
   const query = usePagedApiQuery<T>({
     path,
     page,
@@ -70,6 +88,7 @@ function usePagedTable<T>({
     sortKey,
     sortDirection,
     filters,
+    params,
   });
 
   const { totalPages, refetch } = query;
@@ -123,12 +142,12 @@ function usePagedTable<T>({
       refetch();
     };
 
-    registerPagePopulator(repopulate);
+    registerPagePopulator(repopulate, populateReasons);
 
     return () => {
       unregisterPagePopulator(repopulate);
     };
-  }, [refetch]);
+  }, [refetch, populateReasons]);
 
   return {
     ...query,

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AppState, { Filter } from 'App/State/AppState';
+import { Filter } from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -16,8 +16,6 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
-import usePaging from 'Components/Table/usePaging';
-import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
@@ -27,44 +25,29 @@ import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
-import {
-  clearQueueDetails,
-  fetchQueueDetails,
-} from 'Store/Actions/queueActions';
-import {
-  batchToggleCutoffUnmetMovies,
-  clearCutoffUnmet,
-  fetchCutoffUnmet,
-  gotoCutoffUnmetPage,
-  setCutoffUnmetFilter,
-  setCutoffUnmetSort,
-  setCutoffUnmetTableOption,
-} from 'Store/Actions/wantedActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
-import { TableOptionsChangePayload } from 'typings/Table';
 import getFilterValue from 'Utilities/Filter/getFilterValue';
 import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
-import {
-  registerPagePopulator,
-  unregisterPagePopulator,
-} from 'Utilities/pagePopulator';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import CutoffUnmetRow from './CutoffUnmetRow';
+import {
+  useCutoffUnmet,
+  useToggleMonitoredCutoffUnmetMovies,
+} from './useCutoffUnmet';
 
 function getMonitoredValue(
   filters: Filter[],
-  selectedFilterKey: string
+  selectedFilterKey: string | number
 ): boolean {
   return !!getFilterValue(filters, selectedFilterKey, 'monitored', false);
 }
 
 function CutoffUnmet() {
   const dispatch = useDispatch();
-  const requestCurrentPage = useCurrentPage();
 
   const {
     isFetching,
@@ -79,8 +62,19 @@ function CutoffUnmet() {
     page,
     pageSize,
     totalPages,
-    totalRecords = 0,
-  } = useSelector((state: AppState) => state.wanted.cutoffUnmet);
+    totalRecords,
+    refetch,
+    handleFirstPagePress,
+    handlePreviousPagePress,
+    handleNextPagePress,
+    handleLastPagePress,
+    handlePageSelect,
+    handleFilterSelect,
+    handleSortPress,
+    handleTableOptionChange,
+  } = useCutoffUnmet();
+
+  const { toggleMonitored, isSaving } = useToggleMonitoredCutoffUnmetMovies();
 
   const isSearchingForAllMovies = useSelector(
     createCommandExecutingSelector(commandNames.CUTOFF_UNMET_MOVIES_SEARCH)
@@ -95,25 +89,9 @@ function CutoffUnmet() {
   const [isConfirmSearchAllModalOpen, setIsConfirmSearchAllModalOpen] =
     useState(false);
 
-  const {
-    handleFirstPagePress,
-    handlePreviousPagePress,
-    handleNextPagePress,
-    handleLastPagePress,
-    handlePageSelect,
-  } = usePaging({
-    page,
-    totalPages,
-    gotoPage: gotoCutoffUnmetPage,
-  });
-
   const selectedIds = useMemo(() => {
     return getSelectedIds(selectedState);
   }, [selectedState]);
-
-  const isSaving = useMemo(() => {
-    return items.filter((m) => m.isSaving).length > 1;
-  }, [items]);
 
   const itemsSelected = !!selectedIds.length;
   const isShowingMonitored = getMonitoredValue(filters, selectedFilterKey);
@@ -148,11 +126,11 @@ function CutoffUnmet() {
         name: commandNames.MOVIE_SEARCH,
         movieIds: selectedIds,
         commandFinished: () => {
-          dispatch(fetchCutoffUnmet());
+          refetch();
         },
       })
     );
-  }, [selectedIds, dispatch]);
+  }, [selectedIds, refetch, dispatch]);
 
   const handleSearchAllPress = useCallback(() => {
     setIsConfirmSearchAllModalOpen(true);
@@ -167,86 +145,27 @@ function CutoffUnmet() {
       executeCommand({
         name: commandNames.CUTOFF_UNMET_MOVIES_SEARCH,
         commandFinished: () => {
-          dispatch(fetchCutoffUnmet());
+          refetch();
         },
       })
     );
 
     setIsConfirmSearchAllModalOpen(false);
-  }, [dispatch]);
+  }, [refetch, dispatch]);
 
   const handleToggleSelectedPress = useCallback(() => {
-    dispatch(
-      batchToggleCutoffUnmetMovies({
-        movieIds: selectedIds,
-        monitored: !isShowingMonitored,
-      })
-    );
-  }, [isShowingMonitored, selectedIds, dispatch]);
-
-  const handleFilterSelect = useCallback(
-    (filterKey: number | string) => {
-      dispatch(setCutoffUnmetFilter({ selectedFilterKey: filterKey }));
-    },
-    [dispatch]
-  );
-
-  const handleSortPress = useCallback(
-    (sortKey: string) => {
-      dispatch(setCutoffUnmetSort({ sortKey }));
-    },
-    [dispatch]
-  );
-
-  const handleTableOptionChange = useCallback(
-    (payload: TableOptionsChangePayload) => {
-      dispatch(setCutoffUnmetTableOption(payload));
-
-      if (payload.pageSize) {
-        dispatch(gotoCutoffUnmetPage({ page: 1 }));
-      }
-    },
-    [dispatch]
-  );
+    toggleMonitored(selectedIds, !isShowingMonitored);
+  }, [isShowingMonitored, selectedIds, toggleMonitored]);
 
   useEffect(() => {
-    if (requestCurrentPage) {
-      dispatch(fetchCutoffUnmet());
-    } else {
-      dispatch(gotoCutoffUnmetPage({ page: 1 }));
-    }
-
     return () => {
-      dispatch(clearCutoffUnmet());
-      dispatch(clearQueueDetails());
       dispatch(clearMovieFiles());
-    };
-  }, [requestCurrentPage, dispatch]);
-
-  useEffect(() => {
-    const repopulate = () => {
-      dispatch(fetchCutoffUnmet());
-    };
-
-    registerPagePopulator(repopulate, [
-      'movieUpdated',
-      'movieFileUpdated',
-      'movieFileDeleted',
-    ]);
-
-    return () => {
-      unregisterPagePopulator(repopulate);
     };
   }, [dispatch]);
 
   useEffect(() => {
     if (!previousItems || hasDifferentItems(items, previousItems)) {
-      const movieIds = selectUniqueIds<Movie, number>(items, 'id');
       const movieFileIds = selectUniqueIds<Movie, number>(items, 'movieFileId');
-
-      if (movieIds.length) {
-        dispatch(fetchQueueDetails({ movieIds }));
-      }
 
       if (movieFileIds.length) {
         dispatch(fetchMovieFiles({ movieFileIds }));

@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, {
   useCallback,
   useEffect,
@@ -9,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import TextTruncate from 'react-text-truncate';
 import { createSelector } from 'reselect';
+import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
@@ -62,10 +64,6 @@ import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
-import {
-  clearQueueDetails,
-  fetchQueueDetails,
-} from 'Store/Actions/queueActions';
 import {
   cancelFetchReleases,
   clearReleases,
@@ -123,6 +121,7 @@ interface MovieDetailsProps {
 
 function MovieDetails({ movieId }: MovieDetailsProps) {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const movie = useMovie(movieId);
@@ -433,8 +432,8 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     dispatch(fetchMovieFiles({ movieId }));
     refetchExtraFiles({ cancelRefetch: false });
     refetchMovieCredits({ cancelRefetch: false });
-    dispatch(fetchQueueDetails({ movieId }));
-  }, [movieId, dispatch, refetchMovieCredits, refetchExtraFiles]);
+    invalidateQueueDetails(queryClient);
+  }, [movieId, dispatch, queryClient, refetchMovieCredits, refetchExtraFiles]);
 
   useEffect(() => {
     populate();
@@ -446,7 +445,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     return () => {
       unregisterPagePopulator(populate);
       dispatch(clearMovieFiles());
-      dispatch(clearQueueDetails());
       dispatch(cancelFetchReleases());
       dispatch(clearReleases());
     };
