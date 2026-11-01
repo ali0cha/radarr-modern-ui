@@ -1,17 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
 import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import { kinds } from 'Helpers/Props';
-import { resetOAuth, startOAuth } from 'Store/Actions/oAuthActions';
 import { InputOnChange } from 'typings/inputs';
+import { resetOAuth, startOAuth, useOAuthStore } from './useOAuth';
 
 export interface OAuthInputProps {
   label?: string;
   name: string;
   provider: string;
-  providerData: object;
-  section: string;
+  providerData: Record<string, unknown>;
   onChange: InputOnChange<unknown>;
 }
 
@@ -20,24 +17,13 @@ function OAuthInput({
   name,
   provider,
   providerData,
-  section,
   onChange,
 }: OAuthInputProps) {
-  const dispatch = useDispatch();
-  const { authorizing, error, result } = useSelector(
-    (state: AppState) => state.oAuth
-  );
+  const { authorizing, error, result } = useOAuthStore();
 
   const handlePress = useCallback(() => {
-    dispatch(
-      startOAuth({
-        name,
-        provider,
-        providerData,
-        section,
-      })
-    );
-  }, [name, provider, providerData, section, dispatch]);
+    startOAuth({ name, provider, providerData });
+  }, [name, provider, providerData]);
 
   useEffect(() => {
     if (!result) {
@@ -51,9 +37,9 @@ function OAuthInput({
 
   useEffect(() => {
     return () => {
-      dispatch(resetOAuth());
+      resetOAuth();
     };
-  }, [dispatch]);
+  }, []);
 
   return (
     <div>
