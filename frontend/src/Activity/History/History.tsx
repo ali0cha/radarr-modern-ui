@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -13,7 +12,7 @@ import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
 import { align, icons, kinds } from 'Helpers/Props';
-import createMoviesFetchingSelector from 'Movie/createMoviesFetchingSelector';
+import { useMoviesFetching } from 'Movie/useMovies';
 import translate from 'Utilities/String/translate';
 import HistoryFilterModal from './HistoryFilterModal';
 import HistoryRow from './HistoryRow';
@@ -46,9 +45,8 @@ function History() {
     handleTableOptionChange,
   } = useHistory();
 
-  const { isMoviesFetching, isMoviesPopulated, moviesError } = useSelector(
-    createMoviesFetchingSelector()
-  );
+  const { isMoviesFetching, isMoviesPopulated, moviesError } =
+    useMoviesFetching();
 
   const isFetchingAny = isFetching || isMoviesFetching;
   const isAllPopulated = isPopulated && (isMoviesPopulated || !items.length);

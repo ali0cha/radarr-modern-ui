@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withMovies from 'Movie/withMovies';
 import withUISettings from 'Settings/UI/withUISettings';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createExistingMovieSelector from 'Store/Selectors/createExistingMovieSelector';
@@ -26,4 +27,4 @@ function createMapStateToProps() {
   );
 }
 
-export default withUISettings(connect(createMapStateToProps)(AddNewMovieSearchResult));
+export default withMovies(withUISettings(connect(createMapStateToProps)(AddNewMovieSearchResult)));

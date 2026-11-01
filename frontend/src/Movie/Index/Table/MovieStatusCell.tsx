@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import Icon from 'Components/Icon';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
 import VirtualTableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons } from 'Helpers/Props';
 import getMovieStatusDetails from 'Movie/getMovieStatusDetails';
 import { MovieStatus } from 'Movie/Movie';
-import { toggleMovieMonitored } from 'Store/Actions/movieActions';
+import { useToggleMovieMonitored } from 'Movie/useMovies';
 import translate from 'Utilities/String/translate';
 import styles from './MovieStatusCell.module.css';
 
@@ -16,7 +15,6 @@ interface MovieStatusCellProps {
   monitored: boolean;
   status: MovieStatus;
   isSelectMode: boolean;
-  isSaving: boolean;
   component?: React.ElementType;
 }
 
@@ -27,18 +25,17 @@ function MovieStatusCell(props: MovieStatusCellProps) {
     monitored,
     status,
     isSelectMode,
-    isSaving,
     component: Component = VirtualTableRowCell,
     ...otherProps
   } = props;
 
   const statusDetails = getMovieStatusDetails(status);
 
-  const dispatch = useDispatch();
+  const { toggleMonitored, isSaving } = useToggleMovieMonitored(movieId);
 
   const onMonitoredPress = useCallback(() => {
-    dispatch(toggleMovieMonitored({ movieId, monitored: !monitored }));
-  }, [movieId, monitored, dispatch]);
+    toggleMonitored(!monitored);
+  }, [monitored, toggleMonitored]);
 
   return (
     <Component className={className} {...otherProps}>

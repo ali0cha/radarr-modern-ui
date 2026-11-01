@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
 import Icon from 'Components/Icon';
@@ -19,7 +19,6 @@ import { icons, kinds } from 'Helpers/Props';
 import DeleteMovieModal from 'Movie/Delete/DeleteMovieModal';
 import MovieDetailsLinks from 'Movie/Details/MovieDetailsLinks';
 import EditMovieModal from 'Movie/Edit/EditMovieModal';
-import createMovieIndexItemSelector from 'Movie/Index/createMovieIndexItemSelector';
 import { Statistics } from 'Movie/Movie';
 import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import MovieTitleLink from 'Movie/MovieTitleLink';
@@ -32,8 +31,9 @@ import formatBytes from 'Utilities/Number/formatBytes';
 import firstCharToUpper from 'Utilities/String/firstCharToUpper';
 import translate from 'Utilities/String/translate';
 import MovieIndexProgressBar from '../ProgressBar/MovieIndexProgressBar';
+import { useTableOptions } from '../useMovieIndex';
+import useMovieIndexItem from '../useMovieIndexItem';
 import MovieStatusCell from './MovieStatusCell';
-import selectTableOptions from './selectTableOptions';
 import styles from './MovieIndexRow.module.css';
 
 interface MovieIndexRowProps {
@@ -46,12 +46,12 @@ interface MovieIndexRowProps {
 function MovieIndexRow(props: MovieIndexRowProps) {
   const { movieId, columns, isSelectMode } = props;
 
-  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
-    createMovieIndexItemSelector(props.movieId)
+  const { movie, isRefreshingMovie, isSearchingMovie } = useMovieIndexItem(
+    props.movieId
   );
   const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
-  const { showSearchAction } = useSelector(selectTableOptions);
+  const { showSearchAction } = useTableOptions();
 
   const { movieRuntimeFormat } = useUISettings();
 
@@ -86,7 +86,6 @@ function MovieIndexRow(props: MovieIndexRowProps) {
     hasFile,
     movieFile,
     youTubeTrailerId,
-    isSaving = false,
   } = movie;
 
   const {
@@ -174,7 +173,6 @@ function MovieIndexRow(props: MovieIndexRowProps) {
               monitored={monitored}
               status={status}
               isSelectMode={isSelectMode}
-              isSaving={isSaving}
               component={VirtualTableRowCell}
             />
           );

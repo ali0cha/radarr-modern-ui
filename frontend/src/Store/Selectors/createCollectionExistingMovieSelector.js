@@ -1,10 +1,9 @@
 import { createSelector } from 'reselect';
-import createAllMoviesSelector from './createAllMoviesSelector';
 
 function createCollectionExistingMovieSelector() {
   return createSelector(
     (state, { tmdbId }) => tmdbId,
-    createAllMoviesSelector(),
+    (state, { allMovies }) => allMovies,
     (tmdbId, allMovies) => {
       return allMovies.find((movie) => movie.tmdbId === tmdbId);
     }

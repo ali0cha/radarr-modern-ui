@@ -1,13 +1,12 @@
 import { throttle } from 'lodash';
 import React, { RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import Movie from 'Movie/Movie';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+import { useOverviewOptions } from '../useMovieIndex';
 import MovieIndexOverview from './MovieIndexOverview';
-import selectOverviewOptions from './selectOverviewOptions';
 
 // Poster container dimensions
 const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
@@ -72,9 +71,7 @@ function MovieIndexOverviews(props: MovieIndexOverviewsProps) {
     isSmallScreen,
   } = props;
 
-  const { size: posterSize, detailedProgressBar } = useSelector(
-    selectOverviewOptions
-  );
+  const { size: posterSize, detailedProgressBar } = useOverviewOptions();
   const listRef = useRef<List>(null);
   const [measureRef, bounds] = useMeasure();
   const [size, setSize] = useState({ width: 0, height: 0 });

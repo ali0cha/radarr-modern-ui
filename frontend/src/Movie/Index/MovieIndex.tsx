@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, {
   useCallback,
   useEffect,
@@ -8,8 +9,6 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigationType } from 'react-router-dom';
 import { SelectProvider } from 'App/SelectContext';
-import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
-import MoviesAppState, { MovieIndexAppState } from 'App/State/MoviesAppState';
 import { RSS_SYNC } from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -26,18 +25,11 @@ import { align, icons, kinds } from 'Helpers/Props';
 import { DESCENDING } from 'Helpers/Props/sortDirections';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import NoMovie from 'Movie/NoMovie';
+import { invalidateMovies } from 'Movie/useMovies';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { fetchMovies } from 'Store/Actions/movieActions';
-import {
-  setMovieFilter,
-  setMovieSort,
-  setMovieTableOption,
-  setMovieView,
-} from 'Store/Actions/movieIndexActions';
 import scrollPositions from 'Store/scrollPositions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
-import createMovieClientSideCollectionItemsSelector from 'Store/Selectors/createMovieClientSideCollectionItemsSelector';
 import translate from 'Utilities/String/translate';
 import MovieIndexFilterMenu from './Menus/MovieIndexFilterMenu';
 import MovieIndexSortMenu from './Menus/MovieIndexSortMenu';
@@ -57,6 +49,7 @@ import MovieIndexSelectModeButton from './Select/MovieIndexSelectModeButton';
 import MovieIndexSelectModeMenuItem from './Select/MovieIndexSelectModeMenuItem';
 import MovieIndexTable from './Table/MovieIndexTable';
 import MovieIndexTableOptions from './Table/MovieIndexTableOptions';
+import { useMovieIndex, useMovieIndexStore } from './useMovieIndex';
 import styles from './MovieIndex.module.css';
 
 function getViewComponent(view: string) {
@@ -91,8 +84,13 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
     sortKey,
     sortDirection,
     view,
-  }: MoviesAppState & MovieIndexAppState & ClientSideCollectionAppState =
-    useSelector(createMovieClientSideCollectionItemsSelector('movieIndex'));
+    handleSortSelect,
+  } = useMovieIndex();
+
+  const queryClient = useQueryClient();
+  const setView = useMovieIndexStore((state) => state.setView);
+  const setFilter = useMovieIndexStore((state) => state.setFilter);
+  const setTableOptions = useMovieIndexStore((state) => state.setTableOptions);
 
   const isRssSyncExecuting = useSelector(
     createCommandExecutingSelector(RSS_SYNC)
@@ -110,9 +108,9 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
 
   useEffect(() => {
     if (initialNavigationType.current === 'PUSH') {
-      dispatch(fetchMovies());
+      invalidateMovies(queryClient);
     }
-  }, [dispatch]);
+  }, [queryClient]);
 
   const onRssSyncPress = useCallback(() => {
     dispatch(
@@ -127,35 +125,30 @@ const MovieIndex = withScrollPosition((props: MovieIndexProps) => {
   }, [isSelectMode, setIsSelectMode]);
 
   const onTableOptionChange = useCallback(
-    (payload: unknown) => {
-      dispatch(setMovieTableOption(payload));
+    (payload: Parameters<typeof setTableOptions>[0]) => {
+      setTableOptions(payload);
     },
-    [dispatch]
+    [setTableOptions]
   );
 
   const onViewSelect = useCallback(
     (value: string) => {
-      dispatch(setMovieView({ view: value }));
+      setView(value);
 
       if (scrollerRef.current) {
         scrollerRef.current.scrollTo(0, 0);
       }
     },
-    [scrollerRef, dispatch]
+    [scrollerRef, setView]
   );
 
-  const onSortSelect = useCallback(
-    (value: string) => {
-      dispatch(setMovieSort({ sortKey: value }));
-    },
-    [dispatch]
-  );
+  const onSortSelect = handleSortSelect;
 
   const onFilterSelect = useCallback(
     (value: string | number) => {
-      dispatch(setMovieFilter({ selectedFilterKey: value }));
+      setFilter(value);
     },
-    [dispatch]
+    [setFilter]
   );
 
   const onOptionsPress = useCallback(() => {

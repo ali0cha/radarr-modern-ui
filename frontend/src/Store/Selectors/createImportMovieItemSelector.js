@@ -1,13 +1,12 @@
 import _ from 'lodash';
 import { createSelector } from 'reselect';
-import createAllMoviesSelector from './createAllMoviesSelector';
 
 function createImportMovieItemSelector() {
   return createSelector(
     (state, { id }) => id,
     (state) => state.addMovie,
     (state) => state.importMovie,
-    createAllMoviesSelector(),
+    (state, { allMovies }) => allMovies,
     (id, addMovie, importMovie, movies) => {
       const item = _.find(importMovie.items, { id }) || {};
       const selectedMovie = item && item.selectedMovie;

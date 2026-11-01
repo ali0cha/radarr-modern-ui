@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { toggleMovieMonitored } from 'Store/Actions/movieActions';
+import withMovies from 'Movie/withMovies';
+import withToggleMovieMonitored from 'Movie/withToggleMovieMonitored';
 import createCollectionExistingMovieSelector from 'Store/Selectors/createCollectionExistingMovieSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import CollectionMovie from './CollectionMovie';
@@ -20,10 +21,6 @@ function createMapStateToProps() {
     }
   );
 }
-
-const mapDispatchToProps = {
-  toggleMovieMonitored
-};
 
 class CollectionMovieConnector extends Component {
 
@@ -56,4 +53,4 @@ CollectionMovieConnector.propTypes = {
   toggleMovieMonitored: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(CollectionMovieConnector);
+export default withMovies(connect(createMapStateToProps)(withToggleMovieMonitored(CollectionMovieConnector)));

@@ -1,12 +1,13 @@
 import { some } from 'lodash';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
-import createAllMoviesSelector from './createAllMoviesSelector';
+import Movie from 'Movie/Movie';
 
+// The movies of the library are passed as the allMovies prop, see withMovies
 function createExistingMovieSelector() {
   return createSelector(
     (_: AppState, { tmdbId }: { tmdbId: number }) => tmdbId,
-    createAllMoviesSelector(),
+    (_: AppState, { allMovies }: { allMovies: Movie[] }) => allMovies,
     (tmdbId, movies) => {
       return some(movies, { tmdbId });
     }

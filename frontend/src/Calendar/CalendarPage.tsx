@@ -15,6 +15,7 @@ import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { align, icons } from 'Helpers/Props';
 import NoMovie from 'Movie/NoMovie';
+import { useMovieCount } from 'Movie/useMovies';
 import {
   searchMissing,
   setCalendarDaysCount,
@@ -24,7 +25,6 @@ import { executeCommand } from 'Store/Actions/commandActions';
 import { createCustomFiltersSelector } from 'Store/Selectors/createClientSideCollectionSelector';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
-import createMovieCountSelector from 'Store/Selectors/createMovieCountSelector';
 import { isCommandExecuting } from 'Utilities/Command';
 import isBefore from 'Utilities/Date/isBefore';
 import translate from 'Utilities/String/translate';
@@ -98,7 +98,7 @@ function CalendarPage() {
     createCommandExecutingSelector(commandNames.RSS_SYNC)
   );
   const customFilters = useSelector(createCustomFiltersSelector('calendar'));
-  const hasMovies = !!useSelector(createMovieCountSelector());
+  const hasMovies = !!useMovieCount().count;
 
   const [pageContentRef, { width }] = useMeasure();
   const [isCalendarLinkModalOpen, setIsCalendarLinkModalOpen] = useState(false);

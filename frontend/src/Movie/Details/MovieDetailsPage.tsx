@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import NotFound from 'Components/NotFound';
 import usePrevious from 'Helpers/Hooks/usePrevious';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
+import { useMovies } from 'Movie/useMovies';
 import translate from 'Utilities/String/translate';
 import MovieDetails from './MovieDetails';
 
 function MovieDetailsPage() {
-  const allMovies = useSelector(createAllMoviesSelector());
+  const { movies: allMovies } = useMovies();
   const { titleSlug } = useParams<{ titleSlug: string }>();
   const navigate = useNavigate();
 

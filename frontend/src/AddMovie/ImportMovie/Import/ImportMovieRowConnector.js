@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withMovies from 'Movie/withMovies';
 import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import ImportMovieRow from './ImportMovieRow';
 
 function createImportMovieItemSelector() {
@@ -20,7 +20,7 @@ function createImportMovieItemSelector() {
 function createMapStateToProps() {
   return createSelector(
     createImportMovieItemSelector(),
-    createAllMoviesSelector(),
+    (state, { allMovies }) => allMovies,
     (item, movies) => {
       const selectedMovie = item && item.selectedMovie;
       const isExistingMovie = !!selectedMovie && _.some(movies, { tmdbId: selectedMovie.tmdbId });
@@ -84,4 +84,4 @@ ImportMovieRowConnector.propTypes = {
   setImportMovieValue: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(ImportMovieRowConnector);
+export default withMovies(connect(createMapStateToProps, mapDispatchToProps)(ImportMovieRowConnector));

@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
-import AppState from 'App/State/AppState';
 import { RENAME_MOVIE } from 'Commands/commandNames';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import PageContentFooter from 'Components/Page/PageContentFooter';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
+import { useBulkDeleteMovies, useMovieEditor } from 'Movie/useMovies';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
-import { saveMovieEditor } from 'Store/Actions/movieActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -26,28 +23,10 @@ interface SavePayload {
   moveFiles?: boolean;
 }
 
-const movieEditorSelector = createSelector(
-  (state: AppState) => state.movies,
-  (movies) => {
-    const { isSaving, isDeleting, deleteError } = movies;
-
-    return {
-      isSaving,
-      isDeleting,
-      deleteError,
-    };
-  }
-);
-
 function MovieIndexSelectFooter() {
-  const { isSaving, isDeleting, deleteError } =
-    useSelector(movieEditorSelector);
-
   const isOrganizingMovies = useSelector(
     createCommandExecutingSelector(RENAME_MOVIE)
   );
-
-  const dispatch = useDispatch();
 
   usePrefetchRootFolders();
 
@@ -55,9 +34,10 @@ function MovieIndexSelectFooter() {
   const [isOrganizeModalOpen, setIsOrganizeModalOpen] = useState(false);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isSavingMovies, setIsSavingMovies] = useState(false);
-  const [isSavingTags, setIsSavingTags] = useState(false);
-  const previousIsDeleting = usePrevious(isDeleting);
+  const { saveEditor: saveMovies, isSavingEditor: isSavingMovies } =
+    useMovieEditor();
+  const { saveEditor: saveTags, isSavingEditor: isSavingTags } =
+    useMovieEditor();
 
   const [selectState, selectDispatch] = useSelect();
   const { selectedState } = selectState;
@@ -65,6 +45,10 @@ function MovieIndexSelectFooter() {
   const movieIds = useMemo(() => {
     return getSelectedIds(selectedState);
   }, [selectedState]);
+
+  const { bulkDelete, isDeleting } = useBulkDeleteMovies(() => {
+    selectDispatch({ type: 'unselectAll' });
+  });
 
   const selectedCount = movieIds.length ? movieIds.length : 0;
 
@@ -78,17 +62,14 @@ function MovieIndexSelectFooter() {
 
   const onSavePress = useCallback(
     (payload: SavePayload) => {
-      setIsSavingMovies(true);
       setIsEditModalOpen(false);
 
-      dispatch(
-        saveMovieEditor({
-          ...payload,
-          movieIds,
-        })
-      );
+      saveMovies({
+        ...payload,
+        movieIds,
+      });
     },
-    [movieIds, dispatch]
+    [movieIds, saveMovies]
   );
 
   const onOrganizePress = useCallback(() => {
@@ -109,18 +90,15 @@ function MovieIndexSelectFooter() {
 
   const onApplyTagsPress = useCallback(
     (tags: number[], applyTags: string) => {
-      setIsSavingTags(true);
       setIsTagsModalOpen(false);
 
-      dispatch(
-        saveMovieEditor({
-          movieIds,
-          tags,
-          applyTags,
-        })
-      );
+      saveTags({
+        movieIds,
+        tags,
+        applyTags,
+      });
     },
-    [movieIds, dispatch]
+    [movieIds, saveTags]
   );
 
   const onDeletePress = useCallback(() => {
@@ -131,19 +109,6 @@ function MovieIndexSelectFooter() {
     setIsDeleteModalOpen(false);
   }, []);
 
-  useEffect(() => {
-    if (!isSaving) {
-      setIsSavingMovies(false);
-      setIsSavingTags(false);
-    }
-  }, [isSaving]);
-
-  useEffect(() => {
-    if (previousIsDeleting && !isDeleting && !deleteError) {
-      selectDispatch({ type: 'unselectAll' });
-    }
-  }, [previousIsDeleting, isDeleting, deleteError, selectDispatch]);
-
   const anySelected = selectedCount > 0;
 
   return (
@@ -151,7 +116,7 @@ function MovieIndexSelectFooter() {
       <div className={styles.buttons}>
         <div className={styles.actionButtons}>
           <SpinnerButton
-            isSpinning={isSaving && isSavingMovies}
+            isSpinning={isSavingMovies}
             isDisabled={!anySelected || isOrganizingMovies}
             onPress={onEditPress}
           >
@@ -168,7 +133,7 @@ function MovieIndexSelectFooter() {
           </SpinnerButton>
 
           <SpinnerButton
-            isSpinning={isSaving && isSavingTags}
+            isSpinning={isSavingTags}
             isDisabled={!anySelected || isOrganizingMovies}
             onPress={onTagsPress}
           >
@@ -215,6 +180,7 @@ function MovieIndexSelectFooter() {
       <DeleteMovieModal
         isOpen={isDeleteModalOpen}
         movieIds={movieIds}
+        onDeleteMoviesPress={bulkDelete}
         onModalClose={onDeleteModalClose}
       />
     </PageContentFooter>

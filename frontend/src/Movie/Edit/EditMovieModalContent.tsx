@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo, useState } from 'react';
 import MovieMinimumAvailabilityPopoverContent from 'AddMovie/MovieMinimumAvailabilityPopoverContent';
-import AppState from 'App/State/AppState';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
@@ -15,7 +13,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import { usePendingChangesStore } from 'Helpers/Hooks/usePendingChangesStore';
 import {
   icons,
   inputTypes,
@@ -24,8 +22,8 @@ import {
   tooltipPositions,
 } from 'Helpers/Props';
 import MoveMovieModal from 'Movie/MoveMovie/MoveMovieModal';
-import useMovie from 'Movie/useMovie';
-import { saveMovie, setMovieValue } from 'Store/Actions/movieActions';
+import Movie from 'Movie/Movie';
+import { useMovie, useSaveMovie } from 'Movie/useMovies';
 import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
 import translate from 'Utilities/String/translate';
@@ -44,7 +42,7 @@ function EditMovieModalContent({
   onModalClose,
   onDeleteMoviePress,
 }: EditMovieModalContentProps) {
-  const dispatch = useDispatch();
+  const movie = useMovie(movieId)!;
   const {
     title,
     monitored,
@@ -53,13 +51,12 @@ function EditMovieModalContent({
     path,
     tags,
     rootFolderPath: initialRootFolderPath,
-  } = useMovie(movieId)!;
+  } = movie;
 
-  const { isSaving, saveError, pendingChanges } = useSelector(
-    (state: AppState) => state.movies
+  const { pendingChanges, setPendingChange } = usePendingChangesStore<Movie>(
+    {}
   );
-
-  const wasSaving = usePrevious(isSaving);
+  const { saveMovie, isSaving, saveError } = useSaveMovie(onModalClose);
 
   const [isRootFolderModalOpen, setIsRootFolderModalOpen] = useState(false);
 
@@ -93,10 +90,9 @@ function EditMovieModalContent({
 
   const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error actions aren't typed
-      dispatch(setMovieValue({ name, value }));
+      setPendingChange(name as keyof Movie, value as never);
     },
-    [dispatch]
+    [setPendingChange]
   );
 
   const handleRootFolderPress = useCallback(() => {
@@ -129,31 +125,21 @@ function EditMovieModalContent({
     } else {
       setIsConfirmMoveModalOpen(false);
 
-      dispatch(
-        saveMovie({
-          id: movieId,
-          moveFiles: false,
-        })
-      );
+      saveMovie({ movie: { ...movie, ...pendingChanges }, moveFiles: false });
     }
-  }, [movieId, isPathChanging, isConfirmMoveModalOpen, dispatch]);
+  }, [
+    movie,
+    pendingChanges,
+    isPathChanging,
+    isConfirmMoveModalOpen,
+    saveMovie,
+  ]);
 
   const handleMoveMoviePress = useCallback(() => {
     setIsConfirmMoveModalOpen(false);
 
-    dispatch(
-      saveMovie({
-        id: movieId,
-        moveFiles: true,
-      })
-    );
-  }, [movieId, dispatch]);
-
-  useEffect(() => {
-    if (!isSaving && wasSaving && !saveError) {
-      onModalClose();
-    }
-  }, [isSaving, wasSaving, saveError, onModalClose]);
+    saveMovie({ movie: { ...movie, ...pendingChanges }, moveFiles: true });
+  }, [movie, pendingChanges, saveMovie]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

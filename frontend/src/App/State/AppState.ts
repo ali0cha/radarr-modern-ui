@@ -7,7 +7,6 @@ import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
 import MovieCollectionAppState from './MovieCollectionAppState';
 import MovieFilesAppState from './MovieFilesAppState';
-import MoviesAppState, { MovieIndexAppState } from './MoviesAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import ReleasesAppState from './ReleasesAppState';
@@ -75,8 +74,6 @@ interface AppState {
   interactiveImport: InteractiveImportAppState;
   movieCollections: MovieCollectionAppState;
   movieFiles: MovieFilesAppState;
-  movieIndex: MovieIndexAppState;
-  movies: MoviesAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
   releases: ReleasesAppState;

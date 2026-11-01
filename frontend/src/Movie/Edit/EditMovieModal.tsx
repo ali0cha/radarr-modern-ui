@@ -1,7 +1,5 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Modal from 'Components/Modal/Modal';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
 import EditMovieModalContent, {
   EditMovieModalContentProps,
 } from './EditMovieModalContent';
@@ -15,16 +13,9 @@ function EditMovieModal({
   onModalClose,
   ...otherProps
 }: EditMovieModalProps) {
-  const dispatch = useDispatch();
-
-  const handleModalClose = useCallback(() => {
-    dispatch(clearPendingChanges({ section: 'movies' }));
-    onModalClose();
-  }, [dispatch, onModalClose]);
-
   return (
-    <Modal isOpen={isOpen} onModalClose={handleModalClose}>
-      <EditMovieModalContent {...otherProps} onModalClose={handleModalClose} />
+    <Modal isOpen={isOpen} onModalClose={onModalClose}>
+      <EditMovieModalContent {...otherProps} onModalClose={onModalClose} />
     </Modal>
   );
 }

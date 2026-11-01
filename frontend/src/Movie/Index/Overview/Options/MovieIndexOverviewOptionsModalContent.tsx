@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -10,9 +9,8 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
-import { setMovieOverviewOption } from 'Store/Actions/movieIndexActions';
 import translate from 'Utilities/String/translate';
-import selectOverviewOptions from '../selectOverviewOptions';
+import { useMovieIndexStore, useOverviewOptions } from '../../useMovieIndex';
 
 const posterSizeOptions = [
   {
@@ -55,15 +53,17 @@ function MovieIndexOverviewOptionsModalContent(
     showSizeOnDisk,
     showTags,
     showSearchAction,
-  } = useSelector(selectOverviewOptions);
+  } = useOverviewOptions();
 
-  const dispatch = useDispatch();
+  const setOverviewOptions = useMovieIndexStore(
+    (state) => state.setOverviewOptions
+  );
 
   const onOverviewOptionChange = useCallback(
     ({ name, value }: { name: string; value: unknown }) => {
-      dispatch(setMovieOverviewOption({ [name]: value }));
+      setOverviewOptions({ [name]: value });
     },
-    [dispatch]
+    [setOverviewOptions]
   );
 
   return (

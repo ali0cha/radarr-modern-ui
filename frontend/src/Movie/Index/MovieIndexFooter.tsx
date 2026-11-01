@@ -1,44 +1,15 @@
 import classNames from 'classnames';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
-import MoviesAppState from 'App/State/MoviesAppState';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-import createDeepEqualSelector from 'Store/Selectors/createDeepEqualSelector';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
+import { useMovieIndex } from './useMovieIndex';
 import styles from './MovieIndexFooter.module.css';
 
-function createUnoptimizedSelector() {
-  return createSelector(
-    createClientSideCollectionSelector('movies', 'movieIndex'),
-    (movies: MoviesAppState) => {
-      return movies.items.map((m) => {
-        const { monitored, status, hasFile, statistics } = m;
-
-        return {
-          monitored,
-          status,
-          hasFile,
-          statistics,
-        };
-      });
-    }
-  );
-}
-
-function createMovieSelector() {
-  return createDeepEqualSelector(
-    createUnoptimizedSelector(),
-    (movies) => movies
-  );
-}
-
 export default function MovieIndexFooter() {
-  const movies = useSelector(createMovieSelector());
+  const { filteredMovies: movies } = useMovieIndex();
   const count = movies.length;
   let movieFiles = 0;
   let monitored = 0;

@@ -1,6 +1,6 @@
 import { orderBy } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { RENAME_MOVIE } from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
@@ -11,8 +11,8 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
+import { useMovies } from 'Movie/useMovies';
 import { executeCommand } from 'Store/Actions/commandActions';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import styles from './OrganizeMoviesModalContent.module.css';
 
@@ -24,7 +24,7 @@ interface OrganizeMoviesModalContentProps {
 function OrganizeMoviesModalContent(props: OrganizeMoviesModalContentProps) {
   const { movieIds, onModalClose } = props;
 
-  const allMovies: Movie[] = useSelector(createAllMoviesSelector());
+  const { movies: allMovies } = useMovies();
   const dispatch = useDispatch();
 
   const movieTitles = useMemo(() => {

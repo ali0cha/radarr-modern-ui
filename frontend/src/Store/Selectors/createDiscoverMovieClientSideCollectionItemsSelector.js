@@ -4,7 +4,7 @@ import createDeepEqualSelector from './createDeepEqualSelector';
 
 function createUnoptimizedSelector(uiSection) {
   return createSelector(
-    createClientSideCollectionSelector('movies', uiSection),
+    createClientSideCollectionSelector('discoverMovie', uiSection),
     (movies) => {
       const items = movies.items.map((s) => {
         const {

@@ -22,7 +22,7 @@ import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptions
 import TablePager from 'Components/Table/TablePager';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
-import createMoviesFetchingSelector from 'Movie/createMoviesFetchingSelector';
+import { useMoviesFetching } from 'Movie/useMovies';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
@@ -69,9 +69,8 @@ function Queue() {
   } = useQueue();
 
   const { count } = useQueueStatus();
-  const { isMoviesFetching, isMoviesPopulated, moviesError } = useSelector(
-    createMoviesFetchingSelector()
-  );
+  const { isMoviesFetching, isMoviesPopulated, moviesError } =
+    useMoviesFetching();
 
   const isRefreshMonitoredDownloadsExecuting = useSelector(
     createCommandExecutingSelector(commandNames.REFRESH_MONITORED_DOWNLOADS)

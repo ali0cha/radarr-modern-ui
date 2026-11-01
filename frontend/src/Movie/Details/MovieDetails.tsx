@@ -51,7 +51,7 @@ import MovieCollectionLabel from 'Movie/MovieCollectionLabel';
 import MovieGenres from 'Movie/MovieGenres';
 import MoviePoster from 'Movie/MoviePoster';
 import MovieInteractiveSearchModal from 'Movie/Search/MovieInteractiveSearchModal';
-import useMovie from 'Movie/useMovie';
+import { useMovie, useMovies, useToggleMovieMonitored } from 'Movie/useMovies';
 import MovieFileEditorTable from 'MovieFile/Editor/MovieFileEditorTable';
 import ExtraFileTable from 'MovieFile/Extras/ExtraFileTable';
 import useExtraFiles from 'MovieFile/Extras/useExtraFiles';
@@ -59,7 +59,6 @@ import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import useUISettings from 'Settings/UI/useUISettings';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { toggleMovieMonitored } from 'Store/Actions/movieActions';
 import {
   clearMovieFiles,
   fetchMovieFiles,
@@ -68,7 +67,6 @@ import {
   cancelFetchReleases,
   clearReleases,
 } from 'Store/Actions/releaseActions';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import fonts from 'Styles/Variables/fonts';
@@ -125,7 +123,8 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   const navigate = useNavigate();
 
   const movie = useMovie(movieId);
-  const allMovies = useSelector(createAllMoviesSelector());
+  const { movies: allMovies } = useMovies();
+  const { toggleMonitored, isSaving } = useToggleMovieMonitored(movieId);
 
   const { isMovieFilesFetching, movieFilesError, hasMovieFiles } = useSelector(
     createMovieFilesSelector()
@@ -285,14 +284,9 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
 
   const handleMonitorTogglePress = useCallback(
     (value: boolean) => {
-      dispatch(
-        toggleMovieMonitored({
-          movieId,
-          monitored: value,
-        })
-      );
+      toggleMonitored(value);
     },
-    [movieId, dispatch]
+    [toggleMonitored]
   );
 
   const handleRefreshPress = useCallback(() => {
@@ -509,7 +503,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
     isAvailable,
     images,
     tags,
-    isSaving = false,
   } = movie;
 
   const { sizeOnDisk = 0 } = statistics;

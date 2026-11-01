@@ -1,9 +1,6 @@
 import { throttle } from 'lodash';
 import React, { RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
 import Scroller from 'Components/Scroller/Scroller';
 import Column from 'Components/Table/Column';
 import useMeasure from 'Helpers/Hooks/useMeasure';
@@ -11,6 +8,7 @@ import { SortDirection } from 'Helpers/Props/sortDirections';
 import Movie from 'Movie/Movie';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+import { useMovieIndexColumns } from '../useMovieIndex';
 import MovieIndexRow from './MovieIndexRow';
 import MovieIndexTableHeader from './MovieIndexTableHeader';
 import styles from './MovieIndexTable.module.css';
@@ -37,11 +35,6 @@ interface MovieIndexTableProps {
   isSelectMode: boolean;
   isSmallScreen: boolean;
 }
-
-const columnsSelector = createSelector(
-  (state: AppState) => state.movieIndex.columns,
-  (columns) => columns
-);
 
 function Row({ index, style, data }: ListChildComponentProps<RowItemData>) {
   const { items, sortKey, columns, isSelectMode } = data;
@@ -86,7 +79,7 @@ function MovieIndexTable(props: MovieIndexTableProps) {
     scrollerRef,
   } = props;
 
-  const columns = useSelector(columnsSelector);
+  const columns = useMovieIndexColumns();
   const listRef = useRef<List<RowItemData>>(null);
   const [measureRef, bounds] = useMeasure();
   const [size, setSize] = useState({ width: 0, height: 0 });

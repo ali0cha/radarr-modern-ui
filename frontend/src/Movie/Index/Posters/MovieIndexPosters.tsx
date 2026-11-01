@@ -1,15 +1,13 @@
 import { throttle } from 'lodash';
 import React, { RefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { FixedSizeGrid as Grid, GridChildComponentProps } from 'react-window';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
 import useMeasure from 'Helpers/Hooks/useMeasure';
 import { SortDirection } from 'Helpers/Props/sortDirections';
 import MovieIndexPoster from 'Movie/Index/Posters/MovieIndexPoster';
 import Movie from 'Movie/Movie';
 import dimensions from 'Styles/Variables/dimensions';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
+import { usePosterOptions } from '../useMovieIndex';
 
 const bodyPadding = parseInt(dimensions.pageContentBodyPadding);
 const bodyPaddingSmallScreen = parseInt(
@@ -50,15 +48,6 @@ interface MovieIndexPostersProps {
   isSelectMode: boolean;
   isSmallScreen: boolean;
 }
-
-const movieIndexSelector = createSelector(
-  (state: AppState) => state.movieIndex.posterOptions,
-  (posterOptions) => {
-    return {
-      posterOptions,
-    };
-  }
-);
 
 function Cell({
   columnIndex,
@@ -110,7 +99,7 @@ export default function MovieIndexPosters(props: MovieIndexPostersProps) {
     isSmallScreen,
   } = props;
 
-  const { posterOptions } = useSelector(movieIndexSelector);
+  const posterOptions = usePosterOptions();
   const ref = useRef<Grid>(null);
   const [measureRef, bounds] = useMeasure();
   const [size, setSize] = useState({ width: 0, height: 0 });

@@ -1,6 +1,5 @@
 import { uniq } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -12,8 +11,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds, sizes } from 'Helpers/Props';
-import Movie from 'Movie/Movie';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
+import { useMovies } from 'Movie/useMovies';
 import { Tag } from 'Tags/Tag';
 import useTags from 'Tags/useTags';
 import translate from 'Utilities/String/translate';
@@ -28,7 +26,7 @@ interface TagsModalContentProps {
 function TagsModalContent(props: TagsModalContentProps) {
   const { movieIds, onModalClose, onApplyTagsPress } = props;
 
-  const allMovies: Movie[] = useSelector(createAllMoviesSelector());
+  const { movies: allMovies } = useMovies();
   const tagList: Tag[] = useTags();
 
   const [tags, setTags] = useState<number[]>([]);

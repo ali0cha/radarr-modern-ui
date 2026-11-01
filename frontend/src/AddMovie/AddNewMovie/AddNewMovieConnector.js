@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { createSelector } from 'reselect';
+import withMovies from 'Movie/withMovies';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import { clearAddMovie, lookupMovie } from 'Store/Actions/addMovieActions';
 import { clearMovieFiles, fetchMovieFiles } from 'Store/Actions/movieFileActions';
@@ -14,7 +15,7 @@ import AddNewMovie from './AddNewMovie';
 function createMapStateToProps() {
   return createSelector(
     (state) => state.addMovie,
-    (state) => state.movies.items.length,
+    (state, { allMovies }) => allMovies.length,
     (state, { locationSearch }) => locationSearch,
     (addMovie, existingMoviesCount, locationSearch) => {
       const { params } = parseUrl(locationSearch);
@@ -120,7 +121,7 @@ AddNewMovieConnectorBase.propTypes = {
   clearMovieFiles: PropTypes.func.isRequired
 };
 
-const ConnectedAddNewMovie = connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieConnectorBase);
+const ConnectedAddNewMovie = withMovies(connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieConnectorBase));
 
 function AddNewMovieConnector() {
   const { search } = useLocation();

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import TextTruncate from 'react-text-truncate';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
 import Icon from 'Components/Icon';
@@ -21,9 +21,9 @@ import { executeCommand } from 'Store/Actions/commandActions';
 import dimensions from 'Styles/Variables/dimensions';
 import fonts from 'Styles/Variables/fonts';
 import translate from 'Utilities/String/translate';
-import createMovieIndexItemSelector from '../createMovieIndexItemSelector';
+import { useOverviewOptions } from '../useMovieIndex';
+import useMovieIndexItem from '../useMovieIndexItem';
 import MovieIndexOverviewInfo from './MovieIndexOverviewInfo';
-import selectOverviewOptions from './selectOverviewOptions';
 import styles from './MovieIndexOverview.module.css';
 
 const columnPadding = parseInt(dimensions.movieIndexColumnPadding);
@@ -58,12 +58,12 @@ function MovieIndexOverview(props: MovieIndexOverviewProps) {
     isSmallScreen,
   } = props;
 
-  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
-    createMovieIndexItemSelector(props.movieId)
+  const { movie, isRefreshingMovie, isSearchingMovie } = useMovieIndexItem(
+    props.movieId
   );
   const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
-  const overviewOptions = useSelector(selectOverviewOptions);
+  const overviewOptions = useOverviewOptions();
 
   const {
     title,

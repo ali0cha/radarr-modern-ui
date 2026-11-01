@@ -11,6 +11,7 @@ import {
 } from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
+import { invalidateMovies, removeMovies, setMovie } from 'Movie/useMovies';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
@@ -21,7 +22,6 @@ import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQuality
 import { setAppValue, setVersion } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
 import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
-import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
@@ -58,8 +58,7 @@ const mapDispatchToProps = {
   dispatchUpdate: update,
   dispatchUpdateItem: updateItem,
   dispatchRemoveItem: removeItem,
-  dispatchFetchHealth: fetchHealth,
-  dispatchFetchMovies: fetchMovies
+  dispatchFetchHealth: fetchHealth
 };
 
 function Logger(minimumLogLevel) {
@@ -224,14 +223,13 @@ class SignalRConnector extends Component {
 
   handleMovie = (body) => {
     const action = body.action;
-    const section = 'movies';
 
     if (action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...body.resource });
+      setMovie(queryClient, body.resource);
 
       repopulatePage('movieUpdated');
     } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: body.resource.id });
+      removeMovies(queryClient, [body.resource.id]);
     }
   };
 
@@ -331,7 +329,6 @@ class SignalRConnector extends Component {
 
     const {
       dispatchFetchCommands,
-      dispatchFetchMovies,
       dispatchSetAppValue
     } = this.props;
 
@@ -344,7 +341,7 @@ class SignalRConnector extends Component {
 
     // Repopulate the page (if a repopulator is set) to ensure things
     // are in sync after reconnecting.
-    dispatchFetchMovies();
+    invalidateMovies(queryClient);
     dispatchFetchCommands();
     invalidateQueue(queryClient);
     repopulatePage();
@@ -379,8 +376,7 @@ SignalRConnector.propTypes = {
   dispatchUpdate: PropTypes.func.isRequired,
   dispatchUpdateItem: PropTypes.func.isRequired,
   dispatchRemoveItem: PropTypes.func.isRequired,
-  dispatchFetchHealth: PropTypes.func.isRequired,
-  dispatchFetchMovies: PropTypes.func.isRequired
+  dispatchFetchHealth: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(SignalRConnector);

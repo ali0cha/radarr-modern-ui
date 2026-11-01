@@ -6,7 +6,6 @@ import withLanguages from 'Language/withLanguages';
 import withQualityProfileSchema from 'Settings/Profiles/Quality/withQualityProfileSchema';
 import { deleteMovieFile, setMovieFilesSort, setMovieFilesTableOption } from 'Store/Actions/movieFileActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-import createMovieSelector from 'Store/Selectors/createMovieSelector';
 import getQualities from 'Utilities/Quality/getQualities';
 import MovieFileEditorTableContent from './MovieFileEditorTableContent';
 
@@ -16,7 +15,6 @@ function createMapStateToProps() {
     createClientSideCollectionSelector('movieFiles'),
     (state, { languagesState }) => languagesState,
     (state, { qualityProfileSchemaState }) => qualityProfileSchemaState,
-    createMovieSelector(),
     (
       movieId,
       movieFiles,

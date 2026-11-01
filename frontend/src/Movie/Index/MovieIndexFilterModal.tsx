@@ -1,27 +1,7 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
 import FilterModal from 'Components/Filter/FilterModal';
-import { setMovieFilter } from 'Store/Actions/movieIndexActions';
-
-function createMovieSelector() {
-  return createSelector(
-    (state: AppState) => state.movies.items,
-    (movies) => {
-      return movies;
-    }
-  );
-}
-
-function createFilterBuilderPropsSelector() {
-  return createSelector(
-    (state: AppState) => state.movieIndex.filterBuilderProps,
-    (filterBuilderProps) => {
-      return filterBuilderProps;
-    }
-  );
-}
+import { useMovies } from 'Movie/useMovies';
+import { filterBuilderProps, useMovieIndexStore } from './useMovieIndex';
 
 interface MovieIndexFilterModalProps {
   isOpen: boolean;
@@ -30,17 +10,14 @@ interface MovieIndexFilterModalProps {
 export default function MovieIndexFilterModal(
   props: MovieIndexFilterModalProps
 ) {
-  const sectionItems = useSelector(createMovieSelector());
-  const filterBuilderProps = useSelector(createFilterBuilderPropsSelector());
-  const customFilterType = 'movieIndex';
-
-  const dispatch = useDispatch();
+  const { movies: sectionItems } = useMovies();
+  const setFilter = useMovieIndexStore((state) => state.setFilter);
 
   const dispatchSetFilter = useCallback(
-    (payload: unknown) => {
-      dispatch(setMovieFilter(payload));
+    ({ selectedFilterKey }: { selectedFilterKey: string | number }) => {
+      setFilter(selectedFilterKey);
     },
-    [dispatch]
+    [setFilter]
   );
 
   return (
@@ -49,7 +26,7 @@ export default function MovieIndexFilterModal(
       {...props}
       sectionItems={sectionItems}
       filterBuilderProps={filterBuilderProps}
-      customFilterType={customFilterType}
+      customFilterType="movieIndex"
       dispatchSetFilter={dispatchSetFilter}
     />
   );

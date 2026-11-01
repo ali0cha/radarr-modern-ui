@@ -5,6 +5,7 @@ import { batchActions } from 'redux-batched-actions';
 import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { filterBuilderTypes, filterBuilderValueTypes, filterTypes, sortDirections } from 'Helpers/Props';
+import { filterPredicates } from 'Movie/movieDefinitions';
 import { IMPORT_LIST_EXCLUSIONS_PATH } from 'Settings/ImportLists/ImportListExclusions/useImportListExclusions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -20,7 +21,6 @@ import createSetClientSideCollectionFilterReducer from './Creators/Reducers/crea
 import createSetClientSideCollectionSortReducer from './Creators/Reducers/createSetClientSideCollectionSortReducer';
 import createSetSettingValueReducer from './Creators/Reducers/createSetSettingValueReducer';
 import createSetTableOptionReducer from './Creators/Reducers/createSetTableOptionReducer';
-import { filterPredicates } from './movieActions';
 
 //
 // Variables

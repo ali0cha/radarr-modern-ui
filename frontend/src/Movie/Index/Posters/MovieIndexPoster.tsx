@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
 import Icon from 'Components/Icon';
 import ImdbRating from 'Components/ImdbRating';
@@ -26,9 +26,9 @@ import { executeCommand } from 'Store/Actions/commandActions';
 import formatDate from 'Utilities/Date/formatDate';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
-import createMovieIndexItemSelector from '../createMovieIndexItemSelector';
+import { usePosterOptions } from '../useMovieIndex';
+import useMovieIndexItem from '../useMovieIndexItem';
 import MovieIndexPosterInfo from './MovieIndexPosterInfo';
-import selectPosterOptions from './selectPosterOptions';
 import styles from './MovieIndexPoster.module.css';
 
 interface MovieIndexPosterProps {
@@ -42,8 +42,8 @@ interface MovieIndexPosterProps {
 function MovieIndexPoster(props: MovieIndexPosterProps) {
   const { movieId, sortKey, isSelectMode, posterWidth, posterHeight } = props;
 
-  const { movie, isRefreshingMovie, isSearchingMovie } = useSelector(
-    createMovieIndexItemSelector(props.movieId)
+  const { movie, isRefreshingMovie, isSearchingMovie } = useMovieIndexItem(
+    props.movieId
   );
   const qualityProfile = useQualityProfile(movie.qualityProfileId);
 
@@ -62,7 +62,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
     showTraktRating,
     showTags,
     showSearchAction,
-  } = useSelector(selectPosterOptions);
+  } = usePosterOptions();
 
   const { showRelativeDates, shortDateFormat, longDateFormat, timeFormat } =
     useUISettings();

@@ -2,14 +2,14 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import Movie from 'Movie/Movie';
+import { useMovies } from 'Movie/useMovies';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import ImportList from 'typings/ImportList';
 import MovieCollection from 'typings/MovieCollection';
 
 // Whether a movie, a collection or an import list uses the profile
 function useProfileInUse(profileProp: string, id?: number) {
-  const movies = useSelector(createAllMoviesSelector());
+  const { movies } = useMovies();
   const collections = useSelector(
     (state: AppState) => state.movieCollections.items
   );

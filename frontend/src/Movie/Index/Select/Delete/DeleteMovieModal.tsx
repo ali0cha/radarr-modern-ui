@@ -1,20 +1,24 @@
 import React from 'react';
 import Modal from 'Components/Modal/Modal';
-import DeleteMovieModalContent from './DeleteMovieModalContent';
+import DeleteMovieModalContent, {
+  DeleteMovieModalContentProps,
+} from './DeleteMovieModalContent';
 
 interface DeleteMovieModalProps {
   isOpen: boolean;
   movieIds: number[];
+  onDeleteMoviesPress: DeleteMovieModalContentProps['onDeleteMoviesPress'];
   onModalClose(): void;
 }
 
 function DeleteMovieModal(props: DeleteMovieModalProps) {
-  const { isOpen, movieIds, onModalClose } = props;
+  const { isOpen, movieIds, onDeleteMoviesPress, onModalClose } = props;
 
   return (
     <Modal isOpen={isOpen} onModalClose={onModalClose}>
       <DeleteMovieModalContent
         movieIds={movieIds}
+        onDeleteMoviesPress={onDeleteMoviesPress}
         onModalClose={onModalClose}
       />
     </Modal>

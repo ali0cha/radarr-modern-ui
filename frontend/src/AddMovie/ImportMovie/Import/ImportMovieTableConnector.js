@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withMovies from 'Movie/withMovies';
 import { queueLookupMovie, setImportMovieValue } from 'Store/Actions/importMovieActions';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import ImportMovieTable from './ImportMovieTable';
 
 function createMapStateToProps() {
@@ -9,7 +9,7 @@ function createMapStateToProps() {
     (state) => state.addMovie,
     (state) => state.importMovie,
     (state) => state.app.dimensions,
-    createAllMoviesSelector(),
+    (state, { allMovies }) => allMovies,
     (addMovie, importMovie, dimensions, allMovies) => {
       return {
         defaultMonitor: addMovie.defaults.monitor,
@@ -40,4 +40,4 @@ function createMapDispatchToProps(dispatch, props) {
   };
 }
 
-export default connect(createMapStateToProps, createMapDispatchToProps)(ImportMovieTable);
+export default withMovies(connect(createMapStateToProps, createMapDispatchToProps)(ImportMovieTable));

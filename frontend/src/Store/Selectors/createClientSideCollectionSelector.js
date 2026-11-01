@@ -15,7 +15,7 @@ function getSortClause(sortKey, sortDirection, sortPredicates) {
   };
 }
 
-function filter(items, state) {
+export function filterItems(items, state) {
   const {
     selectedFilterKey,
     filters,
@@ -82,7 +82,7 @@ function filter(items, state) {
   });
 }
 
-function sort(items, state) {
+export function sortItems(items, state) {
   const {
     sortKey,
     sortDirection,
@@ -127,8 +127,8 @@ function createClientSideCollectionSelector(section, uiSection) {
     (sectionState, uiSectionState = {}, customFilters) => {
       const state = Object.assign({}, sectionState, uiSectionState, { customFilters });
 
-      const filtered = filter(state.items, state);
-      const sorted = sort(filtered, state);
+      const filtered = filterItems(state.items, state);
+      const sorted = sortItems(filtered, state);
 
       return {
         ...sectionState,

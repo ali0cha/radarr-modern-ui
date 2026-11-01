@@ -1,13 +1,11 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
+import React, { useMemo } from 'react';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { kinds } from 'Helpers/Props';
+import { useMovie, useMoviesFetching } from 'Movie/useMovies';
 import sortByProp from 'Utilities/Array/sortByProp';
 import translate from 'Utilities/String/translate';
 import MovieTitlesRow from './MovieTitlesRow';
@@ -26,35 +24,23 @@ const columns: Column[] = [
   },
 ];
 
-function movieAlternativeTitlesSelector(movieId: number) {
-  return createSelector(
-    (state: AppState) => state.movies,
-    (movies) => {
-      const { isFetching, isPopulated, error, items } = movies;
-
-      const alternateTitles =
-        items.find((m) => m.id === movieId)?.alternateTitles ?? [];
-
-      return {
-        isFetching,
-        isPopulated,
-        error,
-        items: alternateTitles,
-      };
-    }
-  );
-}
-
 interface MovieTitlesProps {
   movieId: number;
 }
 
 function MovieTitlesTable({ movieId }: MovieTitlesProps) {
-  const { isFetching, isPopulated, error, items } = useSelector(
-    movieAlternativeTitlesSelector(movieId)
-  );
+  const {
+    isMoviesFetching: isFetching,
+    isMoviesPopulated: isPopulated,
+    moviesError: error,
+  } = useMoviesFetching();
+  const movie = useMovie(movieId);
+  const items = useMemo(() => movie?.alternateTitles ?? [], [movie]);
 
-  const sortedItems = items.sort(sortByProp('title'));
+  const sortedItems = useMemo(
+    () => [...items].sort(sortByProp('title')),
+    [items]
+  );
 
   if (!isFetching && !!error) {
     return (

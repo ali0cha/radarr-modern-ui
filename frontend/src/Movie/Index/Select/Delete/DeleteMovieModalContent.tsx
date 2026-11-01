@@ -1,8 +1,5 @@
 import { orderBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import AppState from 'App/State/AppState';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -13,29 +10,27 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
-import { bulkDeleteMovie, setDeleteOption } from 'Store/Actions/movieActions';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
+import { setDeleteOptions, useDeleteOptions, useMovies } from 'Movie/useMovies';
 import { InputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
 import styles from './DeleteMovieModalContent.module.css';
 
-interface DeleteMovieModalContentProps {
+export interface DeleteMovieModalContentProps {
   movieIds: number[];
+  onDeleteMoviesPress: (payload: {
+    movieIds: number[];
+    deleteFiles: boolean;
+    addImportExclusion: boolean;
+  }) => void;
   onModalClose(): void;
 }
 
-const selectDeleteOptions = createSelector(
-  (state: AppState) => state.movies.deleteOptions,
-  (deleteOptions) => deleteOptions
-);
-
 function DeleteMovieModalContent(props: DeleteMovieModalContentProps) {
-  const { movieIds, onModalClose } = props;
+  const { movieIds, onDeleteMoviesPress, onModalClose } = props;
 
-  const { addImportExclusion } = useSelector(selectDeleteOptions);
-  const allMovies: Movie[] = useSelector(createAllMoviesSelector());
-  const dispatch = useDispatch();
+  const { addImportExclusion } = useDeleteOptions();
+  const { movies: allMovies } = useMovies();
 
   const [deleteFiles, setDeleteFiles] = useState(false);
 
@@ -55,26 +50,20 @@ function DeleteMovieModalContent(props: DeleteMovieModalContentProps) {
   );
 
   const onDeleteOptionChange = useCallback(
-    ({ name, value }: { name: string; value: boolean }) => {
-      dispatch(
-        setDeleteOption({
-          [name]: value,
-        })
-      );
+    ({ value }: { name: string; value: boolean }) => {
+      setDeleteOptions({ addImportExclusion: value });
     },
-    [dispatch]
+    []
   );
 
   const onDeleteMoviesConfirmed = useCallback(() => {
     setDeleteFiles(false);
 
-    dispatch(
-      bulkDeleteMovie({
-        movieIds,
-        deleteFiles,
-        addImportExclusion,
-      })
-    );
+    onDeleteMoviesPress({
+      movieIds,
+      deleteFiles,
+      addImportExclusion,
+    });
 
     onModalClose();
   }, [
@@ -82,7 +71,7 @@ function DeleteMovieModalContent(props: DeleteMovieModalContentProps) {
     deleteFiles,
     addImportExclusion,
     setDeleteFiles,
-    dispatch,
+    onDeleteMoviesPress,
     onModalClose,
   ]);
 

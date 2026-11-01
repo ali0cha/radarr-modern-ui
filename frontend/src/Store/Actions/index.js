@@ -7,10 +7,8 @@ import * as customFilters from './customFilterActions';
 import * as discoverMovie from './discoverMovieActions';
 import * as importMovie from './importMovieActions';
 import * as interactiveImportActions from './interactiveImportActions';
-import * as movies from './movieActions';
 import * as movieCollections from './movieCollectionActions';
 import * as movieFiles from './movieFileActions';
-import * as movieIndex from './movieIndexActions';
 import * as oAuth from './oAuthActions';
 import * as providerOptions from './providerOptionActions';
 import * as releases from './releaseActions';
@@ -30,8 +28,6 @@ export default [
   oAuth,
   providerOptions,
   releases,
-  movies,
   movieCollections,
-  movieIndex,
   system
 ];

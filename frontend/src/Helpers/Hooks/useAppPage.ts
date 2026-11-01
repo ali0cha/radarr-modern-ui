@@ -4,33 +4,30 @@ import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
 import { useInitializeLanguage } from 'Language/useLanguageName';
 import { useLanguages } from 'Language/useLanguages';
+import { useMovies } from 'Movie/useMovies';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexerFlags } from 'Settings/Indexers/useIndexerFlags';
 import { useQualityProfiles } from 'Settings/Profiles/Quality/useQualityProfiles';
 import { useUISettingsQuery } from 'Settings/UI/useUISettings';
 import { fetchTranslations } from 'Store/Actions/appActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
-import { fetchMovies } from 'Store/Actions/movieActions';
 import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
 import { fetchStatus } from 'Store/Actions/systemActions';
 import { useTagsQuery } from 'Tags/useTags';
 
 const createErrorsSelector = () =>
   createSelector(
-    (state: AppState) => state.movies.error,
     (state: AppState) => state.movieCollections.error,
     (state: AppState) => state.customFilters.error,
     (state: AppState) => state.system.status.error,
     (state: AppState) => state.app.translations.error,
     (
-      moviesError,
       movieCollectionsError,
       customFiltersError,
       systemStatusError,
       translationsError
     ) => {
       const hasError = !!(
-        moviesError ||
         movieCollectionsError ||
         customFiltersError ||
         systemStatusError ||
@@ -40,7 +37,6 @@ const createErrorsSelector = () =>
       return {
         hasError,
         errors: {
-          moviesError,
           movieCollectionsError,
           customFiltersError,
           systemStatusError,
@@ -55,6 +51,7 @@ const useAppPage = () => {
 
   useInitializeLanguage();
 
+  const { isPopulated: isMoviesPopulated, error: moviesError } = useMovies();
   const { isSuccess: isTagsPopulated, error: tagsError } = useTagsQuery();
   const { isPopulated: isImportListsPopulated, error: importListsError } =
     useImportLists();
@@ -71,7 +68,6 @@ const useAppPage = () => {
 
   const isStatePopulated = useSelector(
     (state: AppState) =>
-      state.movies.isPopulated &&
       state.movieCollections.isPopulated &&
       state.customFilters.isPopulated &&
       state.system.status.isPopulated &&
@@ -80,6 +76,7 @@ const useAppPage = () => {
 
   const isPopulated =
     isStatePopulated &&
+    isMoviesPopulated &&
     isTagsPopulated &&
     isImportListsPopulated &&
     isUISettingsPopulated &&
@@ -93,6 +90,7 @@ const useAppPage = () => {
 
   const hasError =
     hasStateError ||
+    !!moviesError ||
     !!tagsError ||
     !!importListsError ||
     !!uiSettingsError ||
@@ -103,6 +101,7 @@ const useAppPage = () => {
   const errors = useMemo(
     () => ({
       ...stateErrors,
+      moviesError: moviesError ?? undefined,
       tagsError: tagsError ?? undefined,
       importListsError: importListsError ?? undefined,
       uiSettingsError: uiSettingsError ?? undefined,
@@ -112,6 +111,7 @@ const useAppPage = () => {
     }),
     [
       stateErrors,
+      moviesError,
       tagsError,
       importListsError,
       uiSettingsError,
@@ -135,7 +135,6 @@ const useAppPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchMovies());
     dispatch(fetchMovieCollections());
     dispatch(fetchCustomFilters());
     dispatch(fetchStatus());

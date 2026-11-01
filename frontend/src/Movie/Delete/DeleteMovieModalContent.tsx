@@ -13,8 +13,13 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, inputTypes, kinds } from 'Helpers/Props';
 import { Statistics } from 'Movie/Movie';
-import useMovie from 'Movie/useMovie';
-import { deleteMovie, setDeleteOption } from 'Store/Actions/movieActions';
+import {
+  setDeleteOptions,
+  useDeleteMovie,
+  useDeleteOptions,
+  useMovie,
+} from 'Movie/useMovies';
+import { updateItem } from 'Store/Actions/baseActions';
 import { CheckInputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -36,8 +41,9 @@ function DeleteMovieModalContent({
     collection,
     statistics = {} as Statistics,
   } = useMovie(movieId)!;
-  const { addImportExclusion } = useSelector(
-    (state: AppState) => state.movies.deleteOptions
+  const { addImportExclusion } = useDeleteOptions();
+  const collections = useSelector(
+    (state: AppState) => state.movieCollections.items
   );
 
   const { movieFileCount = 0, sizeOnDisk = 0 } = statistics;
@@ -51,31 +57,42 @@ function DeleteMovieModalContent({
     []
   );
 
-  const handleDeleteMovieConfirmed = useCallback(() => {
-    dispatch(
-      deleteMovie({
-        id: movieId,
-        collectionTmdbId: collection?.tmdbId,
-        deleteFiles,
-        addImportExclusion,
-      })
+  // The collection the movie belongs to has one movie more missing, unless the
+  // movie is the last one that it has.
+  const updateCollection = useCallback(() => {
+    const collectionToUpdate = collections.find(
+      (item) => item.tmdbId === collection?.tmdbId
     );
 
+    if (
+      !collectionToUpdate ||
+      collectionToUpdate.movies.length - collectionToUpdate.missingMovies === 1
+    ) {
+      return;
+    }
+
+    dispatch(
+      updateItem({
+        section: 'movieCollections',
+        ...collectionToUpdate,
+        missingMovies: collectionToUpdate.missingMovies + 1,
+      })
+    );
+  }, [collection, collections, dispatch]);
+
+  const { deleteMovie } = useDeleteMovie(movieId, updateCollection);
+
+  const handleDeleteMovieConfirmed = useCallback(() => {
+    deleteMovie({ deleteFiles, addImportExclusion });
+
     onModalClose();
-  }, [
-    movieId,
-    collection,
-    addImportExclusion,
-    deleteFiles,
-    dispatch,
-    onModalClose,
-  ]);
+  }, [addImportExclusion, deleteFiles, deleteMovie, onModalClose]);
 
   const handleDeleteOptionChange = useCallback(
-    ({ name, value }: CheckInputChanged) => {
-      dispatch(setDeleteOption({ [name]: value }));
+    ({ value }: CheckInputChanged) => {
+      setDeleteOptions({ addImportExclusion: value });
     },
-    [dispatch]
+    []
   );
 
   return (

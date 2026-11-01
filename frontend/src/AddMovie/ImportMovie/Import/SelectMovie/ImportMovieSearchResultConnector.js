@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import withMovies from 'Movie/withMovies';
 import createExistingMovieSelector from 'Store/Selectors/createExistingMovieSelector';
 import ImportMovieSearchResult from './ImportMovieSearchResult';
 
@@ -14,4 +15,4 @@ function createMapStateToProps() {
   );
 }
 
-export default connect(createMapStateToProps)(ImportMovieSearchResult);
+export default withMovies(connect(createMapStateToProps)(ImportMovieSearchResult));

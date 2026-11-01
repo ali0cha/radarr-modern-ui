@@ -1,6 +1,4 @@
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import ModelBase from 'App/ModelBase';
 import FieldSet from 'Components/FieldSet';
 import Label from 'Components/Label';
@@ -10,6 +8,7 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
+import { useMovies } from 'Movie/useMovies';
 import { useDownloadClients } from 'Settings/DownloadClients/useDownloadClients';
 import { useImportLists } from 'Settings/ImportLists/useImportLists';
 import { useIndexers } from 'Settings/Indexers/useIndexers';
@@ -17,7 +16,6 @@ import { useNotifications } from 'Settings/Notifications/useNotifications';
 import { useDelayProfiles } from 'Settings/Profiles/Delay/useDelayProfiles';
 import { useReleaseProfiles } from 'Settings/Profiles/Release/useReleaseProfiles';
 import { useAutoTaggings } from 'Settings/Tags/AutoTagging/useAutoTaggings';
-import createAllMoviesSelector from 'Store/Selectors/createAllMoviesSelector';
 import translate from 'Utilities/String/translate';
 import TagDetailsDelayProfile from './TagDetailsDelayProfile';
 import styles from './TagDetailsModalContent.module.css';
@@ -26,32 +24,6 @@ function findMatchingItems<T extends ModelBase>(ids: number[], items: T[]) {
   return items.filter((s) => {
     return ids.includes(s.id);
   });
-}
-
-function createUnorderedMatchingMoviesSelector(movieIds: number[]) {
-  return createSelector(createAllMoviesSelector(), (movies) =>
-    findMatchingItems(movieIds, movies)
-  );
-}
-
-function createMatchingMoviesSelector(movieIds: number[]) {
-  return createSelector(
-    createUnorderedMatchingMoviesSelector(movieIds),
-    (movies) => {
-      return movies.sort((movieA, movieB) => {
-        const sortTitleA = movieA.sortTitle;
-        const sortTitleB = movieB.sortTitle;
-
-        if (sortTitleA > sortTitleB) {
-          return 1;
-        } else if (sortTitleA < sortTitleB) {
-          return -1;
-        }
-
-        return 0;
-      });
-    }
-  );
 }
 
 export interface TagDetailsModalContentProps {
@@ -83,7 +55,20 @@ function TagDetailsModalContent({
   onModalClose,
   onDeleteTagPress,
 }: TagDetailsModalContentProps) {
-  const movies = useSelector(createMatchingMoviesSelector(movieIds));
+  const { movies: allMovies } = useMovies();
+  const movies = useMemo(
+    () =>
+      findMatchingItems(movieIds, allMovies).sort((movieA, movieB) => {
+        if (movieA.sortTitle > movieB.sortTitle) {
+          return 1;
+        } else if (movieA.sortTitle < movieB.sortTitle) {
+          return -1;
+        }
+
+        return 0;
+      }),
+    [movieIds, allMovies]
+  );
 
   const { defaultProfile, items: otherDelayProfiles } = useDelayProfiles();
   const delayProfiles = useMemo(
