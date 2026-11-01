@@ -36,13 +36,16 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 | `redux/captcha`, `redux/oauth`, `redux/provider-options`, `redux/custom-filters` | What the forms need: the captcha, the OAuth sign in, the options that a provider gives for a field, the custom filters |
 | `redux/system`, `redux/app` | The system pages (status, health, tasks, backups, updates, logs) and what the whole app shares (window size, messages, version, connection, sidebar, translations) |
 | `redux/remove-redux` | The store, its middlewares and its packages are removed |
+| `chore/remove-orphans` | Files that nothing imports anymore: those left by the move out of Redux, and a few that Radarr itself did not use |
+| `fix/login-styles` | Writes `Content/styles.css` again, which the backend's login and logout pages link to (see below). It belongs to the Vite step, it is kept as a separate commit on top |
 | `ts/utilities` | TypeScript conversion of the utilities, independent of the others |
 
 ## Things worth knowing
 
 - **Saved preferences are kept.** The views, sorts, filters, columns, page sizes and defaults that a user chose used to be saved by `redux-localstorage` in one document. Each store that replaced a section reads what it needs from that document the first time, after the old migrations (`blacklist` renamed to `blocklist`, `preDB`, monitor saved as `true` or `false`) were applied to it, so nobody starts from scratch.
 - **Small behavior changes** that came with the move, on purpose: the discover page loads again once the lists are refreshed, the reCAPTCHA of an input is shown again (it needed values that nothing gave it anymore) and the popup that adds a movie from discover closes when the movie is added instead of before.
-- **Not covered:** the project has no automated tests for the front-end, and a few things were not tried for real: signing in with the OAuth providers, restoring a backup and restarting the application for real, the reporting of errors to Sentry, and Windows or macOS.
+- **The login page was broken by the Vite step, and is fixed.** The backend serves `login.html` and `logout.html` itself, and they link to `Content/styles.css`, which the Webpack build wrote and the Vite build did not: the login page answered with an error for everyone who signs in with the forms authentication. It was found by starting from an empty Radarr, and `fix/login-styles` writes the file again. Anything else that the backend reads from the UI folder (`Content/` fonts, images, manifest, robots) was checked and is served.
+- **Not covered:** the project has no automated tests for the front-end, and a few things were not tried for real: signing in with the OAuth providers (only up to the window of the provider, with a simulated answer), the reports that Sentry sends (its set up and the cleaning of what it would send were checked in isolation, nothing was sent), and Windows or macOS.
 
 ## Build and try it
 
@@ -53,7 +56,17 @@ yarn typecheck
 yarn lint
 ```
 
-The UI is served by the Radarr backend from `_output/UI`, so to try it, point a Radarr build at that folder. Each migrated screen was checked by hand against a real Radarr (7.0.0.10815, `develop`): adding, editing, testing and deleting, bulk actions, validation errors, errors from the server, live updates through SignalR, losing and getting back the connection, and starting from a browser that has the preferences of the old UI as well as from an empty one.
+The UI is served by the Radarr backend from `_output/UI`, so to try it, point a Radarr build at that folder. With Docker, for example:
+
+```bash
+docker run -d --name radarr-ui-test -p 127.0.0.1:17878:7878 \
+  -e PUID=1000 -e PGID=1000 \
+  -v /tmp/radarr-test-config:/config -v /tmp/radarr-test-movies:/movies \
+  -v "$PWD/_output/UI":/app/radarr/bin/UI:ro \
+  lscr.io/linuxserver/radarr:develop
+```
+
+Restart that container after each build, which replaces the folder that it serves. Each migrated screen was checked by hand against a real Radarr (7.0.0.10815, `develop`): adding, editing, testing and deleting, bulk actions, validation errors, errors from the server, live updates through SignalR, losing and getting back the connection, restarting the application and restoring a backup for real, signing in and out with the forms authentication, and starting from a browser that has the preferences of the old UI as well as from an empty one and from an empty Radarr.
 
 ## Upstream
 
