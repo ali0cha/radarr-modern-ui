@@ -1,7 +1,5 @@
-import { IconName } from '@fortawesome/free-regular-svg-icons';
-import classNames from 'classnames';
 import React from 'react';
-import Icon from 'Components/Icon';
+import Icon, { IconName } from 'Components/Icon';
 import MenuButton from 'Components/Menu/MenuButton';
 import { icons } from 'Helpers/Props';
 import styles from './PageMenuButton.module.css';
@@ -23,10 +21,8 @@ function PageMenuButton({
       <Icon name={iconName} size={18} />
 
       {showIndicator ? (
-        <span
-          className={classNames(styles.indicatorContainer, 'fa-layers fa-fw')}
-        >
-          <Icon name={icons.CIRCLE} size={9} />
+        <span className={styles.indicatorContainer}>
+          <Icon name={icons.CIRCLE} size={9} filled={true} />
         </span>
       ) : null}
 

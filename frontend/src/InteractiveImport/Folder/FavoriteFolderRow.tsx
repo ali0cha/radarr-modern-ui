@@ -35,6 +35,7 @@ function FavoriteFolderRow({ folder, onPress }: FavoriteFolderRowProps) {
           title={translate('FavoriteFolderRemove')}
           kind="danger"
           name={icons.HEART}
+          filled={true}
           onPress={handleRemoveFavoritePress}
         />
       </TableRowCell>

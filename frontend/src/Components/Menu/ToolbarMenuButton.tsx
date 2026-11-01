@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import React from 'react';
 import Icon, { IconName } from 'Components/Icon';
 import MenuButton, { MenuButtonProps } from 'Components/Menu/MenuButton';
@@ -25,10 +24,8 @@ function ToolbarMenuButton({
         <Icon name={iconName} size={21} />
 
         {showIndicator ? (
-          <span
-            className={classNames(styles.indicatorContainer, 'fa-layers fa-fw')}
-          >
-            <Icon name={icons.CIRCLE} size={9} />
+          <span className={styles.indicatorContainer}>
+            <Icon name={icons.CIRCLE} size={9} filled={true} />
           </span>
         ) : null}
 

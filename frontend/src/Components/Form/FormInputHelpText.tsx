@@ -43,7 +43,7 @@ function FormInputHelpText({
 
       {!link && tooltip ? (
         <Icon
-          containerClassName={styles.details}
+          titleWrapperClassName={styles.details}
           name={icons.INFO}
           title={tooltip}
         />
