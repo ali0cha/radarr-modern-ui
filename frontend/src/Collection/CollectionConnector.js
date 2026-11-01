@@ -1,111 +1,76 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand } from 'Commands/useCommands';
 import withCommandExecuting from 'Commands/withCommandExecuting';
 import withScrollPosition from 'Components/withScrollPosition';
-import {
-  fetchMovieCollections,
-  saveMovieCollections,
-  setMovieCollectionsFilter,
-  setMovieCollectionsSort
-} from 'Store/Actions/movieCollectionActions';
 import scrollPositions from 'Store/scrollPositions';
-import createCollectionClientSideCollectionItemsSelector from 'Store/Selectors/createCollectionClientSideCollectionItemsSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import Collection from './Collection';
+import {
+  useMovieCollections,
+  useMovieCollectionsStore,
+  useMovieCollectionsView,
+  useSaveMovieCollections
+} from './useMovieCollections';
 
-function createMapStateToProps() {
-  return createSelector(
-    createCollectionClientSideCollectionItemsSelector('movieCollections'),
-    (state, { isCommandExecuting }) => isCommandExecuting,
-    createDimensionsSelector(),
-    (
-      collections,
-      isRefreshingCollections,
-      dimensionsState
-    ) => {
-      return {
-        ...collections,
-        isRefreshingCollections,
-        isSmallScreen: dimensionsState.isSmallScreen
-      };
-    }
+const selectDimensions = createDimensionsSelector();
+
+function CollectionConnector(props) {
+  const { isCommandExecuting } = props;
+
+  const collections = useMovieCollectionsView();
+  const { refetch } = useMovieCollections();
+  const { saveCollections, isSaving } = useSaveMovieCollections();
+  const dimensions = useSelector(selectDimensions);
+  const setSort = useMovieCollectionsStore((state) => state.setSort);
+  const setFilter = useMovieCollectionsStore((state) => state.setFilter);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleScroll = useCallback(({ scrollTop }) => {
+    scrollPositions.movieCollections = scrollTop;
+  }, []);
+
+  const handleSortSelect = useCallback((sortKey) => {
+    setSort(sortKey);
+  }, [setSort]);
+
+  const handleFilterSelect = useCallback((selectedFilterKey) => {
+    setFilter(selectedFilterKey);
+  }, [setFilter]);
+
+  const handleRefreshMovieCollectionsPress = useCallback(() => {
+    executeCommand({
+      name: commandNames.REFRESH_COLLECTIONS
+    });
+  }, []);
+
+  return (
+    <Collection
+      {...props}
+      {...collections}
+      isRefreshingCollections={isCommandExecuting}
+      isSmallScreen={dimensions.isSmallScreen}
+      isSaving={isSaving}
+      isAdding={false}
+      onSortSelect={handleSortSelect}
+      onFilterSelect={handleFilterSelect}
+      onRefreshMovieCollectionsPress={handleRefreshMovieCollectionsPress}
+      onScroll={handleScroll}
+      onUpdateSelectedPress={saveCollections}
+    />
   );
 }
 
-function createMapDispatchToProps(dispatch, props) {
-  return {
-    dispatchFetchMovieCollections() {
-      dispatch(fetchMovieCollections());
-    },
-    onUpdateSelectedPress(payload) {
-      dispatch(saveMovieCollections(payload));
-    },
-    onSortSelect(sortKey) {
-      dispatch(setMovieCollectionsSort({ sortKey }));
-    },
-    onFilterSelect(selectedFilterKey) {
-      dispatch(setMovieCollectionsFilter({ selectedFilterKey }));
-    },
-    onRefreshMovieCollectionsPress() {
-      executeCommand({
-        name: commandNames.REFRESH_COLLECTIONS
-      });
-    }
-  };
-}
-
-class CollectionConnector extends Component {
-
-  //
-  // Lifecycle
-
-  componentDidMount() {
-    this.props.dispatchFetchMovieCollections();
-  }
-
-  //
-  // Listeners
-
-  onScroll = ({ scrollTop }) => {
-    scrollPositions.movieCollections = scrollTop;
-  };
-
-  onUpdateSelectedPress = (payload) => {
-    this.props.onUpdateSelectedPress(payload);
-  };
-
-  //
-  // Render
-
-  render() {
-    const {
-      dispatchFetchMovieCollections,
-      ...otherProps
-    } = this.props;
-
-    return (
-      <Collection
-        {...otherProps}
-        onViewSelect={this.onViewSelect}
-        onScroll={this.onScroll}
-        onUpdateSelectedPress={this.onUpdateSelectedPress}
-      />
-    );
-  }
-}
-
 CollectionConnector.propTypes = {
-  isSmallScreen: PropTypes.bool.isRequired,
-  view: PropTypes.string.isRequired,
-  onUpdateSelectedPress: PropTypes.func.isRequired,
-  dispatchFetchMovieCollections: PropTypes.func.isRequired
+  isCommandExecuting: PropTypes.bool.isRequired
 };
 
 export default withScrollPosition(
-  withCommandExecuting(commandNames.REFRESH_COLLECTIONS)(connect(createMapStateToProps, createMapDispatchToProps)(CollectionConnector)),
+  withCommandExecuting(commandNames.REFRESH_COLLECTIONS)(CollectionConnector),
   'movieCollections'
 );

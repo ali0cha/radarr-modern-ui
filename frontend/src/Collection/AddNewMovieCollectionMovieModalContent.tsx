@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import MovieMinimumAvailabilityPopoverContent from 'AddMovie/MovieMinimumAvailabilityPopoverContent';
-import AppState from 'App/State/AppState';
-import useMovieCollection from 'Collection/useMovieCollection';
+import {
+  useAddCollectionMovie,
+  useMovieCollection,
+} from 'Collection/useMovieCollections';
 import CheckInput from 'Components/Form/CheckInput';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -15,14 +17,10 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Popover from 'Components/Tooltip/Popover';
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import { usePendingChangesStore } from 'Helpers/Hooks/usePendingChangesStore';
 import { icons, inputTypes, kinds, tooltipPositions } from 'Helpers/Props';
-import { Image } from 'Movie/Movie';
+import { Image, MovieMonitor } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
-import {
-  addMovie,
-  setMovieCollectionValue,
-} from 'Store/Actions/movieCollectionActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import useIsWindows from 'System/useIsWindows';
@@ -51,18 +49,15 @@ function AddNewMovieCollectionMovieModalContent({
   folder,
   onModalClose,
 }: AddNewMovieCollectionMovieModalContentProps) {
-  const dispatch = useDispatch();
-
   const collection = useMovieCollection(collectionId)!;
 
   const { isSmallScreen } = useSelector(createDimensionsSelector());
   const isWindows = useIsWindows();
 
-  const { isAdding, addError, pendingChanges } = useSelector(
-    (state: AppState) => state.movieCollections
-  );
-
-  const wasAdding = usePrevious(isAdding);
+  const { pendingChanges, setPendingChange } = usePendingChangesStore<
+    Record<string, unknown>
+  >({});
+  const { addMovie, isAdding, addError } = useAddCollectionMovie(onModalClose);
 
   const { settings, validationErrors, validationWarnings } = useMemo(() => {
     const options = {
@@ -88,25 +83,22 @@ function AddNewMovieCollectionMovieModalContent({
 
   const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error actions aren't typed
-      dispatch(setMovieCollectionValue({ name, value }));
+      setPendingChange(name, value);
     },
-    [dispatch]
+    [setPendingChange]
   );
 
   const handleAddMoviePress = useCallback(() => {
-    dispatch(
-      addMovie({
-        tmdbId,
-        title,
-        rootFolderPath: rootFolderPath.value,
-        monitor: monitor.value,
-        qualityProfileId: qualityProfileId.value,
-        minimumAvailability: minimumAvailability.value,
-        searchForMovie: searchForMovie.value,
-        tags: tags.value,
-      })
-    );
+    addMovie({
+      tmdbId,
+      title,
+      rootFolderPath: rootFolderPath.value,
+      monitor: monitor.value as MovieMonitor,
+      qualityProfileId: qualityProfileId.value,
+      minimumAvailability: minimumAvailability.value,
+      searchForMovie: searchForMovie.value,
+      tags: tags.value,
+    });
   }, [
     tmdbId,
     title,
@@ -116,14 +108,8 @@ function AddNewMovieCollectionMovieModalContent({
     minimumAvailability,
     searchForMovie,
     tags,
-    dispatch,
+    addMovie,
   ]);
-
-  useEffect(() => {
-    if (!isAdding && wasAdding && !addError) {
-      onModalClose();
-    }
-  }, [isAdding, wasAdding, addError, onModalClose]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

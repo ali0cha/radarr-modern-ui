@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useMovieCollections } from 'Collection/useMovieCollections';
 import Card from 'Components/Card';
 import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
 import PageSectionContent from 'Components/Page/PageSectionContent';
 import { icons } from 'Helpers/Props';
-import { fetchMovieCollections } from 'Store/Actions/movieCollectionActions';
 import QualityProfileModel from 'typings/QualityProfile';
 import translate from 'Utilities/String/translate';
 import EditQualityProfileModal from './EditQualityProfileModal';
@@ -23,7 +22,7 @@ function getClonedQualityProfile(qualityProfile: QualityProfileModel) {
 }
 
 function QualityProfiles() {
-  const dispatch = useDispatch();
+  const { refetch: refetchCollections } = useMovieCollections();
   const { items, isFetching, isPopulated, error } = useQualityProfiles();
 
   const [isQualityProfileModalOpen, setIsQualityProfileModalOpen] =
@@ -57,8 +56,8 @@ function QualityProfiles() {
 
   // The collections tell whether a profile is in use
   useEffect(() => {
-    dispatch(fetchMovieCollections());
-  }, [dispatch]);
+    refetchCollections();
+  }, [refetchCollections]);
 
   return (
     <FieldSet legend={translate('QualityProfiles')}>

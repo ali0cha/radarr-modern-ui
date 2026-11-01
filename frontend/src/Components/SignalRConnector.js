@@ -10,6 +10,7 @@ import {
   setQueueStatus
 } from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
+import { invalidateMovieCollections, removeMovieCollection, setMovieCollection } from 'Collection/useMovieCollections';
 import { handleCommandFinished, handleCommandUpdated } from 'Commands/commandEvents';
 import { invalidateCommands } from 'Commands/useCommands';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
@@ -238,14 +239,11 @@ class SignalRConnector extends Component {
 
   handleCollection = (body) => {
     const action = body.action;
-    const section = 'movieCollections';
-
-    console.log(body);
 
     if (action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...body.resource });
+      setMovieCollection(queryClient, body.resource);
     } else if (action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: body.resource.id });
+      removeMovieCollection(queryClient, body.resource.id);
     }
   };
 
@@ -344,6 +342,7 @@ class SignalRConnector extends Component {
     // Repopulate the page (if a repopulator is set) to ensure things
     // are in sync after reconnecting.
     invalidateMovies(queryClient);
+    invalidateMovieCollections(queryClient);
     invalidateMovieFiles(queryClient);
     invalidateCommands(queryClient);
     invalidateQueue(queryClient);

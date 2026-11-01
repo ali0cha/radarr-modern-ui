@@ -1,6 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import {
+  setMovieCollection,
+  useCollectionByTmdbId,
+} from 'Collection/useMovieCollections';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
@@ -19,7 +22,6 @@ import {
   useDeleteOptions,
   useMovie,
 } from 'Movie/useMovies';
-import { updateItem } from 'Store/Actions/baseActions';
 import { CheckInputChanged } from 'typings/inputs';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
@@ -34,7 +36,6 @@ function DeleteMovieModalContent({
   movieId,
   onModalClose,
 }: DeleteMovieModalContentProps) {
-  const dispatch = useDispatch();
   const {
     title,
     path,
@@ -42,9 +43,8 @@ function DeleteMovieModalContent({
     statistics = {} as Statistics,
   } = useMovie(movieId)!;
   const { addImportExclusion } = useDeleteOptions();
-  const collections = useSelector(
-    (state: AppState) => state.movieCollections.items
-  );
+  const collectionOfMovie = useCollectionByTmdbId(collection?.tmdbId ?? 0);
+  const queryClient = useQueryClient();
 
   const { movieFileCount = 0, sizeOnDisk = 0 } = statistics;
 
@@ -60,25 +60,18 @@ function DeleteMovieModalContent({
   // The collection the movie belongs to has one movie more missing, unless the
   // movie is the last one that it has.
   const updateCollection = useCallback(() => {
-    const collectionToUpdate = collections.find(
-      (item) => item.tmdbId === collection?.tmdbId
-    );
-
     if (
-      !collectionToUpdate ||
-      collectionToUpdate.movies.length - collectionToUpdate.missingMovies === 1
+      !collectionOfMovie ||
+      collectionOfMovie.movies.length - collectionOfMovie.missingMovies === 1
     ) {
       return;
     }
 
-    dispatch(
-      updateItem({
-        section: 'movieCollections',
-        ...collectionToUpdate,
-        missingMovies: collectionToUpdate.missingMovies + 1,
-      })
-    );
-  }, [collection, collections, dispatch]);
+    setMovieCollection(queryClient, {
+      id: collectionOfMovie.id,
+      missingMovies: collectionOfMovie.missingMovies + 1,
+    });
+  }, [collectionOfMovie, queryClient]);
 
   const { deleteMovie } = useDeleteMovie(movieId, updateCollection);
 

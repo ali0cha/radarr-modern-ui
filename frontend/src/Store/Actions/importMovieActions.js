@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { createAction } from 'redux-actions';
 import { batchActions } from 'redux-batched-actions';
 import { queryClient } from 'App/queryClient';
+import { setMovie } from 'Movie/useMovies';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
@@ -241,6 +242,8 @@ export const actionHandlers = handleThunks({
     }).request;
 
     promise.done((data) => {
+      data.forEach((movie) => setMovie(queryClient, movie));
+
       dispatch(batchActions([
         set({
           section,
@@ -248,8 +251,6 @@ export const actionHandlers = handleThunks({
           isImported: true,
           importError: null
         }),
-
-        ...data.map((movie) => updateItem({ section: 'movies', ...movie })),
 
         ...addedIds.map((id) => removeItem({ section, id }))
       ]));

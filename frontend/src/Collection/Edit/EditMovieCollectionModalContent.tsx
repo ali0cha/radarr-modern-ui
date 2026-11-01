@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
-import useMovieCollection from 'Collection/useMovieCollection';
+import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  useMovieCollection,
+  useSaveMovieCollection,
+} from 'Collection/useMovieCollections';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -12,16 +14,13 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import usePrevious from 'Helpers/Hooks/usePrevious';
+import { usePendingChangesStore } from 'Helpers/Hooks/usePendingChangesStore';
 import { inputTypes } from 'Helpers/Props';
 import MoviePoster from 'Movie/MoviePoster';
-import {
-  saveMovieCollection,
-  setMovieCollectionValue,
-} from 'Store/Actions/movieCollectionActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import { InputChanged } from 'typings/inputs';
+import MovieCollection from 'typings/MovieCollection';
 import translate from 'Utilities/String/translate';
 import styles from './EditMovieCollectionModalContent.module.css';
 
@@ -34,7 +33,7 @@ function EditMovieCollectionModalContent({
   collectionId,
   onModalClose,
 }: EditMovieCollectionModalContentProps) {
-  const dispatch = useDispatch();
+  const collection = useMovieCollection(collectionId)!;
 
   const {
     title,
@@ -46,14 +45,15 @@ function EditMovieCollectionModalContent({
     searchOnAdd,
     images,
     tags,
-  } = useMovieCollection(collectionId)!;
+  } = collection;
 
-  const { isSaving, saveError, pendingChanges } = useSelector(
-    (state: AppState) => state.movieCollections
+  const { pendingChanges, setPendingChange } =
+    usePendingChangesStore<MovieCollection>({});
+  const { saveCollection, isSaving, saveError } = useSaveMovieCollection(
+    collectionId,
+    onModalClose
   );
   const { isSmallScreen } = useSelector(createDimensionsSelector());
-
-  const wasSaving = usePrevious(isSaving);
 
   const { settings, ...otherSettings } = useMemo(() => {
     return selectSettings(
@@ -81,25 +81,17 @@ function EditMovieCollectionModalContent({
 
   const handleInputChange = useCallback(
     ({ name, value }: InputChanged) => {
-      // @ts-expect-error actions aren't typed
-      dispatch(setMovieCollectionValue({ name, value }));
+      setPendingChange(
+        name as keyof MovieCollection,
+        value as MovieCollection[keyof MovieCollection]
+      );
     },
-    [dispatch]
+    [setPendingChange]
   );
 
   const handleSavePress = useCallback(() => {
-    dispatch(
-      saveMovieCollection({
-        id: collectionId,
-      })
-    );
-  }, [collectionId, dispatch]);
-
-  useEffect(() => {
-    if (!isSaving && wasSaving && !saveError) {
-      onModalClose();
-    }
-  }, [isSaving, wasSaving, saveError, onModalClose]);
+    saveCollection({ ...collection, ...pendingChanges });
+  }, [collection, pendingChanges, saveCollection]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

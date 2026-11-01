@@ -6,6 +6,7 @@ import { queryClient } from 'App/queryClient';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { filterBuilderTypes, filterBuilderValueTypes, filterTypes, sortDirections } from 'Helpers/Props';
 import { filterPredicates } from 'Movie/movieDefinitions';
+import { setMovie } from 'Movie/useMovies';
 import { IMPORT_LIST_EXCLUSIONS_PATH } from 'Settings/ImportLists/ImportListExclusions/useImportListExclusions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -693,9 +694,9 @@ export const actionHandlers = handleThunks({
     }).request;
 
     promise.done((data) => {
-      dispatch(batchActions([
-        updateItem({ section: 'movies', ...data }),
+      setMovie(queryClient, data);
 
+      dispatch(batchActions([
         itemToUpdate.lists.length === 0 ? removeItem({ section: 'discoverMovie', ...itemToUpdate }) :
           updateItem({ section: 'discoverMovie', ...itemToUpdate, isExisting: true }),
 
@@ -753,14 +754,14 @@ export const actionHandlers = handleThunks({
     }).request;
 
     promise.done((data) => {
+      data.forEach((movie) => setMovie(queryClient, movie));
+
       dispatch(batchActions([
         set({
           section,
           isAdding: false,
           isAdded: true
         }),
-
-        ...data.map((movie) => updateItem({ section: 'movies', ...movie })),
 
         ...addedIds.map((id) => (items.find((i) => i.id === id).lists.length === 0 ? removeItem({ section, id }) : updateItem({ section, id, isExisting: true })))
 

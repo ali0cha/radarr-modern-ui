@@ -1,8 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import Modal from 'Components/Modal/Modal';
-import usePrevious from 'Helpers/Hooks/usePrevious';
-import { clearPendingChanges } from 'Store/Actions/baseActions';
 import AddNewMovieCollectionMovieModalContent, {
   AddNewMovieCollectionMovieModalContentProps,
 } from './AddNewMovieCollectionMovieModalContent';
@@ -17,26 +14,11 @@ function AddNewMovieCollectionMovieModal({
   onModalClose,
   ...otherProps
 }: AddNewCollectionMovieModalProps) {
-  const dispatch = useDispatch();
-
-  const wasOpen = usePrevious(isOpen);
-
-  const handleModalClose = useCallback(() => {
-    dispatch(clearPendingChanges({ section: 'movieCollections' }));
-    onModalClose();
-  }, [dispatch, onModalClose]);
-
-  useEffect(() => {
-    if (wasOpen && !isOpen) {
-      dispatch(clearPendingChanges({ section: 'movieCollections' }));
-    }
-  }, [wasOpen, isOpen, dispatch]);
-
   return (
-    <Modal isOpen={isOpen} onModalClose={handleModalClose}>
+    <Modal isOpen={isOpen} onModalClose={onModalClose}>
       <AddNewMovieCollectionMovieModalContent
         {...otherProps}
-        onModalClose={handleModalClose}
+        onModalClose={onModalClose}
       />
     </Modal>
   );

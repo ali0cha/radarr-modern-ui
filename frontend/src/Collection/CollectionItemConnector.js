@@ -1,61 +1,53 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import createCollectionSelector from 'Store/Selectors/createCollectionSelector';
+import React, { useMemo } from 'react';
+import { useMovieCollection } from 'Collection/useMovieCollections';
 
-function createMapStateToProps() {
-  return createSelector(
-    createCollectionSelector(),
-    (collection) => {
-      // If a movie is deleted this selector may fire before the parent
-      // selectors, which will result in an undefined movie, if that happens
-      // we want to return early here and again in the render function to avoid
-      // trying to show a movie that has no information available.
+function CollectionItemConnector(props) {
+  const {
+    id: itemId,
+    collectionId,
+    component: ItemComponent,
+    ...otherProps
+  } = props;
 
-      if (!collection) {
-        return {};
-      }
+  const collection = useMovieCollection(collectionId);
 
-      const allGenres = collection.movies.flatMap((movie) => movie.genres);
+  const data = useMemo(() => {
+    // If a collection is deleted this may render before the parent does, which
+    // will result in an undefined collection, if that happens we want to return
+    // early here to avoid trying to show a collection that has no information
+    // available.
 
-      return {
-        ...collection,
-        movies: [...collection.movies].sort((a, b) => b.year - a.year),
-        genres: Array.from(new Set(allGenres))
-      };
-    }
-  );
-}
-
-class CollectionItemConnector extends Component {
-
-  //
-  // Render
-
-  render() {
-    const {
-      id,
-      component: ItemComponent,
-      ...otherProps
-    } = this.props;
-
-    if (!id) {
-      return null;
+    if (!collection) {
+      return {};
     }
 
-    return (
-      <ItemComponent
-        {...otherProps}
-        id={id}
-      />
-    );
+    const allGenres = collection.movies.flatMap((movie) => movie.genres);
+
+    return {
+      ...collection,
+      movies: [...collection.movies].sort((a, b) => b.year - a.year),
+      genres: Array.from(new Set(allGenres))
+    };
+  }, [collection]);
+
+  if (!data.id) {
+    return null;
   }
+
+  return (
+    <ItemComponent
+      {...otherProps}
+      collectionId={collectionId}
+      {...data}
+    />
+  );
 }
 
 CollectionItemConnector.propTypes = {
   id: PropTypes.number,
+  collectionId: PropTypes.number,
   component: PropTypes.elementType.isRequired
 };
 
-export default connect(createMapStateToProps)(CollectionItemConnector);
+export default CollectionItemConnector;

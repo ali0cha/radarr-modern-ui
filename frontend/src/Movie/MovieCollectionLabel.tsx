@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  useCollectionByTmdbId,
+  useToggleCollectionMonitored,
+} from 'Collection/useMovieCollections';
 import MonitorToggleButton from 'Components/MonitorToggleButton';
-import { toggleCollectionMonitored } from 'Store/Actions/movieCollectionActions';
-import { createCollectionSelectorForHook } from 'Store/Selectors/createCollectionSelector';
-import MovieCollection from 'typings/MovieCollection';
 import translate from 'Utilities/String/translate';
 import styles from './MovieCollectionLabel.module.css';
 
@@ -12,23 +12,20 @@ interface MovieCollectionLabelProps {
 }
 
 function MovieCollectionLabel({ tmdbId }: MovieCollectionLabelProps) {
-  const {
-    id,
-    monitored,
-    title,
-    isSaving = false,
-  } = useSelector(createCollectionSelectorForHook(tmdbId)) ||
-  ({} as MovieCollection);
+  const collection = useCollectionByTmdbId(tmdbId);
+  const { id, monitored, title } = collection ?? {
+    id: 0,
+    monitored: false,
+    title: '',
+  };
 
-  const dispatch = useDispatch();
+  const { toggleMonitored, isSaving } = useToggleCollectionMonitored(id);
 
   const handleMonitorTogglePress = useCallback(
     (value: boolean) => {
-      dispatch(
-        toggleCollectionMonitored({ collectionId: id, monitored: value })
-      );
+      toggleMonitored(value);
     },
-    [id, dispatch]
+    [toggleMonitored]
   );
 
   if (!id) {

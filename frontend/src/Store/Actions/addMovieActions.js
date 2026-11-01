@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import { createAction } from 'redux-actions';
 import { batchActions } from 'redux-batched-actions';
+import { queryClient } from 'App/queryClient';
+import { changeMissingMovies } from 'Collection/useMovieCollections';
+import { setMovie } from 'Movie/useMovies';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getNewMovie from 'Utilities/Movie/getNewMovie';
@@ -129,13 +132,14 @@ export const actionHandlers = handleThunks({
     }).request;
 
     promise.done((data) => {
+      setMovie(queryClient, data);
+
       const updatedItem = _.cloneDeep(data);
       updatedItem.internalId = updatedItem.id;
       updatedItem.id = updatedItem.tmdbId;
       delete updatedItem.images;
 
       const actions = [
-        updateItem({ section: 'movies', ...data }),
         updateItem({ section: 'addMovie', ...updatedItem }),
 
         set({
@@ -151,12 +155,7 @@ export const actionHandlers = handleThunks({
         return;
       }
 
-      const collectionToUpdate = getState().movieCollections.items.find((collection) => collection.tmdbId === newMovie.collection.tmdbId);
-
-      if (collectionToUpdate) {
-        const collectionData = { ...collectionToUpdate, missingMovies: Math.max(0, collectionToUpdate.missingMovies - 1 ) };
-        actions.push(updateItem({ section: 'movieCollections', ...collectionData }));
-      }
+      changeMissingMovies(queryClient, newMovie.collection.tmdbId, -1);
 
       dispatch(batchActions(actions));
     });

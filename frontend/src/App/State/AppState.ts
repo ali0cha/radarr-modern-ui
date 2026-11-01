@@ -4,7 +4,6 @@ import CaptchaAppState from './CaptchaAppState';
 import CustomFiltersAppState from './CustomFiltersAppState';
 import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
-import MovieCollectionAppState from './MovieCollectionAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import ReleasesAppState from './ReleasesAppState';
@@ -69,7 +68,6 @@ interface AppState {
   captcha: CaptchaAppState;
   customFilters: CustomFiltersAppState;
   interactiveImport: InteractiveImportAppState;
-  movieCollections: MovieCollectionAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
   releases: ReleasesAppState;
