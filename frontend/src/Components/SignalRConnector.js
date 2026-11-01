@@ -14,6 +14,7 @@ import { handleCommandFinished, handleCommandUpdated } from 'Commands/commandEve
 import { invalidateCommands } from 'Commands/useCommands';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateMovies, removeMovies, setMovie } from 'Movie/useMovies';
+import { invalidateMovieFiles, removeMovieFiles, updateMovieFile } from 'MovieFile/useMovieFiles';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
 import { DOWNLOAD_CLIENTS_PATH } from 'Settings/DownloadClients/useDownloadClients';
 import { IMPORT_LISTS_PATH } from 'Settings/ImportLists/useImportLists';
@@ -187,15 +188,13 @@ class SignalRConnector extends Component {
   };
 
   handleMoviefile = (body) => {
-    const section = 'movieFiles';
-
     if (body.action === 'updated') {
-      this.props.dispatchUpdateItem({ section, ...body.resource });
+      updateMovieFile(queryClient, body.resource);
 
       // Repopulate the page to handle recently imported file
       repopulatePage('movieFileUpdated');
     } else if (body.action === 'deleted') {
-      this.props.dispatchRemoveItem({ section, id: body.resource.id });
+      removeMovieFiles(queryClient, [body.resource.id]);
 
       repopulatePage('movieFileDeleted');
     }
@@ -345,6 +344,7 @@ class SignalRConnector extends Component {
     // Repopulate the page (if a repopulator is set) to ensure things
     // are in sync after reconnecting.
     invalidateMovies(queryClient);
+    invalidateMovieFiles(queryClient);
     invalidateCommands(queryClient);
     invalidateQueue(queryClient);
     repopulatePage();

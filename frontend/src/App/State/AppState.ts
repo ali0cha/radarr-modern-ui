@@ -5,7 +5,6 @@ import CustomFiltersAppState from './CustomFiltersAppState';
 import InteractiveImportAppState from './InteractiveImportAppState';
 import MessagesAppState from './MessagesAppState';
 import MovieCollectionAppState from './MovieCollectionAppState';
-import MovieFilesAppState from './MovieFilesAppState';
 import OAuthAppState from './OAuthAppState';
 import ProviderOptionsAppState from './ProviderOptionsAppState';
 import ReleasesAppState from './ReleasesAppState';
@@ -71,7 +70,6 @@ interface AppState {
   customFilters: CustomFiltersAppState;
   interactiveImport: InteractiveImportAppState;
   movieCollections: MovieCollectionAppState;
-  movieFiles: MovieFilesAppState;
   oAuth: OAuthAppState;
   providerOptions: ProviderOptionsAppState;
   releases: ReleasesAppState;

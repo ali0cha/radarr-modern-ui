@@ -1,48 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { Component, useMemo } from 'react';
 import withLanguages from 'Language/withLanguages';
+import { useMovieFile, useUpdateMovieFiles } from 'MovieFile/useMovieFiles';
 import withQualityProfileSchema from 'Settings/Profiles/Quality/withQualityProfileSchema';
-import { updateMovieFiles } from 'Store/Actions/movieFileActions';
-import createMovieFileSelector from 'Store/Selectors/createMovieFileSelector';
 import getQualities from 'Utilities/Quality/getQualities';
 import FileEditModalContent from './FileEditModalContent';
-
-function createMapStateToProps() {
-  return createSelector(
-    createMovieFileSelector(),
-    (state, { qualityProfileSchemaState }) => qualityProfileSchemaState,
-    (state, { languagesState }) => languagesState,
-    (movieFile, qualityProfiles, languages) => {
-
-      const filterItems = ['Any', 'Original'];
-      const filteredLanguages = languages.items.filter((lang) => !filterItems.includes(lang.name));
-
-      const quality = movieFile.quality;
-
-      return {
-        isFetching: qualityProfiles.isFetching || languages.isFetching,
-        isPopulated: qualityProfiles.isPopulated && languages.isPopulated,
-        error: qualityProfiles.error || languages.error,
-        qualityId: quality ? quality.quality.id : 0,
-        real: quality ? quality.revision.real > 0 : false,
-        proper: quality ? quality.revision.version > 1 : false,
-        qualities: getQualities(qualityProfiles.schema?.items),
-        languageIds: movieFile.languages ? movieFile.languages.map((l) => l.id) : [],
-        languages: filteredLanguages,
-        indexerFlags: movieFile.indexerFlags,
-        edition: movieFile.edition,
-        releaseGroup: movieFile.releaseGroup,
-        relativePath: movieFile.relativePath
-      };
-    }
-  );
-}
-
-const mapDispatchToProps = {
-  dispatchUpdateMovieFiles: updateMovieFiles
-};
 
 class FileEditModalContentConnector extends Component {
 
@@ -126,4 +88,55 @@ FileEditModalContentConnector.propTypes = {
   onModalClose: PropTypes.func.isRequired
 };
 
-export default withQualityProfileSchema(withLanguages(connect(createMapStateToProps, mapDispatchToProps)(FileEditModalContentConnector)));
+function FileEditModalContentConnectorWithData(props) {
+  const {
+    movieFileId,
+    languagesState,
+    qualityProfileSchemaState,
+    onModalClose
+  } = props;
+
+  const savedMovieFile = useMovieFile(movieFileId);
+  const { updateMovieFiles } = useUpdateMovieFiles();
+
+  const mapped = useMemo(() => {
+    const movieFile = savedMovieFile ?? {};
+    const filterItems = ['Any', 'Original'];
+    const filteredLanguages = languagesState.items.filter((lang) => !filterItems.includes(lang.name));
+    const quality = movieFile.quality;
+
+    return {
+      isFetching: qualityProfileSchemaState.isFetching || languagesState.isFetching,
+      isPopulated: qualityProfileSchemaState.isPopulated && languagesState.isPopulated,
+      error: qualityProfileSchemaState.error || languagesState.error,
+      qualityId: quality ? quality.quality.id : 0,
+      real: quality ? quality.revision.real > 0 : false,
+      proper: quality ? quality.revision.version > 1 : false,
+      qualities: getQualities(qualityProfileSchemaState.schema?.items),
+      languageIds: movieFile.languages ? movieFile.languages.map((l) => l.id) : [],
+      languages: filteredLanguages,
+      indexerFlags: movieFile.indexerFlags,
+      edition: movieFile.edition,
+      releaseGroup: movieFile.releaseGroup,
+      relativePath: movieFile.relativePath
+    };
+  }, [savedMovieFile, languagesState, qualityProfileSchemaState]);
+
+  return (
+    <FileEditModalContentConnector
+      movieFileId={movieFileId}
+      {...mapped}
+      dispatchUpdateMovieFiles={({ files }) => updateMovieFiles(files)}
+      onModalClose={onModalClose}
+    />
+  );
+}
+
+FileEditModalContentConnectorWithData.propTypes = {
+  movieFileId: PropTypes.number.isRequired,
+  languagesState: PropTypes.object.isRequired,
+  qualityProfileSchemaState: PropTypes.object.isRequired,
+  onModalClose: PropTypes.func.isRequired
+};
+
+export default withQualityProfileSchema(withLanguages(FileEditModalContentConnectorWithData));

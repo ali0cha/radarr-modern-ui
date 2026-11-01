@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
@@ -11,17 +11,13 @@ import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
+import { useMovieFilesByIds } from 'MovieFile/useMovieFiles';
 import useUISettings from 'Settings/UI/useUISettings';
 import {
   clearCalendar,
   fetchCalendar,
   gotoCalendarToday,
 } from 'Store/Actions/calendarActions';
-import {
-  clearMovieFiles,
-  fetchMovieFiles,
-} from 'Store/Actions/movieFileActions';
-import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import {
   registerPagePopulator,
@@ -52,8 +48,6 @@ function Calendar() {
 
   const wasRefreshingMovie = usePrevious(isRefreshingMovie);
   const previousFirstDayOfWeek = usePrevious(firstDayOfWeek);
-  const previousItems = usePrevious(items);
-
   const handleScheduleUpdate = useCallback(() => {
     clearTimeout(updateTimeout.current);
 
@@ -70,7 +64,6 @@ function Calendar() {
 
     return () => {
       dispatch(clearCalendar());
-      dispatch(clearMovieFiles());
       clearTimeout(updateTimeout.current);
     };
   }, [dispatch, handleScheduleUpdate]);
@@ -115,15 +108,12 @@ function Calendar() {
     }
   }, [time, view, isRefreshingMovie, wasRefreshingMovie, dispatch]);
 
-  useEffect(() => {
-    if (!previousItems || hasDifferentItems(items, previousItems)) {
-      const movieFileIds = selectUniqueIds<Movie, number>(items, 'movieFileId');
+  const movieFileIds = useMemo(
+    () => selectUniqueIds<Movie, number>(items, 'movieFileId'),
+    [items]
+  );
 
-      if (movieFileIds.length) {
-        dispatch(fetchMovieFiles({ movieFileIds }));
-      }
-    }
-  }, [items, previousItems, dispatch]);
+  useMovieFilesByIds(movieFileIds);
 
   return (
     <div className={styles.calendar}>

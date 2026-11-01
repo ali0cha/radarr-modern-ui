@@ -9,7 +9,6 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import TextTruncate from 'react-text-truncate';
-import { createSelector } from 'reselect';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
@@ -56,13 +55,10 @@ import { useMovie, useMovies, useToggleMovieMonitored } from 'Movie/useMovies';
 import MovieFileEditorTable from 'MovieFile/Editor/MovieFileEditorTable';
 import ExtraFileTable from 'MovieFile/Extras/ExtraFileTable';
 import useExtraFiles from 'MovieFile/Extras/useExtraFiles';
+import { useMovieFilesForMovie } from 'MovieFile/useMovieFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import useUISettings from 'Settings/UI/useUISettings';
-import {
-  clearMovieFiles,
-  fetchMovieFiles,
-} from 'Store/Actions/movieFileActions';
 import {
   cancelFetchReleases,
   clearReleases,
@@ -96,22 +92,6 @@ function getFanartUrl(images: Image[]) {
   return image?.url ?? image?.remoteUrl;
 }
 
-function createMovieFilesSelector() {
-  return createSelector(
-    (state: AppState) => state.movieFiles,
-    ({ items, isFetching, isPopulated, error }) => {
-      const hasMovieFiles = !!items.length;
-
-      return {
-        isMovieFilesFetching: isFetching,
-        isMovieFilesPopulated: isPopulated,
-        movieFilesError: error,
-        hasMovieFiles,
-      };
-    }
-  );
-}
-
 interface MovieDetailsProps {
   movieId: number;
 }
@@ -125,9 +105,13 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   const { movies: allMovies } = useMovies();
   const { toggleMonitored, isSaving } = useToggleMovieMonitored(movieId);
 
-  const { isMovieFilesFetching, movieFilesError, hasMovieFiles } = useSelector(
-    createMovieFilesSelector()
-  );
+  const {
+    items: movieFiles,
+    isFetching: isMovieFilesFetching,
+    error: movieFilesError,
+    refetch: refetchMovieFiles,
+  } = useMovieFilesForMovie(movieId);
+  const hasMovieFiles = !!movieFiles.length;
   const {
     isFetching: isExtraFilesFetching,
     error: extraFilesError,
@@ -418,11 +402,11 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   );
 
   const populate = useCallback(() => {
-    dispatch(fetchMovieFiles({ movieId }));
+    refetchMovieFiles({ cancelRefetch: false });
     refetchExtraFiles({ cancelRefetch: false });
     refetchMovieCredits({ cancelRefetch: false });
     invalidateQueueDetails(queryClient);
-  }, [movieId, dispatch, queryClient, refetchMovieCredits, refetchExtraFiles]);
+  }, [queryClient, refetchMovieFiles, refetchMovieCredits, refetchExtraFiles]);
 
   useEffect(() => {
     populate();
@@ -433,7 +417,6 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
 
     return () => {
       unregisterPagePopulator(populate);
-      dispatch(clearMovieFiles());
       dispatch(cancelFetchReleases());
       dispatch(clearReleases());
     };

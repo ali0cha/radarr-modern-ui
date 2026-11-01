@@ -6,9 +6,6 @@ import { createSelector } from 'reselect';
 import withMovies from 'Movie/withMovies';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
 import { clearAddMovie, lookupMovie } from 'Store/Actions/addMovieActions';
-import { clearMovieFiles, fetchMovieFiles } from 'Store/Actions/movieFileActions';
-import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
-import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import parseUrl from 'Utilities/String/parseUrl';
 import AddNewMovie from './AddNewMovie';
 
@@ -31,9 +28,7 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   lookupMovie,
-  clearAddMovie,
-  fetchMovieFiles,
-  clearMovieFiles
+  clearAddMovie
 };
 
 class AddNewMovieConnectorBase extends Component {
@@ -47,27 +42,12 @@ class AddNewMovieConnectorBase extends Component {
     this._movieLookupTimeout = null;
   }
 
-  componentDidUpdate(prevProps) {
-    const {
-      items
-    } = this.props;
-
-    if (hasDifferentItems(prevProps.items, items)) {
-      const movieIds = selectUniqueIds(items, 'internalId');
-
-      if (movieIds.length) {
-        this.props.fetchMovieFiles({ movieId: movieIds });
-      }
-    }
-  }
-
   componentWillUnmount() {
     if (this._movieLookupTimeout) {
       clearTimeout(this._movieLookupTimeout);
     }
 
     this.props.clearAddMovie();
-    this.props.clearMovieFiles();
   }
 
   //
@@ -116,9 +96,7 @@ AddNewMovieConnectorBase.propTypes = {
   locationSearch: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   lookupMovie: PropTypes.func.isRequired,
-  clearAddMovie: PropTypes.func.isRequired,
-  fetchMovieFiles: PropTypes.func.isRequired,
-  clearMovieFiles: PropTypes.func.isRequired
+  clearAddMovie: PropTypes.func.isRequired
 };
 
 const ConnectedAddNewMovie = withMovies(connect(createMapStateToProps, mapDispatchToProps)(AddNewMovieConnectorBase));

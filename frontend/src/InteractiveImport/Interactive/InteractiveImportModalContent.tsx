@@ -38,6 +38,10 @@ import SelectReleaseGroupModal from 'InteractiveImport/ReleaseGroup/SelectReleas
 import Language from 'Language/Language';
 import Movie from 'Movie/Movie';
 import { MovieFile } from 'MovieFile/MovieFile';
+import {
+  useDeleteMovieFiles,
+  useUpdateMovieFiles,
+} from 'MovieFile/useMovieFiles';
 import { QualityModel } from 'Quality/Quality';
 import {
   clearInteractiveImport,
@@ -47,10 +51,6 @@ import {
   setInteractiveImportSort,
   updateInteractiveImportItems,
 } from 'Store/Actions/interactiveImportActions';
-import {
-  deleteMovieFiles,
-  updateMovieFiles,
-} from 'Store/Actions/movieFileActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
 import { SortCallback } from 'typings/callbacks';
 import { CheckInputChanged } from 'typings/inputs';
@@ -172,17 +172,6 @@ function isSameMovieFile(
   return true;
 }
 
-const movieFilesInfoSelector = createSelector(
-  (state: AppState) => state.movieFiles.isDeleting,
-  (state: AppState) => state.movieFiles.deleteError,
-  (isDeleting, deleteError) => {
-    return {
-      isDeleting,
-      deleteError,
-    };
-  }
-);
-
 const importModeSelector = createSelector(
   (state: AppState) => state.interactiveImport.importMode,
   (importMode) => {
@@ -239,7 +228,8 @@ function InteractiveImportModalContent(
     createClientSideCollectionSelector('interactiveImport')
   );
 
-  const { isDeleting, deleteError } = useSelector(movieFilesInfoSelector);
+  const { deleteMovieFiles, isDeleting, deleteError } = useDeleteMovieFiles();
+  const { updateMovieFiles } = useUpdateMovieFiles();
   const importMode = useSelector(importModeSelector);
 
   const [invalidRowsSelected, setInvalidRowsSelected] = useState<number[]>([]);
@@ -416,8 +406,8 @@ function InteractiveImportModalContent(
       return acc;
     }, []);
 
-    dispatch(deleteMovieFiles({ movieFileIds }));
-  }, [items, selectedIds, setIsConfirmDeleteModalOpen, dispatch]);
+    deleteMovieFiles({ movieFileIds });
+  }, [items, selectedIds, setIsConfirmDeleteModalOpen, deleteMovieFiles]);
 
   const onConfirmDeleteModalClose = useCallback(() => {
     setIsConfirmDeleteModalOpen(false);
@@ -506,11 +496,7 @@ function InteractiveImportModalContent(
     let shouldClose = false;
 
     if (existingFiles.length) {
-      dispatch(
-        updateMovieFiles({
-          files: existingFiles,
-        })
-      );
+      updateMovieFiles(existingFiles);
 
       shouldClose = true;
     }
@@ -536,7 +522,7 @@ function InteractiveImportModalContent(
     originalItems,
     selectedIds,
     onModalClose,
-    dispatch,
+    updateMovieFiles,
   ]);
 
   const onSortPress = useCallback<SortCallback>(

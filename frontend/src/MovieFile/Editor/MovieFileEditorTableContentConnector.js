@@ -1,95 +1,74 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useCallback, useMemo } from 'react';
+import { mergeColumns } from 'Components/Table/pagedTable';
 import withLanguages from 'Language/withLanguages';
+import {
+  movieFilesTableStore,
+  useDeleteMovieFile,
+  useMovieFilesForMovie
+} from 'MovieFile/useMovieFiles';
 import withQualityProfileSchema from 'Settings/Profiles/Quality/withQualityProfileSchema';
-import { deleteMovieFile, setMovieFilesSort, setMovieFilesTableOption } from 'Store/Actions/movieFileActions';
-import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
+import { sortItems } from 'Store/Selectors/createClientSideCollectionSelector';
 import getQualities from 'Utilities/Quality/getQualities';
+import { movieFileColumns } from './movieFileColumns';
 import MovieFileEditorTableContent from './MovieFileEditorTableContent';
 
-function createMapStateToProps() {
-  return createSelector(
-    (state, { movieId }) => movieId,
-    createClientSideCollectionSelector('movieFiles'),
-    (state, { languagesState }) => languagesState,
-    (state, { qualityProfileSchemaState }) => qualityProfileSchemaState,
-    (
-      movieId,
-      movieFiles,
-      languageProfiles,
-      qualityProfiles
-    ) => {
-      const languages = languageProfiles.items;
-      const qualities = getQualities(qualityProfiles.schema?.items);
-      const filesForMovie = movieFiles.items.filter((file) => file.movieId === movieId);
+function MovieFileEditorTableContentConnector(props) {
+  const {
+    movieId,
+    languagesState,
+    qualityProfileSchemaState
+  } = props;
 
-      return {
-        items: filesForMovie,
-        columns: movieFiles.columns,
-        sortKey: movieFiles.sortKey,
-        sortDirection: movieFiles.sortDirection,
-        isDeleting: movieFiles.isDeleting,
-        isSaving: movieFiles.isSaving,
-        error: null,
-        languages,
-        qualities
-      };
+  const { items } = useMovieFilesForMovie(movieId);
+  const { deleteMovieFile, isDeleting } = useDeleteMovieFile();
+
+  const sortKey = movieFilesTableStore((state) => state.sortKey);
+  const sortDirection = movieFilesTableStore((state) => state.sortDirection);
+  const storedColumns = movieFilesTableStore((state) => state.columns);
+  const setSort = movieFilesTableStore((state) => state.setSort);
+  const setColumns = movieFilesTableStore((state) => state.setColumns);
+
+  const columns = useMemo(() => {
+    return mergeColumns(movieFileColumns, storedColumns);
+  }, [storedColumns]);
+
+  const sortedItems = useMemo(() => {
+    return sortItems(items.filter((file) => file.movieId === movieId), { sortKey, sortDirection });
+  }, [items, movieId, sortKey, sortDirection]);
+
+  const qualities = useMemo(() => {
+    return getQualities(qualityProfileSchemaState.schema?.items);
+  }, [qualityProfileSchemaState]);
+
+  const handleTableOptionChange = useCallback((payload) => {
+    if (payload.columns) {
+      setColumns(payload.columns);
     }
+  }, [setColumns]);
+
+  return (
+    <MovieFileEditorTableContent
+      items={sortedItems}
+      columns={columns}
+      sortKey={sortKey}
+      sortDirection={sortDirection}
+      isDeleting={isDeleting}
+      isSaving={false}
+      error={null}
+      languages={languagesState.items}
+      qualities={qualities}
+      onDeletePress={deleteMovieFile}
+      onTableOptionChange={handleTableOptionChange}
+      onSortPress={setSort}
+    />
   );
-}
-
-const mapDispatchToProps = {
-  deleteMovieFile,
-  setMovieFilesTableOption,
-  setMovieFilesSort
-};
-
-class MovieFileEditorTableContentConnector extends Component {
-
-  //
-  // Listeners
-
-  onDeletePress = (movieFileId) => {
-    this.props.deleteMovieFile({
-      id: movieFileId
-    });
-  };
-
-  onTableOptionChange = (payload) => {
-    this.props.setMovieFilesTableOption(payload);
-  };
-
-  onSortPress = (sortKey, sortDirection) => {
-    this.props.setMovieFilesSort({
-      sortKey,
-      sortDirection
-    });
-  };
-
-  //
-  // Render
-
-  render() {
-    return (
-      <MovieFileEditorTableContent
-        {...this.props}
-        onDeletePress={this.onDeletePress}
-        onTableOptionChange={this.onTableOptionChange}
-        onSortPress={this.onSortPress}
-      />
-    );
-  }
 }
 
 MovieFileEditorTableContentConnector.propTypes = {
   movieId: PropTypes.number.isRequired,
-  languages: PropTypes.arrayOf(PropTypes.object).isRequired,
-  qualities: PropTypes.arrayOf(PropTypes.object).isRequired,
-  deleteMovieFile: PropTypes.func.isRequired,
-  setMovieFilesTableOption: PropTypes.func.isRequired,
-  setMovieFilesSort: PropTypes.func.isRequired
+  languagesState: PropTypes.object.isRequired,
+  qualityProfileSchemaState: PropTypes.object.isRequired
 };
 
-export default withQualityProfileSchema(withLanguages(connect(createMapStateToProps, mapDispatchToProps)(MovieFileEditorTableContentConnector)));
+export default withQualityProfileSchema(withLanguages(MovieFileEditorTableContentConnector));

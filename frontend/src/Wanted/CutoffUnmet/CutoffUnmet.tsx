@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Filter } from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
 import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
@@ -17,18 +16,13 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import TablePager from 'Components/Table/TablePager';
-import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
-import {
-  clearMovieFiles,
-  fetchMovieFiles,
-} from 'Store/Actions/movieFileActions';
+import { useMovieFilesByIds } from 'MovieFile/useMovieFiles';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import getFilterValue from 'Utilities/Filter/getFilterValue';
-import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
@@ -46,8 +40,6 @@ function getMonitoredValue(
 }
 
 function CutoffUnmet() {
-  const dispatch = useDispatch();
-
   const {
     isFetching,
     isPopulated,
@@ -96,8 +88,6 @@ function CutoffUnmet() {
   const isShowingMonitored = getMonitoredValue(filters, selectedFilterKey);
   const isSearchingForMovies =
     isSearchingForAllMovies || isSearchingForSelectedMovies;
-
-  const previousItems = usePrevious(items);
 
   const handleSelectAllChange = useCallback(
     ({ value }: CheckInputChanged) => {
@@ -152,21 +142,12 @@ function CutoffUnmet() {
     toggleMonitored(selectedIds, !isShowingMonitored);
   }, [isShowingMonitored, selectedIds, toggleMonitored]);
 
-  useEffect(() => {
-    return () => {
-      dispatch(clearMovieFiles());
-    };
-  }, [dispatch]);
+  const movieFileIds = useMemo(
+    () => selectUniqueIds<Movie, number>(items, 'movieFileId'),
+    [items]
+  );
 
-  useEffect(() => {
-    if (!previousItems || hasDifferentItems(items, previousItems)) {
-      const movieFileIds = selectUniqueIds<Movie, number>(items, 'movieFileId');
-
-      if (movieFileIds.length) {
-        dispatch(fetchMovieFiles({ movieFileIds }));
-      }
-    }
-  }, [items, previousItems, dispatch]);
+  useMovieFilesByIds(movieFileIds);
 
   return (
     <PageContent title={translate('CutoffUnmet')}>
