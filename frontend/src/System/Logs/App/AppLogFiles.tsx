@@ -2,9 +2,8 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
-import { executeCommand } from 'Store/Actions/commandActions';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import { fetchLogFiles } from 'Store/Actions/systemActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import LogFiles from '../LogFiles';
 
 function AppLogFiles() {
@@ -13,8 +12,8 @@ function AppLogFiles() {
     (state: AppState) => state.system.logFiles
   );
 
-  const isDeleteFilesExecuting = useSelector(
-    createCommandExecutingSelector(commandNames.DELETE_LOG_FILES)
+  const isDeleteFilesExecuting = useCommandExecuting(
+    commandNames.DELETE_LOG_FILES
   );
 
   const handleRefreshPress = useCallback(() => {
@@ -22,14 +21,12 @@ function AppLogFiles() {
   }, [dispatch]);
 
   const handleDeleteFilesPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.DELETE_LOG_FILES,
-        commandFinished: () => {
-          dispatch(fetchLogFiles());
-        },
-      })
-    );
+    executeCommand({
+      name: commandNames.DELETE_LOG_FILES,
+      commandFinished: () => {
+        dispatch(fetchLogFiles());
+      },
+    });
   }, [dispatch]);
 
   useEffect(() => {

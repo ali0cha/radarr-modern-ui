@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import Icon from 'Components/Icon';
 import ImdbRating from 'Components/ImdbRating';
 import IconButton from 'Components/Link/IconButton';
@@ -24,7 +24,6 @@ import MoviePopularityIndex from 'Movie/MoviePopularityIndex';
 import MovieTitleLink from 'Movie/MovieTitleLink';
 import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import useUISettings from 'Settings/UI/useUISettings';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { SelectStateInputProps } from 'typings/props';
 import formatRuntime from 'Utilities/Date/formatRuntime';
 import formatBytes from 'Utilities/Number/formatBytes';
@@ -94,28 +93,23 @@ function MovieIndexRow(props: MovieIndexRowProps) {
     movieFileQualities = [],
   } = statistics;
 
-  const dispatch = useDispatch();
   const [isEditMovieModalOpen, setIsEditMovieModalOpen] = useState(false);
   const [isDeleteMovieModalOpen, setIsDeleteMovieModalOpen] = useState(false);
   const [selectState, selectDispatch] = useSelect();
 
   const onRefreshPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: REFRESH_MOVIE,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: REFRESH_MOVIE,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onSearchPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: MOVIE_SEARCH,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: MOVIE_SEARCH,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onEditMoviePress = useCallback(() => {
     setIsEditMovieModalOpen(true);

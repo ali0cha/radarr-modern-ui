@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import Icon from 'Components/Icon';
 import ImdbRating from 'Components/ImdbRating';
 import Label from 'Components/Label';
@@ -22,7 +22,6 @@ import { Statistics } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
 import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
 import useUISettings from 'Settings/UI/useUISettings';
-import { executeCommand } from 'Store/Actions/commandActions';
 import formatDate from 'Utilities/Date/formatDate';
 import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import translate from 'Utilities/String/translate';
@@ -98,28 +97,23 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
 
   const { sizeOnDisk = 0 } = statistics;
 
-  const dispatch = useDispatch();
   const [hasPosterError, setHasPosterError] = useState(false);
   const [isEditMovieModalOpen, setIsEditMovieModalOpen] = useState(false);
   const [isDeleteMovieModalOpen, setIsDeleteMovieModalOpen] = useState(false);
 
   const onRefreshPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: REFRESH_MOVIE,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: REFRESH_MOVIE,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onSearchPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: MOVIE_SEARCH,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: MOVIE_SEARCH,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onPosterLoadError = useCallback(() => {
     setHasPosterError(true);

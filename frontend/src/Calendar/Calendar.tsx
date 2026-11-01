@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import { useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import useCurrentPage from 'Helpers/Hooks/useCurrentPage';
@@ -20,7 +21,6 @@ import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import hasDifferentItems from 'Utilities/Object/hasDifferentItems';
 import selectUniqueIds from 'Utilities/Object/selectUniqueIds';
 import {
@@ -46,9 +46,7 @@ function Calendar() {
     (state: AppState) => state.calendar
   );
 
-  const isRefreshingMovie = useSelector(
-    createCommandExecutingSelector(commandNames.REFRESH_MOVIE)
-  );
+  const isRefreshingMovie = useCommandExecuting(commandNames.REFRESH_MOVIE);
 
   const { firstDayOfWeek } = useUISettings();
 

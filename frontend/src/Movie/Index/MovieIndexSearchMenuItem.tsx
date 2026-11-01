@@ -1,11 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
 import { MOVIE_SEARCH } from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import PageToolbarOverflowMenuItem from 'Components/Page/Toolbar/PageToolbarOverflowMenuItem';
 import { icons } from 'Helpers/Props';
-import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import { useMovieIndex } from './useMovieIndex';
@@ -16,10 +14,8 @@ interface MovieIndexSearchMenuItemProps {
 }
 
 function MovieIndexSearchMenuItem(props: MovieIndexSearchMenuItemProps) {
-  const isSearching = useSelector(createCommandExecutingSelector(MOVIE_SEARCH));
+  const isSearching = useCommandExecuting(MOVIE_SEARCH);
   const { items } = useMovieIndex();
-
-  const dispatch = useDispatch();
 
   const { isSelectMode, selectedFilterKey } = props;
   const [selectState] = useSelect();
@@ -45,13 +41,11 @@ function MovieIndexSearchMenuItem(props: MovieIndexSearchMenuItemProps) {
       : translate('SearchAll');
 
   const onPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: MOVIE_SEARCH,
-        movieIds: moviesToSearch,
-      })
-    );
-  }, [dispatch, moviesToSearch]);
+    executeCommand({
+      name: MOVIE_SEARCH,
+      movieIds: moviesToSearch,
+    });
+  }, [moviesToSearch]);
 
   return (
     <PageToolbarOverflowMenuItem

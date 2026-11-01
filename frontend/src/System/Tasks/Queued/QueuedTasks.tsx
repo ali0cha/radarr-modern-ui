@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import { useCommands } from 'Commands/useCommands';
 import FieldSet from 'Components/FieldSet';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import { fetchCommands } from 'Store/Actions/commandActions';
 import translate from 'Utilities/String/translate';
 import QueuedTaskRow from './QueuedTaskRow';
 
@@ -49,14 +47,11 @@ const columns: Column[] = [
 ];
 
 export default function QueuedTasks() {
-  const dispatch = useDispatch();
-  const { isFetching, isPopulated, items } = useSelector(
-    (state: AppState) => state.commands
-  );
+  const { commands: items, isFetching, isPopulated, refetch } = useCommands();
 
   useEffect(() => {
-    dispatch(fetchCommands());
-  }, [dispatch]);
+    refetch();
+  }, [refetch]);
 
   return (
     <FieldSet legend={translate('Queue')}>

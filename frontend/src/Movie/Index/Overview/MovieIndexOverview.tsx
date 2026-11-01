@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import TextTruncate from 'react-text-truncate';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import Icon from 'Components/Icon';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
@@ -17,7 +17,6 @@ import MovieIndexPosterSelect from 'Movie/Index/Select/MovieIndexPosterSelect';
 import { Statistics } from 'Movie/Movie';
 import MoviePoster from 'Movie/MoviePoster';
 import { useQualityProfile } from 'Settings/Profiles/Quality/useQualityProfiles';
-import { executeCommand } from 'Store/Actions/commandActions';
 import dimensions from 'Styles/Variables/dimensions';
 import fonts from 'Styles/Variables/fonts';
 import translate from 'Utilities/String/translate';
@@ -86,27 +85,22 @@ function MovieIndexOverview(props: MovieIndexOverviewProps) {
 
   const { sizeOnDisk = 0 } = statistics;
 
-  const dispatch = useDispatch();
   const [isEditMovieModalOpen, setIsEditMovieModalOpen] = useState(false);
   const [isDeleteMovieModalOpen, setIsDeleteMovieModalOpen] = useState(false);
 
   const onRefreshPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: REFRESH_MOVIE,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: REFRESH_MOVIE,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onSearchPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: MOVIE_SEARCH,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: MOVIE_SEARCH,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const onEditMoviePress = useCallback(() => {
     setIsEditMovieModalOpen(true);

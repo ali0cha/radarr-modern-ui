@@ -4,6 +4,7 @@ import { createAction } from 'redux-actions';
 import { batchActions } from 'redux-batched-actions';
 import * as calendarViews from 'Calendar/calendarViews';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import { filterBuilderTypes, filterBuilderValueTypes, filterTypes } from 'Helpers/Props';
 import { getUISettings } from 'Settings/UI/useUISettings';
 import { createThunk, handleThunks } from 'Store/thunks';
@@ -11,7 +12,6 @@ import createAjaxRequest from 'Utilities/createAjaxRequest';
 import findSelectedFilters from 'Utilities/Filter/findSelectedFilters';
 import translate from 'Utilities/String/translate';
 import { set, update } from './baseActions';
-import { executeCommandHelper } from './commandActions';
 import createHandleActions from './Creators/createHandleActions';
 import createClearReducer from './Creators/Reducers/createClearReducer';
 
@@ -392,7 +392,7 @@ export const actionHandlers = handleThunks({
       movieIds
     };
 
-    executeCommandHelper(commandPayload, dispatch).then((data) => {
+    executeCommand(commandPayload).then((data) => {
       dispatch(set({
         section,
         searchMissingCommandId: data.id

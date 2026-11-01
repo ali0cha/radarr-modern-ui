@@ -1,6 +1,6 @@
 import React, { FocusEvent, useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import FieldSet from 'Components/FieldSet';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputButton from 'Components/Form/FormInputButton';
@@ -11,7 +11,6 @@ import Icon from 'Components/Icon';
 import ClipboardButton from 'Components/Link/ClipboardButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { icons, inputTypes, kinds } from 'Helpers/Props';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { InputChanged } from 'typings/inputs';
 import { PendingSection } from 'typings/pending';
 import General from 'typings/Settings/General';
@@ -133,8 +132,6 @@ function SecuritySettings({
   isResettingApiKey,
   onInputChange,
 }: SecuritySettingsProps) {
-  const dispatch = useDispatch();
-
   const [isConfirmApiKeyResetModalOpen, setIsConfirmApiKeyResetModalOpen] =
     useState(false);
 
@@ -152,8 +149,8 @@ function SecuritySettings({
   const handleConfirmResetApiKey = useCallback(() => {
     setIsConfirmApiKeyResetModalOpen(false);
 
-    dispatch(executeCommand({ name: commandNames.RESET_API_KEY }));
-  }, [dispatch]);
+    executeCommand({ name: commandNames.RESET_API_KEY });
+  }, []);
 
   const handleCloseResetApiKeyModal = useCallback(() => {
     setIsConfirmApiKeyResetModalOpen(false);

@@ -3,15 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
-import { executeCommand } from 'Store/Actions/commandActions';
+import { executeCommand } from 'Commands/useCommands';
+import withCommandExecuting from 'Commands/withCommandExecuting';
 import { deleteBackup, fetchBackups } from 'Store/Actions/systemActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import Backups from './Backups';
 
 function createMapStateToProps() {
   return createSelector(
     (state) => state.system.backups,
-    createCommandExecutingSelector(commandNames.BACKUP),
+    (state, { isCommandExecuting }) => isCommandExecuting,
     (backups, backupExecuting) => {
       const {
         isFetching,
@@ -42,9 +42,9 @@ function createMapDispatchToProps(dispatch, props) {
     },
 
     onBackupPress() {
-      dispatch(executeCommand({
+      executeCommand({
         name: commandNames.BACKUP
-      }));
+      });
     }
   };
 }
@@ -81,4 +81,4 @@ BackupsConnector.propTypes = {
   dispatchFetchBackups: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps, createMapDispatchToProps)(BackupsConnector);
+export default withCommandExecuting(commandNames.BACKUP)(connect(createMapStateToProps, createMapDispatchToProps)(BackupsConnector));

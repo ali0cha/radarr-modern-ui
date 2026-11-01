@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+import withCommandExecuting from 'Commands/withCommandExecuting';
 import Quality from './Quality';
 
 function createMapStateToProps() {
   return createSelector(
-    createCommandExecutingSelector(commandNames.RESET_QUALITY_DEFINITIONS),
+    (state, { isCommandExecuting }) => isCommandExecuting,
     (isResettingQualityDefinitions) => {
       return {
         isResettingQualityDefinitions
@@ -35,4 +35,4 @@ QualityConnector.propTypes = {
   isResettingQualityDefinitions: PropTypes.bool.isRequired
 };
 
-export default connect(createMapStateToProps)(QualityConnector);
+export default withCommandExecuting(commandNames.RESET_QUALITY_DEFINITIONS)(connect(createMapStateToProps)(QualityConnector));

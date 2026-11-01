@@ -5,8 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -23,8 +23,6 @@ import TablePager from 'Components/Table/TablePager';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import { useMoviesFetching } from 'Movie/useMovies';
-import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
@@ -41,8 +39,6 @@ import {
 } from './useQueue';
 
 function Queue() {
-  const dispatch = useDispatch();
-
   const {
     isFetching,
     isPopulated,
@@ -72,8 +68,8 @@ function Queue() {
   const { isMoviesFetching, isMoviesPopulated, moviesError } =
     useMoviesFetching();
 
-  const isRefreshMonitoredDownloadsExecuting = useSelector(
-    createCommandExecutingSelector(commandNames.REFRESH_MONITORED_DOWNLOADS)
+  const isRefreshMonitoredDownloadsExecuting = useCommandExecuting(
+    commandNames.REFRESH_MONITORED_DOWNLOADS
   );
 
   const shouldBlockRefresh = useRef(false);
@@ -125,12 +121,10 @@ function Queue() {
   );
 
   const handleRefreshPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.REFRESH_MONITORED_DOWNLOADS,
-      })
-    );
-  }, [dispatch]);
+    executeCommand({
+      name: commandNames.REFRESH_MONITORED_DOWNLOADS,
+    });
+  }, []);
 
   const handleQueueRowModalOpenOrClose = useCallback((isOpen: boolean) => {
     shouldBlockRefresh.current = isOpen;

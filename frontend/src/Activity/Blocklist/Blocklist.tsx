@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { SelectProvider } from 'App/SelectContext';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -18,8 +18,6 @@ import TablePager from 'Components/Table/TablePager';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
-import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import translate from 'Utilities/String/translate';
@@ -61,10 +59,9 @@ function Blocklist() {
 
   const invalidateBlocklist = useInvalidateBlocklist();
 
-  const isClearingBlocklistExecuting = useSelector(
-    createCommandExecutingSelector(commandNames.CLEAR_BLOCKLIST)
+  const isClearingBlocklistExecuting = useCommandExecuting(
+    commandNames.CLEAR_BLOCKLIST
   );
-  const dispatch = useDispatch();
 
   const [isConfirmRemoveModalOpen, setIsConfirmRemoveModalOpen] =
     useState(false);
@@ -125,9 +122,9 @@ function Blocklist() {
   }, [setIsConfirmClearModalOpen]);
 
   const handleClearBlocklistConfirmed = useCallback(() => {
-    dispatch(executeCommand({ name: commandNames.CLEAR_BLOCKLIST }));
+    executeCommand({ name: commandNames.CLEAR_BLOCKLIST });
     setIsConfirmClearModalOpen(false);
-  }, [setIsConfirmClearModalOpen, dispatch]);
+  }, [setIsConfirmClearModalOpen]);
 
   const handleConfirmClearModalClose = useCallback(() => {
     setIsConfirmClearModalOpen(false);

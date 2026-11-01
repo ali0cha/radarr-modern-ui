@@ -1,15 +1,14 @@
 import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { executeCommand, useCommand } from 'Commands/useCommands';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
 import usePrevious from 'Helpers/Hooks/usePrevious';
 import { icons } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchTask } from 'Store/Actions/systemActions';
-import createCommandSelector from 'Store/Selectors/createCommandSelector';
 import { isCommandExecuting } from 'Utilities/Command';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
@@ -43,7 +42,7 @@ function ScheduledTaskRow(props: ScheduledTaskRowProps) {
 
   const { showRelativeDates, longDateFormat, shortDateFormat, timeFormat } =
     useUISettings();
-  const command = useSelector(createCommandSelector(taskName));
+  const command = useCommand(taskName);
 
   const [time, setTime] = useState(Date.now());
 
@@ -88,12 +87,10 @@ function ScheduledTaskRow(props: ScheduledTaskRowProps) {
   ]);
 
   const handleExecutePress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: taskName,
-      })
-    );
-  }, [taskName, dispatch]);
+    executeCommand({
+      name: taskName,
+    });
+  }, [taskName]);
 
   useEffect(() => {
     if (!isExecuting && wasExecuting) {

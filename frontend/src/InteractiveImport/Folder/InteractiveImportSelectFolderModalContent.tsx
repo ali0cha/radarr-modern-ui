@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import PathInput from 'Components/Form/PathInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -14,7 +15,6 @@ import Column from 'Components/Table/Column';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import { icons, kinds, sizes } from 'Helpers/Props';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { addRecentFolder } from 'Store/Actions/interactiveImportActions';
 import translate from 'Utilities/String/translate';
 import FavoriteFolderRow from './FavoriteFolderRow';
@@ -97,12 +97,10 @@ function InteractiveImportSelectFolderModalContent(
   const onQuickImportPress = useCallback(() => {
     dispatch(addRecentFolder({ folder }));
 
-    dispatch(
-      executeCommand({
-        name: commandNames.DOWNLOADED_MOVIES_SCAN,
-        path: folder,
-      })
-    );
+    executeCommand({
+      name: commandNames.DOWNLOADED_MOVIES_SCAN,
+      path: folder,
+    });
 
     onModalClose();
   }, [folder, onModalClose, dispatch]);

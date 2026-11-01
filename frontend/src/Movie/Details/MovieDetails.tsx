@@ -13,6 +13,7 @@ import { createSelector } from 'reselect';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand, useCommands } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Icon from 'Components/Icon';
@@ -58,7 +59,6 @@ import useExtraFiles from 'MovieFile/Extras/useExtraFiles';
 import OrganizePreviewModal from 'Organize/OrganizePreviewModal';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import useUISettings from 'Settings/UI/useUISettings';
-import { executeCommand } from 'Store/Actions/commandActions';
 import {
   clearMovieFiles,
   fetchMovieFiles,
@@ -67,7 +67,6 @@ import {
   cancelFetchReleases,
   clearReleases,
 } from 'Store/Actions/releaseActions';
-import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import fonts from 'Styles/Variables/fonts';
 import sortByProp from 'Utilities/Array/sortByProp';
@@ -145,7 +144,7 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   );
   const { isSmallScreen } = useSelector(createDimensionsSelector());
 
-  const commands = useSelector(createCommandsSelector());
+  const { commands } = useCommands();
 
   const { isRefreshing, isRenaming, isSearching } = useMemo(() => {
     const movieRefreshingCommand = findCommand(commands, {
@@ -290,22 +289,18 @@ function MovieDetails({ movieId }: MovieDetailsProps) {
   );
 
   const handleRefreshPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.REFRESH_MOVIE,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: commandNames.REFRESH_MOVIE,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const handleSearchPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.MOVIE_SEARCH,
-        movieIds: [movieId],
-      })
-    );
-  }, [movieId, dispatch]);
+    executeCommand({
+      name: commandNames.MOVIE_SEARCH,
+      movieIds: [movieId],
+    });
+  }, [movieId]);
 
   const handleTouchStart = useCallback(
     (event: TouchEvent) => {

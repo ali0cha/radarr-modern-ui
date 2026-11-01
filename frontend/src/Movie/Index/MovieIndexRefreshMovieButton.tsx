@@ -1,11 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
 import { REFRESH_MOVIE } from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import { icons } from 'Helpers/Props';
-import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import { useMovieIndex } from './useMovieIndex';
@@ -18,12 +16,9 @@ interface MovieIndexRefreshMovieButtonProps {
 function MovieIndexRefreshMovieButton(
   props: MovieIndexRefreshMovieButtonProps
 ) {
-  const isRefreshing = useSelector(
-    createCommandExecutingSelector(REFRESH_MOVIE)
-  );
+  const isRefreshing = useCommandExecuting(REFRESH_MOVIE);
   const { items, totalItems } = useMovieIndex();
 
-  const dispatch = useDispatch();
   const { isSelectMode, selectedFilterKey } = props;
   const [selectState] = useSelect();
   const { selectedState } = selectState;
@@ -48,13 +43,11 @@ function MovieIndexRefreshMovieButton(
       : translate('UpdateAll');
 
   const onPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: REFRESH_MOVIE,
-        movieIds: moviesToRefresh,
-      })
-    );
-  }, [dispatch, moviesToRefresh]);
+    executeCommand({
+      name: REFRESH_MOVIE,
+      movieIds: moviesToRefresh,
+    });
+  }, [moviesToRefresh]);
 
   return (
     <PageToolbarButton

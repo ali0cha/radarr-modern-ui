@@ -1,7 +1,7 @@
 import { orderBy } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { RENAME_MOVIE } from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
@@ -12,7 +12,6 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { icons, kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
 import { useMovies } from 'Movie/useMovies';
-import { executeCommand } from 'Store/Actions/commandActions';
 import translate from 'Utilities/String/translate';
 import styles from './OrganizeMoviesModalContent.module.css';
 
@@ -25,7 +24,6 @@ function OrganizeMoviesModalContent(props: OrganizeMoviesModalContentProps) {
   const { movieIds, onModalClose } = props;
 
   const { movies: allMovies } = useMovies();
-  const dispatch = useDispatch();
 
   const movieTitles = useMemo(() => {
     const movie = movieIds.reduce((acc: Movie[], id) => {
@@ -44,15 +42,13 @@ function OrganizeMoviesModalContent(props: OrganizeMoviesModalContentProps) {
   }, [movieIds, allMovies]);
 
   const onOrganizePress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: RENAME_MOVIE,
-        movieIds,
-      })
-    );
+    executeCommand({
+      name: RENAME_MOVIE,
+      movieIds,
+    });
 
     onModalClose();
-  }, [movieIds, onModalClose, dispatch]);
+  }, [movieIds, onModalClose]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import CheckInput from 'Components/Form/CheckInput';
 import Button from 'Components/Link/Button';
@@ -14,7 +14,6 @@ import useSelectState from 'Helpers/Hooks/useSelectState';
 import { kinds } from 'Helpers/Props';
 import useMovie from 'Movie/useMovie';
 import { useSettings } from 'Settings/useSettings';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import NamingConfig from 'typings/Settings/NamingConfig';
@@ -43,7 +42,6 @@ function OrganizePreviewModalContent({
   movieId,
   onModalClose,
 }: OrganizePreviewModalContentProps) {
-  const dispatch = useDispatch();
   const {
     data: items = [],
     isFetching: isPreviewFetching,
@@ -92,16 +90,14 @@ function OrganizePreviewModalContent({
   const handleOrganizePress = useCallback(() => {
     const files = getSelectedIds(selectedState);
 
-    dispatch(
-      executeCommand({
-        name: commandNames.RENAME_FILES,
-        files,
-        movieId,
-      })
-    );
+    executeCommand({
+      name: commandNames.RENAME_FILES,
+      files,
+      movieId,
+    });
 
     onModalClose();
-  }, [movieId, selectedState, dispatch, onModalClose]);
+  }, [movieId, selectedState, onModalClose]);
 
   return (
     <ModalContent onModalClose={onModalClose}>

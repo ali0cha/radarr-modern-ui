@@ -5,6 +5,11 @@ import { createSelector } from 'reselect';
 import { useQueueDetails } from 'Activity/Queue/useQueue';
 import AppState from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import {
+  executeCommand,
+  useCommandExecuting,
+  useCommands,
+} from 'Commands/useCommands';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
@@ -21,10 +26,7 @@ import {
   setCalendarDaysCount,
   setCalendarFilter,
 } from 'Store/Actions/calendarActions';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { createCustomFiltersSelector } from 'Store/Selectors/createClientSideCollectionSelector';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
-import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import { isCommandExecuting } from 'Utilities/Command';
 import isBefore from 'Utilities/Date/isBefore';
 import translate from 'Utilities/String/translate';
@@ -43,24 +45,6 @@ function createCalendarSelector() {
     (state: AppState) => state.calendar.end,
     (state: AppState) => state.calendar.items,
     (start, end, movies) => ({ start, end, movies })
-  );
-}
-
-function createIsSearchingSelector() {
-  return createSelector(
-    (state: AppState) => state.calendar.searchMissingCommandId,
-    createCommandsSelector(),
-    (searchMissingCommandId, commands) => {
-      if (searchMissingCommandId == null) {
-        return false;
-      }
-
-      return isCommandExecuting(
-        commands.find((command) => {
-          return command.id === searchMissingCommandId;
-        })
-      );
-    }
   );
 }
 
@@ -93,10 +77,16 @@ function CalendarPage() {
       return acc;
     }, []);
   }, [start, end, movies, queueDetails]);
-  const isSearchingForMissing = useSelector(createIsSearchingSelector());
-  const isRssSyncExecuting = useSelector(
-    createCommandExecutingSelector(commandNames.RSS_SYNC)
+  const searchMissingCommandId = useSelector(
+    (state: AppState) => state.calendar.searchMissingCommandId
   );
+  const { commands } = useCommands();
+  const isSearchingForMissing =
+    searchMissingCommandId != null &&
+    isCommandExecuting(
+      commands.find((command) => command.id === searchMissingCommandId)
+    );
+  const isRssSyncExecuting = useCommandExecuting(commandNames.RSS_SYNC);
   const customFilters = useSelector(createCustomFiltersSelector('calendar'));
   const hasMovies = !!useMovieCount().count;
 
@@ -124,12 +114,10 @@ function CalendarPage() {
   }, []);
 
   const handleRssSyncPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.RSS_SYNC,
-      })
-    );
-  }, [dispatch]);
+    executeCommand({
+      name: commandNames.RSS_SYNC,
+    });
+  }, []);
 
   const handleSearchMissingPress = useCallback(() => {
     dispatch(searchMissing({ movieIds: missingMovieIds }));

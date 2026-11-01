@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Filter } from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -20,12 +21,10 @@ import usePrevious from 'Helpers/Hooks/usePrevious';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import Movie from 'Movie/Movie';
-import { executeCommand } from 'Store/Actions/commandActions';
 import {
   clearMovieFiles,
   fetchMovieFiles,
 } from 'Store/Actions/movieFileActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import getFilterValue from 'Utilities/Filter/getFilterValue';
@@ -76,11 +75,11 @@ function CutoffUnmet() {
 
   const { toggleMonitored, isSaving } = useToggleMonitoredCutoffUnmetMovies();
 
-  const isSearchingForAllMovies = useSelector(
-    createCommandExecutingSelector(commandNames.CUTOFF_UNMET_MOVIES_SEARCH)
+  const isSearchingForAllMovies = useCommandExecuting(
+    commandNames.CUTOFF_UNMET_MOVIES_SEARCH
   );
-  const isSearchingForSelectedMovies = useSelector(
-    createCommandExecutingSelector(commandNames.MOVIE_SEARCH)
+  const isSearchingForSelectedMovies = useCommandExecuting(
+    commandNames.MOVIE_SEARCH
   );
 
   const [selectState, setSelectState] = useSelectState();
@@ -121,16 +120,14 @@ function CutoffUnmet() {
   );
 
   const handleSearchSelectedPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.MOVIE_SEARCH,
-        movieIds: selectedIds,
-        commandFinished: () => {
-          refetch();
-        },
-      })
-    );
-  }, [selectedIds, refetch, dispatch]);
+    executeCommand({
+      name: commandNames.MOVIE_SEARCH,
+      movieIds: selectedIds,
+      commandFinished: () => {
+        refetch();
+      },
+    });
+  }, [selectedIds, refetch]);
 
   const handleSearchAllPress = useCallback(() => {
     setIsConfirmSearchAllModalOpen(true);
@@ -141,17 +138,15 @@ function CutoffUnmet() {
   }, []);
 
   const handleSearchAllCutoffUnmetConfirmed = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.CUTOFF_UNMET_MOVIES_SEARCH,
-        commandFinished: () => {
-          refetch();
-        },
-      })
-    );
+    executeCommand({
+      name: commandNames.CUTOFF_UNMET_MOVIES_SEARCH,
+      commandFinished: () => {
+        refetch();
+      },
+    });
 
     setIsConfirmSearchAllModalOpen(false);
-  }, [refetch, dispatch]);
+  }, [refetch]);
 
   const handleToggleSelectedPress = useCallback(() => {
     toggleMonitored(selectedIds, !isShowingMonitored);

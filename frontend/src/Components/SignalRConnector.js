@@ -10,6 +10,8 @@ import {
   setQueueStatus
 } from 'Activity/Queue/useQueue';
 import { queryClient } from 'App/queryClient';
+import { handleCommandFinished, handleCommandUpdated } from 'Commands/commandEvents';
+import { invalidateCommands } from 'Commands/useCommands';
 import { invalidateApiQueries } from 'Helpers/Hooks/useApiQuery';
 import { invalidateMovies, removeMovies, setMovie } from 'Movie/useMovies';
 import { invalidateRootFolders } from 'RootFolder/useRootFolders';
@@ -19,9 +21,8 @@ import { INDEXERS_PATH } from 'Settings/Indexers/useIndexers';
 import { METADATA_PATH } from 'Settings/Metadata/Metadata/useMetadata';
 import { NOTIFICATIONS_PATH } from 'Settings/Notifications/useNotifications';
 import { QUALITY_DEFINITIONS_PATH } from 'Settings/Quality/Definition/useQualityDefinitions';
-import { setAppValue, setVersion } from 'Store/Actions/appActions';
+import { hideMessage, setAppValue, setVersion, showMessage } from 'Store/Actions/appActions';
 import { removeItem, update, updateItem } from 'Store/Actions/baseActions';
-import { fetchCommands, finishCommand, updateCommand } from 'Store/Actions/commandActions';
 import { fetchHealth } from 'Store/Actions/systemActions';
 import { invalidateTags } from 'Tags/useTags';
 import { repopulatePage } from 'Utilities/pagePopulator';
@@ -50,9 +51,8 @@ function createMapStateToProps() {
 }
 
 const mapDispatchToProps = {
-  dispatchFetchCommands: fetchCommands,
-  dispatchUpdateCommand: updateCommand,
-  dispatchFinishCommand: finishCommand,
+  dispatchShowMessage: showMessage,
+  dispatchHideMessage: hideMessage,
   dispatchSetAppValue: setAppValue,
   dispatchSetVersion: setVersion,
   dispatchUpdate: update,
@@ -165,20 +165,24 @@ class SignalRConnector extends Component {
 
   handleCommand = (body) => {
     if (body.action === 'sync') {
-      this.props.dispatchFetchCommands();
+      invalidateCommands(queryClient);
       return;
     }
 
     const resource = body.resource;
     const status = resource.status;
+    const messageActions = {
+      showMessage: this.props.dispatchShowMessage,
+      hideMessage: this.props.dispatchHideMessage
+    };
 
     // Both successful and failed commands need to be
     // completed, otherwise they spin until they time out.
 
     if (status === 'completed' || status === 'failed') {
-      this.props.dispatchFinishCommand(resource);
+      handleCommandFinished(resource, messageActions);
     } else {
-      this.props.dispatchUpdateCommand(resource);
+      handleCommandUpdated(resource, messageActions);
     }
   };
 
@@ -281,7 +285,7 @@ class SignalRConnector extends Component {
   };
 
   handleSystemTask = () => {
-    this.props.dispatchFetchCommands();
+    invalidateCommands(queryClient);
   };
 
   handleRootfolder = () => {
@@ -328,7 +332,6 @@ class SignalRConnector extends Component {
   onReconnected = () => {
 
     const {
-      dispatchFetchCommands,
       dispatchSetAppValue
     } = this.props;
 
@@ -342,7 +345,7 @@ class SignalRConnector extends Component {
     // Repopulate the page (if a repopulator is set) to ensure things
     // are in sync after reconnecting.
     invalidateMovies(queryClient);
-    dispatchFetchCommands();
+    invalidateCommands(queryClient);
     invalidateQueue(queryClient);
     repopulatePage();
   };
@@ -368,9 +371,8 @@ class SignalRConnector extends Component {
 SignalRConnector.propTypes = {
   isReconnecting: PropTypes.bool.isRequired,
   isDisconnected: PropTypes.bool.isRequired,
-  dispatchFetchCommands: PropTypes.func.isRequired,
-  dispatchUpdateCommand: PropTypes.func.isRequired,
-  dispatchFinishCommand: PropTypes.func.isRequired,
+  dispatchShowMessage: PropTypes.func.isRequired,
+  dispatchHideMessage: PropTypes.func.isRequired,
   dispatchSetAppValue: PropTypes.func.isRequired,
   dispatchSetVersion: PropTypes.func.isRequired,
   dispatchUpdate: PropTypes.func.isRequired,

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Filter } from 'App/State/AppState';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand, useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -19,8 +19,6 @@ import TablePager from 'Components/Table/TablePager';
 import useSelectState from 'Helpers/Hooks/useSelectState';
 import { align, icons, kinds } from 'Helpers/Props';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
-import { executeCommand } from 'Store/Actions/commandActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import { CheckInputChanged } from 'typings/inputs';
 import { SelectStateInputProps } from 'typings/props';
 import getFilterValue from 'Utilities/Filter/getFilterValue';
@@ -37,8 +35,6 @@ function getMonitoredValue(
 }
 
 function Missing() {
-  const dispatch = useDispatch();
-
   const {
     isFetching,
     isPopulated,
@@ -66,11 +62,11 @@ function Missing() {
 
   const { toggleMonitored, isSaving } = useToggleMonitoredMissingMovies();
 
-  const isSearchingForAllMovies = useSelector(
-    createCommandExecutingSelector(commandNames.MISSING_MOVIES_SEARCH)
+  const isSearchingForAllMovies = useCommandExecuting(
+    commandNames.MISSING_MOVIES_SEARCH
   );
-  const isSearchingForSelectedMovies = useSelector(
-    createCommandExecutingSelector(commandNames.MOVIE_SEARCH)
+  const isSearchingForSelectedMovies = useCommandExecuting(
+    commandNames.MOVIE_SEARCH
   );
 
   const [selectState, setSelectState] = useSelectState();
@@ -112,16 +108,14 @@ function Missing() {
   );
 
   const handleSearchSelectedPress = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.MOVIE_SEARCH,
-        movieIds: selectedIds,
-        commandFinished: () => {
-          refetch();
-        },
-      })
-    );
-  }, [selectedIds, refetch, dispatch]);
+    executeCommand({
+      name: commandNames.MOVIE_SEARCH,
+      movieIds: selectedIds,
+      commandFinished: () => {
+        refetch();
+      },
+    });
+  }, [selectedIds, refetch]);
 
   const handleSearchAllPress = useCallback(() => {
     setIsConfirmSearchAllModalOpen(true);
@@ -132,17 +126,15 @@ function Missing() {
   }, []);
 
   const handleSearchAllMissingConfirmed = useCallback(() => {
-    dispatch(
-      executeCommand({
-        name: commandNames.MISSING_MOVIES_SEARCH,
-        commandFinished: () => {
-          refetch();
-        },
-      })
-    );
+    executeCommand({
+      name: commandNames.MISSING_MOVIES_SEARCH,
+      commandFinished: () => {
+        refetch();
+      },
+    });
 
     setIsConfirmSearchAllModalOpen(false);
-  }, [refetch, dispatch]);
+  }, [refetch]);
 
   const handleToggleSelectedPress = useCallback(() => {
     toggleMonitored(selectedIds, !isShowingMonitored);

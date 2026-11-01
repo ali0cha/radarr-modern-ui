@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
+import withCommandExecuting from 'Commands/withCommandExecuting';
 import withScrollPosition from 'Components/withScrollPosition';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
-import { executeCommand } from 'Store/Actions/commandActions';
 import { addImportListExclusions, addMovies, clearAddMovie, fetchDiscoverMovies, setListMovieFilter, setListMovieSort, setListMovieTableOption, setListMovieView } from 'Store/Actions/discoverMovieActions';
 import scrollPositions from 'Store/scrollPositions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createDiscoverMovieClientSideCollectionItemsSelector from 'Store/Selectors/createDiscoverMovieClientSideCollectionItemsSelector';
 import { registerPagePopulator, unregisterPagePopulator } from 'Utilities/pagePopulator';
@@ -18,7 +18,7 @@ function createMapStateToProps() {
   return createSelector(
     (state) => state.discoverMovie,
     createDiscoverMovieClientSideCollectionItemsSelector('discoverMovie'),
-    createCommandExecutingSelector(commandNames.IMPORT_LIST_SYNC),
+    (state, { isCommandExecuting }) => isCommandExecuting,
     createDimensionsSelector(),
     (
       discoverMovie,
@@ -71,10 +71,10 @@ function createMapDispatchToProps(dispatch, props) {
     },
 
     onImportListSyncPress() {
-      dispatch(executeCommand({
+      executeCommand({
         name: commandNames.IMPORT_LIST_SYNC,
         commandFinished: this.dispatchFetchListMovies
-      }));
+      });
     }
   };
 }
@@ -141,7 +141,7 @@ DiscoverMovieConnectorBase.propTypes = {
 };
 
 const ConnectedDiscoverMovie = withScrollPosition(
-  connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieConnectorBase),
+  withCommandExecuting(commandNames.IMPORT_LIST_SYNC)(connect(createMapStateToProps, createMapDispatchToProps)(DiscoverMovieConnectorBase)),
   'discoverMovie'
 );
 

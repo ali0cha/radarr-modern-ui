@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
+import { useExecutingCommands } from 'Commands/useCommands';
 import Movie from 'Movie/Movie';
 import { useMovie } from 'Movie/useMovies';
-import createExecutingCommandsSelector from 'Store/Selectors/createExecutingCommandsSelector';
-
-const selectExecutingCommands = createExecutingCommandsSelector();
 
 // A movie of the index, with whether it is being refreshed or searched
 function useMovieIndexItem(movieId: number) {
   const movie = useMovie(movieId) as Movie;
-  const executingCommands = useSelector(selectExecutingCommands);
+  const executingCommands = useExecutingCommands();
 
   return useMemo(() => {
     const isRefreshingMovie = executingCommands.some((command) => {

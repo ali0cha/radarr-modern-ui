@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useSelect } from 'App/SelectContext';
 import { RENAME_MOVIE } from 'Commands/commandNames';
+import { useCommandExecuting } from 'Commands/useCommands';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import PageContentFooter from 'Components/Page/PageContentFooter';
 import { kinds } from 'Helpers/Props';
 import { useBulkDeleteMovies, useMovieEditor } from 'Movie/useMovies';
 import { usePrefetchRootFolders } from 'RootFolder/useRootFolders';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import translate from 'Utilities/String/translate';
 import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import DeleteMovieModal from './Delete/DeleteMovieModal';
@@ -24,9 +23,7 @@ interface SavePayload {
 }
 
 function MovieIndexSelectFooter() {
-  const isOrganizingMovies = useSelector(
-    createCommandExecutingSelector(RENAME_MOVIE)
-  );
+  const isOrganizingMovies = useCommandExecuting(RENAME_MOVIE);
 
   usePrefetchRootFolders();
 

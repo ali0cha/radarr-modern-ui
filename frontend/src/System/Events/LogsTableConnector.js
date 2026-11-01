@@ -3,16 +3,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Commands/useCommands';
+import withCommandExecuting from 'Commands/withCommandExecuting';
 import withCurrentPage from 'Components/withCurrentPage';
-import { executeCommand } from 'Store/Actions/commandActions';
 import * as systemActions from 'Store/Actions/systemActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import LogsTable from './LogsTable';
 
 function createMapStateToProps() {
   return createSelector(
     (state) => state.system.logs,
-    createCommandExecutingSelector(commandNames.CLEAR_LOGS),
+    (state, { isCommandExecuting }) => isCommandExecuting,
     (logs, clearLogExecuting) => {
       return {
         clearLogExecuting,
@@ -23,7 +23,6 @@ function createMapStateToProps() {
 }
 
 const mapDispatchToProps = {
-  executeCommand,
   ...systemActions
 };
 
@@ -96,7 +95,7 @@ class LogsTableConnector extends Component {
   };
 
   onClearLogsPress = () => {
-    this.props.executeCommand({
+    executeCommand({
       name: commandNames.CLEAR_LOGS,
       commandFinished: this.onCommandFinished
     });
@@ -139,10 +138,9 @@ LogsTableConnector.propTypes = {
   gotoLogsPage: PropTypes.func.isRequired,
   setLogsSort: PropTypes.func.isRequired,
   setLogsFilter: PropTypes.func.isRequired,
-  setLogsTableOption: PropTypes.func.isRequired,
-  executeCommand: PropTypes.func.isRequired
+  setLogsTableOption: PropTypes.func.isRequired
 };
 
 export default withCurrentPage(
-  connect(createMapStateToProps, mapDispatchToProps)(LogsTableConnector)
+  withCommandExecuting(commandNames.CLEAR_LOGS)(connect(createMapStateToProps, mapDispatchToProps)(LogsTableConnector))
 );

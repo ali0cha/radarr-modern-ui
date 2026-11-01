@@ -1,7 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as commandNames from 'Commands/commandNames';
+import { useCommandExecuting } from 'Commands/useCommands';
 import Alert from 'Components/Alert';
 import Form from 'Components/Form/Form';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
@@ -14,7 +15,6 @@ import { kinds } from 'Helpers/Props';
 import SettingsToolbar from 'Settings/SettingsToolbar';
 import { useManageSettings } from 'Settings/useSettings';
 import { restart } from 'Store/Actions/systemActions';
-import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import useIsWindowsService from 'System/useIsWindowsService';
 import { InputChanged } from 'typings/inputs';
 import General from 'typings/Settings/General';
@@ -46,9 +46,7 @@ function GeneralSettings() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const isWindowsService = useIsWindowsService();
-  const isResettingApiKey = useSelector(
-    createCommandExecutingSelector(commandNames.RESET_API_KEY)
-  );
+  const isResettingApiKey = useCommandExecuting(commandNames.RESET_API_KEY);
 
   const {
     isFetching,

@@ -2,7 +2,6 @@ import * as addMovie from './addMovieActions';
 import * as app from './appActions';
 import * as calendar from './calendarActions';
 import * as captcha from './captchaActions';
-import * as commands from './commandActions';
 import * as customFilters from './customFilterActions';
 import * as discoverMovie from './discoverMovieActions';
 import * as importMovie from './importMovieActions';
@@ -19,7 +18,6 @@ export default [
   app,
   calendar,
   captcha,
-  commands,
   customFilters,
   discoverMovie,
   movieFiles,

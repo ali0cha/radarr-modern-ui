@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { CommandBody } from 'Commands/Command';
+import { cancelCommand } from 'Commands/useCommands';
 import Icon, { IconProps } from 'Components/Icon';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
@@ -10,7 +10,6 @@ import TableRow from 'Components/Table/TableRow';
 import useModalOpenState from 'Helpers/Hooks/useModalOpenState';
 import { icons, kinds } from 'Helpers/Props';
 import useUISettings from 'Settings/UI/useUISettings';
-import { cancelCommand } from 'Store/Actions/commandActions';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import formatTimeSpan from 'Utilities/Date/formatTimeSpan';
@@ -118,7 +117,6 @@ export default function QueuedTaskRow(props: QueuedTaskRowProps) {
     clientUserAgent,
   } = props;
 
-  const dispatch = useDispatch();
   const { longDateFormat, shortDateFormat, showRelativeDates, timeFormat } =
     useUISettings();
 
@@ -142,8 +140,8 @@ export default function QueuedTaskRow(props: QueuedTaskRowProps) {
   ] = useModalOpenState(false);
 
   const handleCancelPress = useCallback(() => {
-    dispatch(cancelCommand({ id }));
-  }, [id, dispatch]);
+    cancelCommand(id);
+  }, [id]);
 
   useEffect(() => {
     updateTimeTimeoutId.current = setTimeout(() => {
