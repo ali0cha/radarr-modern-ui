@@ -8,6 +8,7 @@ import translate from 'Utilities/String/translate';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import MovieSearchInput from './MovieSearchInput';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
+import PageHeaderToolsMenu from './PageHeaderToolsMenu';
 import styles from './PageHeader.module.css';
 
 function PageHeader() {
@@ -81,6 +82,8 @@ function PageHeader() {
           to="https://translate.servarr.com/projects/radarr/radarr/"
           size={24}
         />
+
+        <PageHeaderToolsMenu />
 
         <PageHeaderActionsMenu
           onKeyboardShortcutsPress={handleOpenKeyboardShortcutsModal}
