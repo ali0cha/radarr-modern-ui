@@ -4,10 +4,10 @@ An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports it
 
 This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
 
-> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `ui/screens`:
+> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `ui/header-tools`:
 >
 > ```bash
-> git checkout ui/screens
+> git checkout ui/header-tools
 > ```
 
 ## Goal
@@ -57,10 +57,11 @@ On top of `chore/remove-orphans`, a second stack ports the redesign of Sonarr v5
 | `ui/layout` | The grouped sidebar, the header with the logo, the toolbar buttons |
 | `ui/calendar` | The calendar as a table with a sticky header, the new event styles, the agenda, the movie index (posters and overview) and the settings page as cards |
 | `ui/screens` | The movie details header (backdrop, poster, pills, tabs), the discover posters and the add movie search results |
+| `ui/header-tools` | The *Tools* menu of the header (test parsing, manual import) |
 
 The accent color is amber (`--accentHue: 85` in `Styles/Themes/themes.css`), close to Radarr's yellow. Set it to `215` to get Sonarr's blue.
 
-**Not ported yet:** the toolbar that moves what does not fit into a menu, the *Tools* menu of the header, the collections and the settings *Add* dialogs, and about thirty style sheets whose markup is not the same as Sonarr's (delay profiles, naming, root folders, interactive search). They work with the new colors and fonts, but keep their old layout.
+**Not ported yet:** the toolbar that moves what does not fit into a menu, the collections and the settings *Add* dialogs, and about thirty style sheets whose markup is not the same as Sonarr's (delay profiles, naming, root folders, interactive search). They work with the new colors and fonts, but keep their old layout.
 
 ## Things worth knowing
 
@@ -71,7 +72,7 @@ The accent color is amber (`--accentHue: 85` in `Styles/Themes/themes.css`), clo
 
 ## Build and try it
 
-Start from the last branch of the stack (`git checkout ui/screens`), then:
+Start from the last branch of the stack (`git checkout ui/header-tools`), then:
 
 ```bash
 yarn install
