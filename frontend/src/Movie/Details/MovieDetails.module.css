@@ -4,8 +4,11 @@
 
 .header {
   position: relative;
+  z-index: 0;
+  overflow: hidden;
+  min-height: 425px;
   width: 100%;
-  height: 425px;
+  container-type: inline-size;
 }
 
 .errorMessage {
@@ -16,34 +19,46 @@
 
 .backdrop {
   position: absolute;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: -2;
+  background-position: center 25%;
   background-size: cover;
+  filter: saturate(1.1);
 }
 
 .backdropOverlay {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: var(--black);
-  opacity: 0.7;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0.56) 50%,
+      rgba(0, 0, 0, 0.78) 100%
+    );
 }
 
 .headerContent {
   display: flex;
-  padding: 30px;
+  align-items: center;
+  padding: 48px 32px 28px;
   width: 100%;
   height: 100%;
-  color: var(--white);
+  color: var(--movieOverlayInk);
+  gap: 32px;
 }
 
 .poster {
   z-index: 2;
   flex-shrink: 0;
-  margin-right: 35px;
-  width: 250px;
-  height: 368px;
+  overflow: hidden;
+  width: clamp(160px, 20cqi, 230px);
+  height: clamp(236px, 29.5cqi, 340px);
+  border-radius: 12px;
+  box-shadow:
+    0 24px 60px -16px rgba(0, 0, 0, 0.55),
+    0 6px 14px -2px rgba(0, 0, 0, 0.30);
 }
 
 .info {
@@ -58,6 +73,7 @@
   display: flex;
   justify-content: space-between;
   flex: 0 0 auto;
+  padding-right: 80px;
 }
 
 .titleContainer {
@@ -66,10 +82,14 @@
 }
 
 .title {
-  letter-spacing: -0.015em;
+  overflow: hidden;
+  color: var(--white);
+  text-wrap: balance;
+  letter-spacing: -0.025em;
   font-weight: 600;
-  font-size: 50px;
-  line-height: 60px;
+  font-size: clamp(2.25rem, 5cqi, 3.25rem);
+  font-family: var(--defaultFontFamily);
+  line-height: 1.2;
 }
 
 .toggleMonitoredContainer {
@@ -116,11 +136,12 @@
 }
 
 .details {
-  margin-bottom: 8px;
-  padding-left: 7px;
-  letter-spacing: -0.015em;
-  font-weight: 600;
-  font-size: 20px;
+  margin: 6px 0 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  font-size: 15px;
+  font-family: var(--defaultFontFamily);
 }
 
 .links,
@@ -132,15 +153,25 @@
 
 .certification {
   margin-right: 15px;
-  padding: 0 5px;
-  border: 1px solid;
-  border-radius: 5px;
+  padding: 0 6px;
+  border: 1px solid color-mix(in oklch, var(--movieOverlayInk) 55%, transparent);
+  border-radius: 6px;
+  font-size: 12px;
 }
 
 .detailsLabel {
   composes: label from 'Components/Label.module.css';
 
-  margin: 5px 10px 5px 0;
+  margin: 5px 8px 5px 0;
+  padding: 5px 12px 5px 10px;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--movieOverlayBackdrop);
+  color: color-mix(in oklch, var(--movieOverlayInk) 95%, transparent);
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  font-size: 12px;
+  backdrop-filter: blur(8px);
 }
 
 .detailsInfoLabel {
@@ -157,9 +188,8 @@
 .studio,
 .collection,
 .genres {
-  letter-spacing: -0.015em;
-  font-weight: 600;
-  font-size: 17px;
+  font-weight: 400;
+  font-size: 14px;
 }
 
 .overview {
@@ -167,32 +197,39 @@
   margin-top: 8px;
   min-height: 0;
   text-wrap: balance;
-  font-size: var(--intermediateFontSize);
+  color: color-mix(in oklch, var(--movieOverlayInk) 92%, transparent);
+  text-wrap: pretty;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .contentContainer {
-  padding: 20px;
+  padding: 28px 32px 64px;
+  background-color: var(--pageBackground);
 }
 
 .tabList {
   margin: 0;
   padding: 0;
-  border-bottom: 1px solid var(--lightGray);
+  border-bottom: 1px solid var(--borderColor);
 }
 
 .tab {
   position: relative;
   bottom: -1px;
   display: inline-block;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: 1px solid transparent;
   border-top: none;
+  color: var(--inkSoft);
+  font-weight: 500;
   list-style: none;
   cursor: pointer;
 }
 
 .selectedTab {
-  border-bottom: 4px solid var(--linkColor);
+  border-bottom: 3px solid var(--accent);
+  color: var(--ink);
 }
 
 .tabContent {
@@ -201,11 +238,11 @@
 
 @media (--breakpointSmall) {
   .contentContainer {
-    padding: 20px 0;
+    padding: 20px 16px 48px;
   }
 
   .headerContent {
-    padding: 15px;
+    padding: 40px 16px 16px;
   }
 
   .title {
@@ -217,6 +254,10 @@
 }
 
 @media (--breakpointLarge) {
+  .titleRow {
+    padding-right: 0;
+  }
+
   .poster,
   .movieNavigationButtons {
     display: none;
