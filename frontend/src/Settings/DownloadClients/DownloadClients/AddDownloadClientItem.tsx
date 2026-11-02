@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
+import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 import Link from 'Components/Link/Link';
 import Menu from 'Components/Menu/Menu';
 import MenuContent from 'Components/Menu/MenuContent';
-import { sizes } from 'Helpers/Props';
+import { icons, sizes } from 'Helpers/Props';
 import DownloadClient from 'typings/DownloadClient';
 import translate from 'Utilities/String/translate';
 import { getNewDownloadClient } from '../useDownloadClients';
@@ -61,9 +62,14 @@ function AddDownloadClientItem({
             </span>
           )}
 
-          <Button to={infoLink} size={sizes.SMALL}>
-            {translate('MoreInfo')}
-          </Button>
+          <Link
+            className={styles.infoLink}
+            to={infoLink}
+            title={translate('MoreInfo')}
+            aria-label={translate('MoreInfo')}
+          >
+            <Icon name={icons.INFO} size={18} />
+          </Link>
         </div>
       </div>
     </div>
