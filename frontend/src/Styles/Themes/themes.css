@@ -225,7 +225,9 @@
   --radarrYellow: oklch(84% 0.160 82);
   --queueColor: var(--purple);
   --themeLightColor: oklch(48% 0.010 260);
-  --movieBackgroundColor: var(--paperCard);
+  --movieBackgroundColor: var(--seriesBackgroundColor);
+  --movieOverlayBackdrop: var(--seriesOverlayBackdrop);
+  --movieOverlayInk: var(--seriesOverlayInk);
   --addMovieBackgroundColor: var(--paperCard);
   --inputIconContainerBackgroundColor: var(--paperWarm);
   --popoverArrowBorderColor: var(--popoverBodyBackgroundColor);

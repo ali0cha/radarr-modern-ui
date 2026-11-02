@@ -3,7 +3,6 @@ import { MOVIE_SEARCH, REFRESH_MOVIE } from 'Commands/commandNames';
 import { executeCommand } from 'Commands/useCommands';
 import Icon from 'Components/Icon';
 import ImdbRating from 'Components/ImdbRating';
-import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
@@ -154,8 +153,9 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
           <MovieIndexPosterSelect movieId={movieId} titleSlug={titleSlug} />
         ) : null}
 
-        <Label className={styles.controls}>
+        <div className={styles.controls}>
           <SpinnerIconButton
+            className={styles.action}
             name={icons.REFRESH}
             title={translate('RefreshMovie')}
             isSpinning={isRefreshingMovie}
@@ -173,6 +173,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
           ) : null}
 
           <IconButton
+            className={styles.action}
             name={icons.EDIT}
             title={translate('EditMovie')}
             onPress={onEditMoviePress}
@@ -191,7 +192,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
               }
             />
           </span>
-        </Label>
+        </div>
 
         {status === 'deleted' ? (
           <div className={styles.deleted} title={translate('Deleted')} />
@@ -233,20 +234,20 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
       ) : null}
 
       {showMonitored ? (
-        <div className={styles.title}>
+        <div className={styles.meta}>
           {monitored ? translate('Monitored') : translate('Unmonitored')}
         </div>
       ) : null}
 
       {showQualityProfile && !!qualityProfile?.name ? (
-        <div className={styles.title} title={translate('QualityProfile')}>
+        <div className={styles.meta} title={translate('QualityProfile')}>
           {qualityProfile.name}
         </div>
       ) : null}
 
       {showCinemaRelease && inCinemas ? (
         <div
-          className={styles.title}
+          className={styles.meta}
           title={`${translate('InCinemas')}: ${formatDate(
             inCinemas,
             longDateFormat
@@ -265,7 +266,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
 
       {showDigitalRelease && digitalRelease ? (
         <div
-          className={styles.title}
+          className={styles.meta}
           title={`${translate('DigitalRelease')}: ${formatDate(
             digitalRelease,
             longDateFormat
@@ -284,7 +285,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
 
       {showPhysicalRelease && physicalRelease ? (
         <div
-          className={styles.title}
+          className={styles.meta}
           title={`${translate('PhysicalRelease')}: ${formatDate(
             physicalRelease,
             longDateFormat
@@ -303,7 +304,7 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
 
       {showReleaseDate && releaseDate ? (
         <div
-          className={styles.title}
+          className={styles.meta}
           title={`${translate('ReleaseDate')}: ${formatDate(
             releaseDate,
             longDateFormat
@@ -321,25 +322,25 @@ function MovieIndexPoster(props: MovieIndexPosterProps) {
       ) : null}
 
       {showTmdbRating && !!ratings.tmdb ? (
-        <div className={styles.title}>
+        <div className={styles.meta}>
           <TmdbRating ratings={ratings} iconSize={12} />
         </div>
       ) : null}
 
       {showImdbRating && !!ratings.imdb ? (
-        <div className={styles.title}>
+        <div className={styles.meta}>
           <ImdbRating ratings={ratings} iconSize={12} />
         </div>
       ) : null}
 
       {showRottenTomatoesRating && !!ratings.rottenTomatoes ? (
-        <div className={styles.title}>
+        <div className={styles.meta}>
           <RottenTomatoRating ratings={ratings} iconSize={12} />
         </div>
       ) : null}
 
       {showTraktRating && !!ratings.trakt ? (
-        <div className={styles.title}>
+        <div className={styles.meta}>
           <TraktRating ratings={ratings} iconSize={12} />
         </div>
       ) : null}

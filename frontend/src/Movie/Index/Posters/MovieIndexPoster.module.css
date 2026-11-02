@@ -1,26 +1,43 @@
 .content {
-  transition: all 200ms ease-in;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  &:hover {
+@media (hover: hover) {
+  .content:hover {
     z-index: 2;
-    box-shadow: 0 0 12px var(--black);
-    transition: all 200ms ease-in;
 
     .controls {
-      opacity: 0.9;
-      transition: opacity 200ms linear 150ms;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .posterContainer {
+      box-shadow:
+        0 16px 36px -12px oklch(0% 0 0 / 0.32),
+        0 4px 12px -2px oklch(0% 0 0 / 0.16);
+      filter: brightness(1.06) saturate(1.04);
     }
   }
 }
 
 .posterContainer {
   position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--movieBackgroundColor);
+  transition:
+    box-shadow 200ms cubic-bezier(0.25, 1, 0.5, 1),
+    filter 200ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.poster {
+.link {
+  composes: link from 'Components/Link/Link.module.css';
+
   position: relative;
   display: block;
-  background-color: var(--defaultColor);
+  background-color: var(--movieBackgroundColor);
 }
 
 .overlayTitle {
@@ -30,61 +47,97 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  padding: 12px;
   width: 100%;
   height: 100%;
-  color: var(--offWhite);
+  background:
+    linear-gradient(155deg, var(--paperWarm), var(--paperCard));
+  color: var(--inkSoft);
   text-align: center;
-  font-size: 20px;
-}
-
-.title {
-  @add-mixin truncate;
-
-  background-color: var(--movieBackgroundColor);
-  text-align: center;
-  font-size: var(--smallFontSize);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  font-size: 18px;
+  font-family: var(--defaultFontFamily);
+  line-height: 1.2;
 }
 
 .controls {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
   z-index: 3;
-  border-radius: 4px;
-  background-color: #707070;
-  color: var(--white);
-  font-size: var(--smallFontSize);
+  display: flex;
+  overflow: hidden;
+  padding: 3px;
+  border-radius: 8px;
+  background-color: var(--movieOverlayBackdrop);
+  box-shadow: 0 8px 22px -10px oklch(0% 0 0 / 0.65);
   opacity: 0;
-  transition: opacity 0;
+  transition:
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(8px);
 }
 
 .action {
   composes: button from 'Components/Link/IconButton.module.css';
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin: 0;
+  width: auto;
+  height: 30px;
+  border-radius: 6px;
+  color: var(--movieOverlayInk);
+  transition:
+    color 120ms cubic-bezier(0.25, 1, 0.5, 1),
+    background-color 120ms cubic-bezier(0.25, 1, 0.5, 1);
+
   &:hover {
-    color: var(--radarrYellow);
+    background-color: oklch(96% 0.008 260 / 0.13);
+    color: oklch(98% 0.006 260);
   }
 }
 
-@media (--breakpointSmall) {
-  .container {
-    padding: 5px;
-  }
+.title {
+  @add-mixin truncate;
+
+  margin-top: 6px;
+  background-color: transparent;
+  color: var(--ink);
+  text-align: left;
+  letter-spacing: -0.01em;
+  font-weight: 550;
+  font-size: 14px;
+  font-family: var(--defaultFontFamily);
+  line-height: 1.4;
+}
+
+.meta {
+  @add-mixin truncate;
+
+  background-color: transparent;
+  color: var(--inkMuted);
+  text-align: left;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 11.5px;
+  font-family: var(--defaultFontFamily);
+  line-height: 1.5;
+}
+
+.metaSep {
+  color: var(--inkFaint);
 }
 
 .tags {
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  padding: 0 3px;
-  height: 21px;
-  background-color: var(--movieBackgroundColor);
-}
-
-.tagsList {
-  display: flex;
-  overflow: hidden;
+  height: auto;
+  background-color: transparent;
 }
 
 .deleted {
@@ -108,19 +161,20 @@
 }
 
 .externalLinks {
-  margin-left: 0.5em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--movieOverlayInk);
 }
 
-.link {
-  composes: link from 'Components/Link/Link.module.css';
-
-  position: relative;
-  display: block;
-  background-color: var(--defaultColor);
+.tagsList {
+  display: flex;
+  overflow: hidden;
 }
 
-.nextAiring {
-  background-color: #fafbfc;
-  text-align: center;
-  font-size: var(--smallFontSize);
+@media (--breakpointSmall) {
+  .container {
+    padding: 5px;
+  }
 }
