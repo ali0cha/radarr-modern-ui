@@ -52,7 +52,8 @@
 }
 
 .title {
-  font-weight: 300;
+  letter-spacing: -0.015em;
+  font-weight: 600;
   font-size: 36px;
 }
 

@@ -68,7 +68,8 @@
   composes: link;
 
   flex: 1 0 1px;
-  font-weight: 300;
+  letter-spacing: -0.015em;
+  font-weight: 600;
   font-size: 30px;
   line-height: 1;
 }
