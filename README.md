@@ -4,15 +4,15 @@ An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports it
 
 This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
 
-> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `chore/remove-orphans`:
+> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `ui/calendar`:
 >
 > ```bash
-> git checkout chore/remove-orphans
+> git checkout ui/calendar
 > ```
 
 ## Goal
 
-Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on:
+Move Radarr's front-end to the stack of Sonarr's, then give it the look of Sonarr v5 (design system, icons, layout), so that it is as easy to work on and as pleasant to use:
 
 | | Radarr (upstream) | This fork |
 | --- | --- | --- |
@@ -45,6 +45,22 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 | `chore/remove-orphans` | Files that nothing imports anymore: those left by the move out of Redux, and a few that Radarr itself did not use |
 | `ts/utilities` | TypeScript conversion of the utilities, independent of the others |
 
+## Sonarr v5 look
+
+On top of `chore/remove-orphans`, a second stack ports the redesign of Sonarr v5. It is ported screen by screen, and checked by eye on each one, because Sonarr's CSS only works where the markup is the same as Radarr's.
+
+| Branches (in order) | What they do |
+| --- | --- |
+| `ui/foundations` | The design system: `oklch` themes (light, dark, color impaired), tokens, breakpoints, the Inter, Fraunces and JetBrains Mono fonts, PostCSS set up for them |
+| `ui/icons` | Font Awesome replaced by [lucide](https://lucide.dev), with the icons that only Radarr uses |
+| `ui/shared-css` | Sonarr's styles for the shared components: buttons, forms, modals, tables, menus, labels |
+| `ui/layout` | The grouped sidebar, the header with the logo, the toolbar buttons |
+| `ui/calendar` | The calendar as a table with a sticky header, the new event styles, the agenda, the movie index (posters and overview) and the settings page as cards |
+
+The accent color is amber (`--accentHue: 85` in `Styles/Themes/themes.css`), close to Radarr's yellow. Set it to `215` to get Sonarr's blue.
+
+**Not ported yet:** the toolbar that moves what does not fit into a menu, the *Tools* menu of the header, the redesigned movie details, discover, collections and add movie screens, and about thirty style sheets whose markup is not the same as Sonarr's (quality profiles, delay profiles, naming, root folders, interactive search). They work with the new colors and fonts, but keep their old layout.
+
 ## Things worth knowing
 
 - **Saved preferences are kept.** The views, sorts, filters, columns, page sizes and defaults that a user chose used to be saved by `redux-localstorage` in one document. Each store that replaced a section reads what it needs from that document the first time, after the old migrations (`blacklist` renamed to `blocklist`, `preDB`, monitor saved as `true` or `false`) were applied to it, so nobody starts from scratch.
@@ -54,7 +70,7 @@ Make Radarr's front-end look and behave like Sonarr's, and be as easy to work on
 
 ## Build and try it
 
-Start from the last branch of the stack (`git checkout chore/remove-orphans`), then:
+Start from the last branch of the stack (`git checkout ui/calendar`), then:
 
 ```bash
 yarn install
