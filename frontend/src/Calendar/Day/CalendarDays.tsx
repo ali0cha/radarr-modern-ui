@@ -4,7 +4,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useIsSidebarVisible } from 'App/useAppStore';
 import * as calendarViews from 'Calendar/calendarViews';
 import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
+import translate from 'Utilities/String/translate';
 import CalendarDay from './CalendarDay';
+import CalendarTableHeader from './CalendarTableHeader';
 import styles from './CalendarDays.module.css';
 
 function CalendarDays() {
@@ -106,20 +108,38 @@ function CalendarDays() {
     };
   }, [handleTouchStart, handleTouchEnd, handleTouchCancel, handleTouchMove]);
 
+  const rowSize = view === calendarViews.MONTH ? 7 : Math.max(dates.length, 1);
+  const rows: string[][] = [];
+
+  for (let index = 0; index < dates.length; index += rowSize) {
+    rows.push(dates.slice(index, index + rowSize));
+  }
+
   return (
-    <div
+    <table
       className={classNames(styles.days, styles[view as keyof typeof styles])}
+      aria-label={translate('Calendar')}
     >
-      {dates.map((date) => {
-        return (
-          <CalendarDay
-            key={date}
-            date={date}
-            isTodaysDate={date === todaysDate}
-          />
-        );
-      })}
-    </div>
+      <CalendarTableHeader todaysDate={todaysDate} />
+
+      <tbody>
+        {rows.map((row) => {
+          return (
+            <tr key={row[0]}>
+              {row.map((date) => {
+                return (
+                  <CalendarDay
+                    key={date}
+                    date={date}
+                    isTodaysDate={date === todaysDate}
+                  />
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 

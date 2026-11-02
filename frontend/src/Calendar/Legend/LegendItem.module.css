@@ -1,37 +1,56 @@
 .legendItem {
+  display: flex;
+  align-items: center;
   margin: 3px 0;
-  margin-right: 6px;
-  padding-left: 5px;
-  width: 220px;
-  border-left-width: 4px;
-  border-left-style: solid;
+  margin-right: 8px;
+  padding: 4px 8px;
+  width: 260px;
+  color: var(--inkSoft);
+  font-size: 12px;
+  font-family: var(--defaultFontFamily);
   cursor: default;
+  gap: 8px;
+
+  &.unmonitored,
+  &.missingUnmonitored {
+    background-image: var(--calendarColorImpairedDiagonalPattern);
+  }
+
+  &.missingMonitored,
+  &.continuing {
+    background-image: var(--calendarColorImpairedPattern);
+  }
 }
 
-/*
- * Status
- */
+.bar {
+  flex-shrink: 0;
+  width: 4px;
+  height: 15px;
+  border-radius: 2px;
+  background-color: var(--inkMuted);
 
-.downloaded {
-  composes: downloaded from 'Calendar/Events/CalendarEvent.module.css';
-}
+  &.downloaded {
+    background-color: var(--calendarDownloadedColor);
+  }
 
-.queue {
-  composes: queue from 'Calendar/Events/CalendarEvent.module.css';
-}
+  &.queue {
+    background-color: var(--calendarDownloadingColor);
+  }
 
-.unmonitored {
-  composes: unmonitored from 'Calendar/Events/CalendarEvent.module.css';
-}
+  &.unmonitored {
+    opacity: 0.5;
+  }
 
-.missingUnmonitored {
-  composes: missingUnmonitored from 'Calendar/Events/CalendarEvent.module.css';
-}
+  &.missingMonitored {
+    background-color: var(--calendarMissingColor);
+  }
 
-.missingMonitored {
-  composes: missingMonitored from 'Calendar/Events/CalendarEvent.module.css';
-}
+  &.missingUnmonitored {
+    background-color: var(--warningColor);
+    opacity: 0.7;
+  }
 
-.continuing {
-  composes: continuing from 'Calendar/Events/CalendarEvent.module.css';
+  &.continuing {
+    background-color: var(--calendarUnairedColor);
+  }
 }

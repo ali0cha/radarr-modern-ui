@@ -1,5 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { invalidateQueueDetails } from 'Activity/Queue/useQueue';
 import { useCalendar, useCalendarStore } from 'Calendar/useCalendar';
 import * as commandNames from 'Commands/commandNames';
@@ -29,6 +35,8 @@ function Calendar() {
   const queryClient = useQueryClient();
   const requestCurrentPage = useCurrentPage();
   const updateTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
 
   const { isFetching, isPopulated, error, items, time, view, refetch } =
     useCalendar();
@@ -88,6 +96,28 @@ function Calendar() {
     }
   }, [isRefreshingMovie, wasRefreshingMovie, refetch]);
 
+  useLayoutEffect(() => {
+    const content = contentRef.current;
+    const sticky = stickyRef.current;
+
+    if (!content || !sticky) {
+      return;
+    }
+
+    const updateHeight = () =>
+      content.style.setProperty(
+        '--calendarStickyHeight',
+        `${sticky.offsetHeight}px`
+      );
+
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(sticky);
+
+    return () => observer.disconnect();
+  }, [isPopulated, error, view]);
+
   const movieFileIds = useMemo(
     () => selectUniqueIds<Movie, number>(items, 'movieFileId'),
     [items]
@@ -111,9 +141,12 @@ function Calendar() {
       ) : null}
 
       {!error && isPopulated && view !== 'agenda' ? (
-        <div className={styles.calendarContent}>
-          <CalendarHeader />
-          <DaysOfWeek />
+        <div ref={contentRef} className={styles.calendarContent}>
+          <div ref={stickyRef} className={styles.sticky}>
+            <CalendarHeader />
+            <DaysOfWeek />
+          </div>
+
           <CalendarDays />
         </div>
       ) : null}

@@ -27,6 +27,8 @@ function LegendItem({
         fullColorEvents && !isAgendaView && 'fullColor'
       )}
     >
+      <span className={classNames(styles.bar, styles[status])} />
+
       {name}
     </div>
   );
