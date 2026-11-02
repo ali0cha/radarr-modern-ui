@@ -4,10 +4,10 @@ An experimental fork of [Radarr](https://github.com/Radarr/Radarr) that ports it
 
 This is a work in progress, kept apart from upstream until it is ready. It is not affiliated with, or endorsed by, the Radarr team.
 
-> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `ui/toolbar-overflow`:
+> **Where is the code?** This branch, `develop`, is Radarr's own `develop` plus this README, so that it stays easy to compare with upstream. The migration lives in the branches listed under [Status](#status), stacked one on the other. To get all of it, check out the last one, `ui/dialogs`:
 >
 > ```bash
-> git checkout ui/toolbar-overflow
+> git checkout ui/dialogs
 > ```
 
 ## Goal
@@ -59,10 +59,11 @@ On top of `chore/remove-orphans`, a second stack ports the redesign of Sonarr v5
 | `ui/screens` | The movie details header (backdrop, poster, pills, tabs), the discover posters and the add movie search results |
 | `ui/header-tools` | The *Tools* menu of the header (test parsing, manual import) |
 | `ui/toolbar-overflow` | One overflow menu (⋮) for the whole toolbar, measured on the real width of the buttons with `@fluentui/priority-overflow`, as in Sonarr. `PageToolbarSection` keeps its API, so the screens did not change |
+| `ui/dialogs` | The *Add* dialogs of the settings (connections, indexers, download clients, import lists, specifications) as rows with an info link |
 
 The accent color is amber (`--accentHue: 85` in `Styles/Themes/themes.css`), close to Radarr's yellow. Set it to `215` to get Sonarr's blue.
 
-**Not ported yet:** the collections and the settings *Add* dialogs, and about thirty style sheets whose markup is not the same as Sonarr's (delay profiles, naming, root folders, interactive search). They work with the new colors and fonts, but keep their old layout.
+**What was left as it was:** the stylesheets whose markup is not the same as Sonarr's (delay and quality profiles, quality definitions, naming, root folders, interactive search). All but interactive search (it needs an indexer) were checked by eye with the new colors and fonts and look right, so their layout was not rewritten. The screens that need the metadata server (discover, adding a movie) could only be checked in the build, not on screen.
 
 ## Things worth knowing
 
@@ -73,7 +74,7 @@ The accent color is amber (`--accentHue: 85` in `Styles/Themes/themes.css`), clo
 
 ## Build and try it
 
-Start from the last branch of the stack (`git checkout ui/toolbar-overflow`), then:
+Start from the last branch of the stack (`git checkout ui/dialogs`), then:
 
 ```bash
 yarn install
